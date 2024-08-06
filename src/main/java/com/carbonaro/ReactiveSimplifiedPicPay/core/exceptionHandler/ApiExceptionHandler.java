@@ -3,65 +3,96 @@ package com.carbonaro.ReactiveSimplifiedPicPay.core.exceptionHandler;
 import com.carbonaro.ReactiveSimplifiedPicPay.core.exceptionHandler.response.ErrorEmptyResponse;
 import com.carbonaro.ReactiveSimplifiedPicPay.core.exceptionHandler.response.ErrorResponse;
 import com.carbonaro.ReactiveSimplifiedPicPay.services.exceptions.EmptyException;
+import com.carbonaro.ReactiveSimplifiedPicPay.services.exceptions.EmptyOrNullObjectException;
 import com.carbonaro.ReactiveSimplifiedPicPay.services.exceptions.NotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import java.time.LocalDateTime;
-import java.util.Arrays;
+import org.springframework.web.server.MissingRequestValueException;
+import org.springframework.web.server.ServerWebExchange;
+import org.springframework.web.server.ServerWebInputException;
 
 @RestControllerAdvice
 public class ApiExceptionHandler extends ApiExceptionsConstants {
 
-    @ExceptionHandler(EmptyException.class)
-    private ResponseEntity<ErrorEmptyResponse> emptyExceptionHandler(EmptyException e) {
+    private static final Logger log = LoggerFactory.getLogger(ApiExceptionHandler.class);
+
+    private void getPrivateStackTrace(Exception e) {
+
+        if (e instanceof EmptyException) {
+            log.warn("ERROR        ====> {}", e.getMessage());
+            log.warn("ERROR CLASS  ====> {}", e.getClass());
+            log.warn("STACKTRACE   ====> {}", (Object) e.getStackTrace());
+        } else {
+            log.error("ERROR        ====> {}", e.getMessage());
+            log.error("ERROR CLASS  ====> {}", e.getClass());
+            log.error("STACKTRACE   ====> {}", (Object) e.getStackTrace());
+        }
+    }
+
+    @ExceptionHandler({EmptyException.class})
+    private ResponseEntity<ErrorEmptyResponse> noContentExceptionHandler(Exception e, ServerWebExchange request) {
 
         getPrivateStackTrace(e);
         ErrorEmptyResponse response = ErrorEmptyResponse.builder()
-                .path("NOT DEFINED YET")
-                .timestemp(LocalDateTime.now())
                 .error(NO_CONTENT)
+                .timestemp(TIMESTEMP)
+                .path(getPath(request))
+                .status(NO_CONTENT_STATUS.value())
                 .warningMessage(NO_CONTENT_WARNING_MESSAGE)
-                .status(HttpStatus.NO_CONTENT.value())
                 .build();
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @ExceptionHandler(NotFoundException.class)
-    private ResponseEntity<ErrorResponse> notFoundExceptionHandler(NotFoundException e) {
+    @ExceptionHandler({MethodArgumentNotValidException.class, MissingRequestValueException.class, ServerWebInputException.class,
+    EmptyOrNullObjectException.class, DataIntegrityViolationException.class})
+    private ResponseEntity<ErrorResponse> badRequestExceptionHandler(Exception e, ServerWebExchange request) {
 
         getPrivateStackTrace(e);
         ErrorResponse response = ErrorResponse.builder()
-                .path("NOT DEFINED YET")
-                .timestemp(LocalDateTime.now())
+                .error(BAD_REQUEST)
+                .timestemp(TIMESTEMP)
+                .path(getPath(request))
+                .status(BAD_REQUEST_STATUS.value())
+                .errorMessage(BAD_REQUEST_ERROR_MESSAGE)
+                .build();
+
+        return new ResponseEntity<>(response, BAD_REQUEST_STATUS);
+    }
+
+    @ExceptionHandler({NotFoundException.class})
+    private ResponseEntity<ErrorResponse> notFoundExceptionHandler(Exception e, ServerWebExchange request) {
+
+        getPrivateStackTrace(e);
+        ErrorResponse response = ErrorResponse.builder()
                 .error(NOT_FOUND)
+                .timestemp(TIMESTEMP)
+                .path(getPath(request))
+                .status(NOT_FOUND_STATUS.value())
                 .errorMessage(NOT_FOUND_ERROR_MESSAGE)
-                .status(HttpStatus.NOT_FOUND.value())
                 .build();
 
-        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(response, NOT_FOUND_STATUS);
     }
 
-    @ExceptionHandler(Exception.class)
-    private ResponseEntity<ErrorResponse> internalServerErrorExceptionHandler(Exception e) {
+    @ExceptionHandler({Exception.class})
+    private ResponseEntity<ErrorResponse> internalServerErrorExceptionHandler(Exception e, ServerWebExchange request) {
 
         getPrivateStackTrace(e);
         ErrorResponse response = ErrorResponse.builder()
-                .path("NOT DEFINED YET")
-                .timestemp(LocalDateTime.now())
+                .timestemp(TIMESTEMP)
+                .path(getPath(request))
                 .error(INTERNAL_SERVER_ERROR)
+                .status(INTERNAL_SERVER_STATUS.value())
                 .errorMessage(INTERNAL_SERVER_ERROR_MESSAGE)
-                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
                 .build();
 
-        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
-    private void getPrivateStackTrace(Exception e) {
-        System.out.println("FINAL ERROR IN THE STACK TRACE ==============> " + e.getMessage());
-        Arrays.stream(e.getStackTrace()).toList().forEach(System.out::println);
+        return new ResponseEntity<>(response, INTERNAL_SERVER_STATUS);
     }
 }
