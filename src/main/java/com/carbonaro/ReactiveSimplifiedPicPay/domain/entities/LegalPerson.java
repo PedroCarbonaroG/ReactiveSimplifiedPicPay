@@ -36,7 +36,7 @@ public class LegalPerson extends Person {
     private CompanySizeEnum companySize;
 
     @Description("List of all company partners")
-    List<NaturalPersonResponse> partners;
+    List<NaturalPerson> partners;
 
     @Description("Number of employees in the company")
     private int employeesNumber;

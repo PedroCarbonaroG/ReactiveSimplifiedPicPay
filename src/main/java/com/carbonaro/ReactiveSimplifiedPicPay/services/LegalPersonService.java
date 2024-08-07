@@ -1,6 +1,7 @@
 package com.carbonaro.ReactiveSimplifiedPicPay.services;
 
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.entities.LegalPerson;
+import com.carbonaro.ReactiveSimplifiedPicPay.domain.entities.NaturalPerson;
 import com.carbonaro.ReactiveSimplifiedPicPay.repositories.LegalPersonRepository;
 import com.carbonaro.ReactiveSimplifiedPicPay.services.exceptions.BadRequestException;
 import com.carbonaro.ReactiveSimplifiedPicPay.services.exceptions.EmptyException;
@@ -16,6 +17,8 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.util.function.Tuple2;
+
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
@@ -29,6 +32,7 @@ public class LegalPersonService {
 
     private final LegalPersonRepository repositoryLP;
     private final ReactiveMongoTemplate mongoTemplate;
+    private final NaturalPersonService naturalPersonService;
 
     public Mono<Void> saveLegalPerson(LegalPerson legalPerson) {
 
@@ -79,6 +83,29 @@ public class LegalPersonService {
                 .then();
     }
 
+    public Mono<Void> savePartner(String cnpj, String partnerCPF) {
+
+        log.info("LegalPerson | Saving new partner for company: {}", cnpj);
+        return Mono
+                .zip(this.findLegalByCNPJ(cnpj), naturalPersonService.findNaturalByCPF(partnerCPF))
+                .flatMap(this::savePartner)
+                .then();
+    }
+    private Mono<Void> savePartner(Tuple2<LegalPerson, NaturalPerson> tuple) {
+
+        return Mono
+                .just(tuple)
+                .flatMap(self -> {
+                    if (self.getT1().getPartners().stream().anyMatch(it -> it.getCpf().equals(tuple.getT2().getCpf()))) {
+                        return Mono.error(new DataIntegrityViolationException("Already have this partner in the company"));
+                    } else {
+                        self.getT1().getPartners().add(self.getT2());
+                    }
+
+                    return this.saveLegalPerson(self.getT1());
+                });
+    }
+
     public Flux<LegalPerson> findAllLegals() {
 
         return repositoryLP
@@ -112,7 +139,7 @@ public class LegalPersonService {
                 .flatMap(unused -> repositoryLP
                             .findByCnpj(legalPerson.getCnpj())
                             .hasElement()
-                            .flatMap(hasValue -> !hasValue ? Mono.just(legalPerson) : Mono.error(new DataIntegrityViolationException("Already have a LegalPerson with that CNPJ.")))
+                            .flatMap(hasValue -> Boolean.FALSE.equals(hasValue) ? Mono.just(legalPerson) : Mono.error(new DataIntegrityViolationException("Already have a LegalPerson with that CNPJ.")))
                 )
                 .flatMap(unused -> legalPerson.getCnpj().matches(onlyNumbers) && legalPerson.getCnpj().length() == 14
                             ? Mono.just(legalPerson)
