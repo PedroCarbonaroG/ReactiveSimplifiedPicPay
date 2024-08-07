@@ -1,8 +1,8 @@
 package com.carbonaro.ReactiveSimplifiedPicPay.domain.entities;
 
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.enums.CompanySizeEnum;
-import com.carbonaro.ReactiveSimplifiedPicPay.domain.responses.NaturalPersonResponse;
-import io.swagger.v3.oas.annotations.media.Schema;
+import com.carbonaro.ReactiveSimplifiedPicPay.domain.responses.person.NaturalPersonResponse;
+import jdk.jfr.Description;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -19,24 +19,27 @@ import java.util.List;
 @Document(value = "LegalPerson")
 public class LegalPerson extends Person {
 
-    @Schema(description = "LegalPerson unique CNPJ")
     @Indexed(unique = true)
+    @Description("Unique LegalPerson CNPJ.")
     private String cnpj;
 
-    @Schema(description = "Saldo bancário da pessoa jurídica")
+    @Description("Company unique bank balance.")
     private BigDecimal balance;
 
-    @Schema(description = "Faturamento mensal da empresa")
+    @Description("Company monthly income.")
     private BigDecimal monthlyBilling;
 
-    @Schema(description = "Faturamento anual da empresa")
+    @Description("Company annual income.")
     private BigDecimal annualBilling;
 
-    @Schema(description = "Configuração de tamanho da empresa baseado no faturamento anual")
+    @Description("Company size based on annual billing")
     private CompanySizeEnum companySize;
 
-    @Schema(description = "Sócios da empresa")
+    @Description("List of all company partners")
     List<NaturalPersonResponse> partners;
+
+    @Description("Number of employees in the company")
+    private int employeesNumber;
 
     public void setCompanySize() {
         setInternalCompanySize();
