@@ -20,6 +20,9 @@ public class LegalPersonResponse extends PersonResponse {
     @Schema(description = "Demonstration of the company size")
     private CompanySizeEnum companySize;
 
+    @Schema(description = "Number of employees in the company")
+    private int employeesNumber;
+
     @Schema(description = "Demonstration of the company partners")
     List<NaturalPersonResponse> partners;
 }
