@@ -6,6 +6,7 @@ import com.carbonaro.ReactiveSimplifiedPicPay.repositories.LegalPersonRepository
 import com.carbonaro.ReactiveSimplifiedPicPay.services.exceptions.BadRequestException;
 import com.carbonaro.ReactiveSimplifiedPicPay.services.exceptions.EmptyException;
 import com.carbonaro.ReactiveSimplifiedPicPay.services.exceptions.EmptyOrNullObjectException;
+import com.carbonaro.ReactiveSimplifiedPicPay.services.exceptions.NotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -104,6 +105,23 @@ public class LegalPersonService {
 
                     return this.saveLegalPerson(self.getT1());
                 });
+    }
+
+    public Mono<Void> deletePartner(String cnpj, String partnerCNPJ) {
+
+        log.info("LegalPerson | Deleting partner: {}, from company: {}", partnerCNPJ, cnpj);
+        return Mono
+                .zip(this.findLegalByCNPJ(cnpj), naturalPersonService.findNaturalByCPF(partnerCNPJ))
+                .flatMap(this::deletePartner)
+                .then();
+    }
+    private Mono<Void> deletePartner(Tuple2<LegalPerson, NaturalPerson> tuple) {
+
+        return Mono
+                .just(tuple)
+                .flatMap(self -> self.getT1().getPartners().removeIf(it -> it.getCpf().equals(self.getT2().getCpf()))
+                        ? this.saveLegalPerson(tuple.getT1())
+                        : Mono.error(new NotFoundException("Don't exist any partner with that CPF in this company.")));
     }
 
     public Flux<LegalPerson> findAllLegals() {
