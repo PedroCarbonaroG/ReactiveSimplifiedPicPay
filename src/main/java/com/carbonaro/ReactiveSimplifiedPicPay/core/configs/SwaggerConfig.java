@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.models.OpenAPI;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import io.swagger.v3.oas.models.info.Info;
 
 @Configuration
 @OpenAPIDefinition
@@ -17,7 +18,7 @@ public class SwaggerConfig {
     public OpenAPI buildAPI() {
 
         return new OpenAPI()
-                .info(new io.swagger.v3.oas.models.info.Info()
+                .info(new Info()
                         .title(DEFAULT_API_TITLE)
                         .version(DEFAULT_API_VERSION)
                         .description(DEFAULT_API_DESCRIPTION)
