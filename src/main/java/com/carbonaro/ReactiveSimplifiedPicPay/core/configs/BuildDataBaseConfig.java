@@ -5,11 +5,13 @@ import com.carbonaro.ReactiveSimplifiedPicPay.domain.entities.NaturalPerson;
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.mappers.IPersonMapper;
 import com.carbonaro.ReactiveSimplifiedPicPay.repositories.LegalPersonRepository;
 import com.carbonaro.ReactiveSimplifiedPicPay.repositories.NaturalPersonRepository;
+import com.carbonaro.ReactiveSimplifiedPicPay.repositories.TransactionRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
+import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -23,28 +25,38 @@ import java.util.List;
 @AllArgsConstructor
 public class BuildDataBaseConfig implements CommandLineRunner {
 
+    private final TransactionRepository transactionRepository;
     private final LegalPersonRepository legalPersonRepository;
     private final NaturalPersonRepository naturalPersonRepository;
 
-    private <T, R> void buildDataBase(List<T> list, ReactiveMongoRepository<T, R> repository) {
+    @Override
+    public void run(String... args) {
 
-        repository
-                .deleteAll()
-                .thenMany(repository.saveAll(list))
+        buildDataBase(getNaturalPersons(), naturalPersonRepository, NaturalPersonRepository.class)
+                .doOnSubscribe(subscription -> buildDataBase(getLegalPersons(), legalPersonRepository, LegalPersonRepository.class).subscribe())
+                .doOnSubscribe(subscription -> transactionRepository.deleteAll().subscribe())
                 .subscribe();
     }
 
-    @Override
-    public void run(String... args) throws Exception {
+    private <T, R> Mono<Void> buildDataBase(List<T> list, ReactiveMongoRepository<T, R> repository, Class<?> repositoryClass) {
 
-        buildDataBase(new ArrayList<>(Arrays.asList(
+        return repository
+                .deleteAll()
+                .then(repository.saveAll(list).then())
+                .doOnSuccess(unused -> log.info("List of {} was persisted with success!", repositoryClass.getSimpleName()))
+                .doOnError(throwable -> log.error("ERROR: {}", throwable.getMessage(), throwable));
+    }
+
+    private List<NaturalPerson> getNaturalPersons() {
+
+        return new ArrayList<>(Arrays.asList(
                 NaturalPerson.builder()
                         .id(null)
                         .name("João Silva")
                         .email("joao.silva@example.com")
                         .address("Rua das Flores, 123")
                         .password("senha123")
-                        .cpf("123.456.789-10")
+                        .cpf("12345678910")
                         .birthDate(LocalDate.parse("10/05/2001", DateTimeFormatter.ofPattern("dd/MM/yyyy")))
                         .balance(BigDecimal.valueOf(15000.00))
                         .build()
@@ -55,7 +67,7 @@ public class BuildDataBaseConfig implements CommandLineRunner {
                         .email("maria.oliveira@example.com")
                         .address("Avenida Central, 456")
                         .password("senha456")
-                        .cpf("987.654.321-00")
+                        .cpf("98765432100")
                         .birthDate(LocalDate.parse("08/01/1997", DateTimeFormatter.ofPattern("dd/MM/yyyy")))
                         .balance(BigDecimal.valueOf(8000.00))
                         .build()
@@ -66,7 +78,7 @@ public class BuildDataBaseConfig implements CommandLineRunner {
                         .email("jose.pereira@example.com")
                         .address("Praça Principal, 789")
                         .password("senha789")
-                        .cpf("456.789.123-00")
+                        .cpf("45678912300")
                         .birthDate(LocalDate.parse("22/08/1999", DateTimeFormatter.ofPattern("dd/MM/yyyy")))
                         .balance(BigDecimal.valueOf(130000.00))
                         .build()
@@ -77,7 +89,7 @@ public class BuildDataBaseConfig implements CommandLineRunner {
                         .email("ana.santos@example.com")
                         .address("Alameda dos Anjos, 321")
                         .password("senha321")
-                        .cpf("321.654.987-00")
+                        .cpf("32165498700")
                         .birthDate(LocalDate.parse("08/10/1973", DateTimeFormatter.ofPattern("dd/MM/yyyy")))
                         .balance(BigDecimal.valueOf(70000.00))
                         .build()
@@ -88,7 +100,7 @@ public class BuildDataBaseConfig implements CommandLineRunner {
                         .email("carlos.souza@example.com")
                         .address("Travessa dos Sonhos, 555")
                         .password("senha555")
-                        .cpf("789.456.321-00")
+                        .cpf("78945632100")
                         .birthDate(LocalDate.parse("14/04/1998", DateTimeFormatter.ofPattern("dd/MM/yyyy")))
                         .balance(BigDecimal.valueOf(16000.00))
                         .build()
@@ -99,30 +111,30 @@ public class BuildDataBaseConfig implements CommandLineRunner {
                         .email("lucia.ferreira@example.com")
                         .address("Rua das Estrelas, 888")
                         .password("senha888")
-                        .cpf("159.357.852-00")
+                        .cpf("15935785200")
                         .birthDate(LocalDate.parse("05/05/2005", DateTimeFormatter.ofPattern("dd/MM/yyyy")))
                         .balance(BigDecimal.valueOf(140000.00))
-                        .build()
-        )), naturalPersonRepository);
+                        .build()));
+    }
 
-        // <===============================================================================================================> //
+    private List<LegalPerson> getLegalPersons() {
 
-        List<LegalPerson> legalPersonList = new ArrayList<>(Arrays.asList(
+        List<LegalPerson> list = new ArrayList<>(Arrays.asList(
                 LegalPerson.builder()
                         .id(null)
                         .name("ABC Incorporadora")
                         .email("contato@abcincorp.com")
                         .address("Rua das Construções, 10")
                         .password("incorppass123")
-                        .cnpj("12.345.678/0001-90")
+                        .cnpj("12345678000190")
                         .balance(BigDecimal.valueOf(120000.00))
                         .monthlyBilling(BigDecimal.valueOf(20000.00))
                         .annualBilling(BigDecimal.valueOf(240000.00))
                         .companySize(null)
-                        .partners(new ArrayList<>(Arrays.asList(
-                                IPersonMapper.INSTANCE.toNaturalPersonResponse(naturalPersonRepository.findByCpf("159.357.852-00").block()),
-                                IPersonMapper.INSTANCE.toNaturalPersonResponse(naturalPersonRepository.findByCpf("789.456.321-00").block())
-                        )))
+                        .partners(Mono
+                                .zip(naturalPersonRepository.findByCpf("15935785200"),
+                                        naturalPersonRepository.findByCpf("78945632100"))
+                                .map(tuple -> Arrays.asList(tuple.getT1(), tuple.getT2())).block())
                         .build()
                 ,
                 LegalPerson.builder()
@@ -131,15 +143,15 @@ public class BuildDataBaseConfig implements CommandLineRunner {
                         .email("contato@xyzconsult.com")
                         .address("Avenida das Ideias, 20")
                         .password("consultpass456")
-                        .cnpj("98.765.432/0001-10")
+                        .cnpj("98765432000110")
                         .balance(BigDecimal.valueOf(2000000.00))
                         .monthlyBilling(BigDecimal.valueOf(155000.00))
                         .annualBilling(BigDecimal.valueOf(1860000.00))
                         .companySize(null)
-                        .partners(new ArrayList<>(Arrays.asList(
-                                IPersonMapper.INSTANCE.toNaturalPersonResponse(naturalPersonRepository.findByCpf("987.654.321-00").block()),
-                                IPersonMapper.INSTANCE.toNaturalPersonResponse(naturalPersonRepository.findByCpf("321.654.987-00").block())
-                        )))
+                        .partners(Mono
+                                .zip(naturalPersonRepository.findByCpf("98765432100"),
+                                        naturalPersonRepository.findByCpf("32165498700"))
+                                .map(tuple -> Arrays.asList(tuple.getT1(), tuple.getT2())).block())
                         .build()
                 ,
                 LegalPerson.builder()
@@ -148,19 +160,19 @@ public class BuildDataBaseConfig implements CommandLineRunner {
                         .email("contato@deftech.com")
                         .address("Praça da Inovação, 30")
                         .password("techpass789")
-                        .cnpj("45.678.901/0001-20")
+                        .cnpj("45678901000120")
                         .balance(BigDecimal.valueOf(120000000.00))
                         .monthlyBilling(BigDecimal.valueOf(45000000.00))
                         .annualBilling(BigDecimal.valueOf(540000000.00))
                         .companySize(null)
-                        .partners(new ArrayList<>(Arrays.asList(
-                                IPersonMapper.INSTANCE.toNaturalPersonResponse(naturalPersonRepository.findByCpf("123.456.789-10").block()),
-                                IPersonMapper.INSTANCE.toNaturalPersonResponse(naturalPersonRepository.findByCpf("456.789.123-00").block())
-                        )))
+                        .partners(Mono
+                                .zip(naturalPersonRepository.findByCpf("12345678910"),
+                                        naturalPersonRepository.findByCpf("45678912300"))
+                                .map(tuple -> Arrays.asList(tuple.getT1(), tuple.getT2())).block())
                         .build()
-                        ));
+        ));
 
-        legalPersonList.forEach(LegalPerson::setCompanySize);
-        buildDataBase(legalPersonList, legalPersonRepository);
+        list.forEach(LegalPerson::setCompanySize);
+        return list;
     }
 }
