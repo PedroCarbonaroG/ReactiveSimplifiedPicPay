@@ -4,15 +4,15 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 public enum CompanySizeEnum {
 
-    @Schema(description = "Empresas com faturamento menor ou igual a R$ 360 mil. - FATURAMENTO ANUAL")
+    @Schema(description = "Companies with revenues less than or equal to R$360K - ANNUAL BILLING.")
     MICROBUSINESS,
 
-    @Schema(description = "Empresas com faturamento maior que R$ 360 mil e menor ou igual a R$ 4,8 milhões. - FATURAMENTO ANUAL")
+    @Schema(description = "Companies with revenues higher than R$360K and less or equal to R$4.8M - ANNUAL BILLING")
     SMALL_ENTERPRISE,
 
-    @Schema(description = "Empresas com faturamento maior que R$ 4,8 milhões e menor ou igual a R$ 300 milhões. - FATURAMENTO ANUAL")
+    @Schema(description = "Companies with revenues higher than 4.8M and less or equal to R$300M - ANNUAL BILLING")
     MEDIUM_ENTERPRISE,
 
-    @Schema(description = "Empresas com faturamento maior que R$ 300 milhões. - FATURAMENTO ANUAL")
+    @Schema(description = "Companies with revenues higher than R$300M - ANNUAL BILLING")
     LARGE_ENTERPRISE;
 }
