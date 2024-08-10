@@ -1,6 +1,6 @@
 package com.carbonaro.ReactiveSimplifiedPicPay.domain.entities;
 
-import io.swagger.v3.oas.annotations.media.Schema;
+import jdk.jfr.Description;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.annotation.Id;
@@ -10,22 +10,22 @@ import org.springframework.data.annotation.Id;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Person {
+public abstract class Person {
 
     @Id
-    @Schema(description = "Id unico da pessoa")
+    @Description("Unique Person identifier.")
     private String id;
 
-    @Schema(description = "Nome completo da pessoa")
+    @Description("Person full name.")
     protected String name;
 
-    @Schema(description = "Email da pessoa")
+    @Description("Person email.")
     private String email;
 
-    @Schema(description = "Endereço completo da pessoa")
+    @Description("Person full address.")
     private String address;
 
-    @Schema(description = "Senha de acesso da pessoa")
+    @Description("Person access password.")
     private String password;
 
 }
