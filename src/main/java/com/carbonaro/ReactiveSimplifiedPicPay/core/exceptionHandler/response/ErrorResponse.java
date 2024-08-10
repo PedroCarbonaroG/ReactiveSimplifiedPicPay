@@ -15,7 +15,7 @@ public class ErrorResponse {
 
     @Schema(description = "Horário exato em que a excessão ocorreu")
     @JsonFormat(pattern = "dd/MM/yyyy - HH:mm:ss")
-    private LocalDateTime timestemp;
+    private LocalDateTime timestamp;
 
     @Schema(description = "Caminho onde ocorreu a excessão")
     private String path;
