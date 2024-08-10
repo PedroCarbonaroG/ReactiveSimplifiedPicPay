@@ -15,7 +15,7 @@ public class ErrorEmptyResponse {
 
     @Schema(description = "Horário exato em que o aviso ocorreu")
     @JsonFormat(pattern = "dd/MM/yyyy - HH:mm:ss")
-    private LocalDateTime timestemp;
+    private LocalDateTime timestamp;
 
     @Schema(description = "Caminho onde ocorreu o aviso")
     private String path;
