@@ -1,7 +1,7 @@
 package com.carbonaro.ReactiveSimplifiedPicPay.domain.entities;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.swagger.v3.oas.annotations.media.Schema;
+import jdk.jfr.Description;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -19,16 +19,16 @@ import java.time.LocalDate;
 @Document(value = "NaturalPerson")
 public class NaturalPerson extends Person {
 
-    @Schema(description = "CPF unico da pessoa física")
     @Indexed(unique = true)
+    @Description("Unique NaturalPerson CPF.")
     private String cpf;
 
-    @Schema(description = "Data de nascimento da pessoa física")
-    @DateTimeFormat(pattern = "dd/MM/yyyy")
     @JsonFormat(pattern = "dd/MM/yyyy")
+    @DateTimeFormat(pattern = "dd/MM/yyyy")
+    @Description("NaturalPerson birthdate.")
     private LocalDate birthDate;
 
-    @Schema(description = "Saldo bancário da pessoa física")
+    @Description("NaturalPerson unique bank balance.")
     private BigDecimal balance;
 
 }
