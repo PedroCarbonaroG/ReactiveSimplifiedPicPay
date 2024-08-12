@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple2;
-
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
@@ -97,6 +96,7 @@ public class LegalPersonService {
         return Mono
                 .just(tuple)
                 .flatMap(self -> {
+
                     if (self.getT1().getPartners().stream().anyMatch(it -> it.getCpf().equals(tuple.getT2().getCpf()))) {
                         return Mono.error(new DataIntegrityViolationException("Already have this partner in the company"));
                     } else {
@@ -184,4 +184,5 @@ public class LegalPersonService {
                 ? Mono.error(new BadRequestException())
                 : Mono.just(legalPerson);
     }
+
 }
