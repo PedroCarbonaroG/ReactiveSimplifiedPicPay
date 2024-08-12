@@ -2,7 +2,6 @@ package com.carbonaro.ReactiveSimplifiedPicPay.core.configs;
 
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.entities.LegalPerson;
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.entities.NaturalPerson;
-import com.carbonaro.ReactiveSimplifiedPicPay.domain.mappers.IPersonMapper;
 import com.carbonaro.ReactiveSimplifiedPicPay.repositories.LegalPersonRepository;
 import com.carbonaro.ReactiveSimplifiedPicPay.repositories.NaturalPersonRepository;
 import com.carbonaro.ReactiveSimplifiedPicPay.repositories.TransactionRepository;
@@ -12,7 +11,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 import reactor.core.publisher.Mono;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
