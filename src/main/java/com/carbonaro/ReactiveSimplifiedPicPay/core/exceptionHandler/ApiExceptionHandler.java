@@ -18,6 +18,7 @@ import org.springframework.web.server.ServerWebInputException;
 @RestControllerAdvice
 public class ApiExceptionHandler extends ApiExceptionsConstants {
 
+    private static final String SEPARATOR = " • ";
     private static final Logger log = LoggerFactory.getLogger(ApiExceptionHandler.class);
 
     private void getPrivateStackTrace(Exception e) {
@@ -42,7 +43,7 @@ public class ApiExceptionHandler extends ApiExceptionsConstants {
                 .timestamp(TIMESTEMP)
                 .path(getPath(request))
                 .status(NO_CONTENT_STATUS.value())
-                .warningMessage(NO_CONTENT_WARNING_MESSAGE)
+                .warningMessage(e.getMessage().concat(SEPARATOR).concat(NO_CONTENT_WARNING_MESSAGE))
                 .build();
 
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -58,7 +59,7 @@ public class ApiExceptionHandler extends ApiExceptionsConstants {
                 .timestamp(TIMESTEMP)
                 .path(getPath(request))
                 .status(BAD_REQUEST_STATUS.value())
-                .errorMessage(BAD_REQUEST_ERROR_MESSAGE)
+                .errorMessage(e.getMessage().concat(SEPARATOR).concat(BAD_REQUEST_ERROR_MESSAGE))
                 .build();
 
         return new ResponseEntity<>(response, BAD_REQUEST_STATUS);
@@ -73,7 +74,7 @@ public class ApiExceptionHandler extends ApiExceptionsConstants {
                 .timestamp(TIMESTEMP)
                 .path(getPath(request))
                 .status(NOT_FOUND_STATUS.value())
-                .errorMessage(NOT_FOUND_ERROR_MESSAGE)
+                .errorMessage(e.getMessage().concat(SEPARATOR).concat(NOT_FOUND_ERROR_MESSAGE))
                 .build();
 
         return new ResponseEntity<>(response, NOT_FOUND_STATUS);
@@ -88,7 +89,7 @@ public class ApiExceptionHandler extends ApiExceptionsConstants {
                 .path(getPath(request))
                 .error(INTERNAL_SERVER_ERROR)
                 .status(INTERNAL_SERVER_STATUS.value())
-                .errorMessage(INTERNAL_SERVER_ERROR_MESSAGE)
+                .errorMessage(e.getMessage().concat(SEPARATOR).concat(INTERNAL_SERVER_ERROR_MESSAGE))
                 .build();
 
         return new ResponseEntity<>(response, INTERNAL_SERVER_STATUS);
