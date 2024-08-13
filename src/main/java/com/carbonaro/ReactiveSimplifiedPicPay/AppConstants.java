@@ -1,10 +1,8 @@
 package com.carbonaro.ReactiveSimplifiedPicPay;
 
 import lombok.experimental.UtilityClass;
-import org.springframework.context.annotation.PropertySource;
 
 @UtilityClass
-@PropertySource("classpath:src/main/resources/messages.properties")
 public class AppConstants {
 
     public static final String LEGAL_SENDER_ERROR = "Transaction.err.legal.sender";
