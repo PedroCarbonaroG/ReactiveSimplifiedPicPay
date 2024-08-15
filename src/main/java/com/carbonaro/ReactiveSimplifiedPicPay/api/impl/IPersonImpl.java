@@ -54,7 +54,7 @@ public class IPersonImpl implements IPersonAPI {
     }
 
     @Override
-    public Mono<Void> savePartnerToLegalPerson(String cnpj, NaturalPersonRequest naturalPerson) {
+    public Mono<Void> savePartnerToLegalPerson(String cnpj, String partnerCPF) {
 
         return null;
     }
@@ -69,13 +69,13 @@ public class IPersonImpl implements IPersonAPI {
     }
 
     @Override
-    public Mono<Void> deleteLegalPerson(LegalPersonRequest legalPerson) {
+    public Mono<Void> deleteLegalPerson(String legalPersonCNPJ) {
 
         return null;
     }
 
     @Override
-    public Mono<Void> deletePartnerByLegalPerson(String cnpj, NaturalPersonRequest naturalPersonRequest) {
+    public Mono<Void> deletePartnerByLegalPerson(String companyCNPJ, String partnerCPF) {
 
         return null;
     }
