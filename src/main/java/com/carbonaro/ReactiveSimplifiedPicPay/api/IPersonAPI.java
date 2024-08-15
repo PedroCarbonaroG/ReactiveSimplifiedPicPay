@@ -1,5 +1,7 @@
 package com.carbonaro.ReactiveSimplifiedPicPay.api;
 
+import com.carbonaro.ReactiveSimplifiedPicPay.core.annotations.RouteDescriptions.*;
+import com.carbonaro.ReactiveSimplifiedPicPay.core.annotations.RouteParams.LegalPersonRequestAsQueryParam;
 import com.carbonaro.ReactiveSimplifiedPicPay.core.exceptionHandler.response.ErrorEmptyResponse;
 import com.carbonaro.ReactiveSimplifiedPicPay.core.exceptionHandler.response.ErrorResponse;
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.requests.LegalPersonRequest;
@@ -21,130 +23,39 @@ import reactor.core.publisher.Mono;
 @RequestMapping(value = "/person", produces = MediaType.APPLICATION_JSON_VALUE)
 public interface IPersonAPI {
 
-    @Operation(
-            summary = "Responsible route to return all LegalPersons.",
-            responses = {
-                    @ApiResponse(
-                            responseCode = "200",
-                            description = "OK",
-                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = LegalPersonResponse.class))),
-
-                    @ApiResponse(
-                            responseCode = "204",
-                            description = "Neither LegalPerson was found.",
-                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorEmptyResponse.class))),
-
-                    @ApiResponse(
-                            responseCode = "404",
-                            description = "Not Found. Resources are not found to complete the service provided by this endpoint.",
-                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorResponse.class))),
-
-                    @ApiResponse(
-                            responseCode = "500",
-                            description = "Internal Server Error. Something went wrong with API, contact the administration.",
-                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorResponse.class)))})
-    @GetMapping(value = "/legals")
+    @GetMapping("/legals")
+    @FindAllLegalsRouteDescription
     Flux<LegalPersonResponse> findAllLegals();
 
-    @Operation(
-            summary = "Responsible route for return LegalPerson by your own CNPJ.",
-            responses = {
-                    @ApiResponse(
-                            responseCode = "200",
-                            description = "OK",
-                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = LegalPersonResponse.class))),
+    @GetMapping("/legals/{cnpj}")
+    @FindLegalByCNPJRouteDescription
+    Mono<LegalPersonResponse> findLegalByCNPJ(@PathVariable String companyCNPJ);
 
-                    @ApiResponse(
-                            responseCode = "204",
-                            description = "Neither LegalPerson was found.",
-                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorEmptyResponse.class))),
-
-                    @ApiResponse(
-                            responseCode = "400",
-                            description = "Some(s) parameter(s) could not match, revise that and try again with right parameters!",
-                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorResponse.class))),
-
-                    @ApiResponse(
-                            responseCode = "404",
-                            description = "Not Found. Resources are not found to complete the service provided by this endpoint.",
-                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorResponse.class))),
-
-                    @ApiResponse(
-                            responseCode = "500",
-                            description = "Internal Server Error. Something went wrong with API, contact the administration.",
-                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorResponse.class)))})
-    @GetMapping(value = "/legals/{cnpj}")
-    Mono<LegalPersonResponse> findLegalByCNPJ(@PathVariable String cnpj);
-
-    @Operation(
-            summary = "Responsible route for return LegalPerson by your own Identifier(ID).",
-            responses = {
-                    @ApiResponse(
-                            responseCode = "200",
-                            description = "OK",
-                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = LegalPersonResponse.class))),
-
-                    @ApiResponse(
-                            responseCode = "204",
-                            description = "Neither LegalPerson was found.",
-                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorEmptyResponse.class))),
-
-                    @ApiResponse(
-                            responseCode = "400",
-                            description = "Some(s) parameter(s) could not match, revise that and try again with right parameters!",
-                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorResponse.class))),
-
-                    @ApiResponse(
-                            responseCode = "404",
-                            description = "Not Found. Resources are not found to complete the service provided by this endpoint.",
-                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorResponse.class))),
-
-                    @ApiResponse(
-                            responseCode = "500",
-                            description = "Internal Server Error. Something went wrong with API, contact the administration.",
-                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorResponse.class)))})
-    @GetMapping(value = "/legals/id/{id}")
+    @GetMapping("/legals/id/{id}")
+    @FindLegalByIdRouteDescription
     Mono<LegalPersonResponse> findLegalById(@PathVariable String id);
 
-    @Operation(
-            summary = "Responsible route for save a new LegalPerson.",
-            responses = {
-                    @ApiResponse(
-                            responseCode = "200",
-                            description = "OK"),
-
-                    @ApiResponse(
-                            responseCode = "400",
-                            description = "Some(s) parameter(s) could not match, revise that and try again with right parameters!",
-                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorResponse.class))),
-
-                    @ApiResponse(
-                            responseCode = "404",
-                            description = "Not Found. Resources are not found to complete the service provided by this endpoint.",
-                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorResponse.class))),
-
-                    @ApiResponse(
-                            responseCode = "500",
-                            description = "Internal Server Error. Something went wrong with API, contact the administration.",
-                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorResponse.class)))})
     @PostMapping("/legal/save")
-    Mono<Void> saveLegalPerson(@RequestBody LegalPersonRequest legalPerson);
+    @LegalPersonRequestAsQueryParam
+    @SaveLegalPersonRouteDescription
+    Mono<Void> saveLegalPerson(@Parameter(hidden = true) LegalPersonRequest legalPerson);
 
-    @Operation
     @PostMapping("/legal/partner")
-    Mono<Void> savePartnerToLegalPerson(@RequestParam String cnpj, @RequestBody NaturalPersonRequest naturalPerson);
+    @SavePartnerToLegalPersonRouteDescription
+    Mono<Void> savePartnerToLegalPerson(@RequestParam String companyCNPJ, @RequestParam String partnerCPF);
 
-    @Operation
     @PatchMapping("/legal")
-    Mono<Void> updateLegalPerson(@RequestParam String cnpj, @RequestBody LegalPersonRequest legalPerson);
+    @LegalPersonRequestAsQueryParam
+    @UpdateLegalPersonRouteDescription
+    Mono<Void> updateLegalPerson(@RequestParam String companyCNPJ, @Parameter(hidden = true) LegalPersonRequest legalPerson);
 
-    @Operation
     @DeleteMapping("/legal")
-    Mono<Void> deleteLegalPerson(@RequestBody LegalPersonRequest legalPerson);
+    @DeleteLegalPersonRouteDescription
+    Mono<Void> deleteLegalPerson(@RequestParam String legalPersonCNPJ);
 
-    @Operation
     @DeleteMapping("/legal/partner")
-    Mono<Void> deletePartnerByLegalPerson(@RequestParam String cnpj, @RequestBody NaturalPersonRequest naturalPersonRequest);
+    @DeletePartnerByLegalPersonRouteDescription
+    Mono<Void> deletePartnerByLegalPerson(@RequestParam String companyCNPJ, @RequestParam String partnerCPF);
 
     @Operation(
             summary = "Responsible route to return all NaturalPersons.",
