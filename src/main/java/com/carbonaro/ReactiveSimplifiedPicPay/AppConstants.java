@@ -5,9 +5,10 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class AppConstants {
 
-    public static final String LEGAL_SENDER_ERROR = "Transaction.err.legal.sender";
-    public static final String NATURAL_SENDER_ERROR = "Transaction.err.natural.sender";
-    public static final String RECEIVER_ERROR = "Transaction.err.receiver";
-    public static final String TRANSACTION_VALUES_ERROR = "Transaction.err.transaction.values";
+    public static final String TRANSACTION_NEGATIVE_VALUE = "transaction.err.negative.value";
+    public static final String TRANSACTION_INSUFFICIENT_BALANCE = "transaction.err.insufficient.balance";
+    public static final String TRANSACTION_LEGAL_SENDER_ERROR = "transaction.err.legal.sender";
+    public static final String TRANSACTION_NATURAL_SENDER_ERROR = "transaction.err.natural.sender";
+    public static final String TRANSACTION_RECEIVER_ERROR = "transaction.err.receiver";
 
 }
