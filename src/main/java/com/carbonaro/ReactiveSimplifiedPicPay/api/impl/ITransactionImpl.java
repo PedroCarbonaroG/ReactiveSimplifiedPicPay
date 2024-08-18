@@ -34,5 +34,4 @@ public class ITransactionImpl implements ITransactionAPI {
                 .flatMap(transactionService::saveTransaction);
     }
 
-
 }
