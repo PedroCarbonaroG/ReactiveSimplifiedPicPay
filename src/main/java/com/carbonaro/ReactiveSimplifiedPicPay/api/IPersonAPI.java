@@ -2,8 +2,8 @@ package com.carbonaro.ReactiveSimplifiedPicPay.api;
 
 import com.carbonaro.ReactiveSimplifiedPicPay.core.annotations.RouteDescriptions.*;
 import com.carbonaro.ReactiveSimplifiedPicPay.core.annotations.RouteParams.LegalPersonRequestAsQueryParam;
-import com.carbonaro.ReactiveSimplifiedPicPay.core.exceptionHandler.response.ErrorEmptyResponse;
-import com.carbonaro.ReactiveSimplifiedPicPay.core.exceptionHandler.response.ErrorResponse;
+import com.carbonaro.ReactiveSimplifiedPicPay.core.exception_handler.response.ErrorEmptyResponse;
+import com.carbonaro.ReactiveSimplifiedPicPay.core.exception_handler.response.ErrorResponse;
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.requests.LegalPersonRequest;
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.requests.NaturalPersonRequest;
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.responses.person.LegalPersonResponse;
@@ -57,59 +57,12 @@ public interface IPersonAPI {
     @DeletePartnerByLegalPersonRouteDescription
     Mono<Void> deletePartnerByLegalPerson(@RequestParam String companyCNPJ, @RequestParam String partnerCPF);
 
-    @Operation(
-            summary = "Responsible route to return all NaturalPersons.",
-            responses = {
-                    @ApiResponse(
-                            responseCode = "200",
-                            description = "OK",
-                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = NaturalPersonResponse.class))),
-
-                    @ApiResponse(
-                            responseCode = "204",
-                            description = "Neither NaturalPerson was found.",
-                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorEmptyResponse.class))),
-
-                    @ApiResponse(
-                            responseCode = "404",
-                            description = "Not Found. Resources are not found to complete the service provided by this endpoint.",
-                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorResponse.class))),
-
-                    @ApiResponse(
-                            responseCode = "500",
-                            description = "Internal Server Error. Something went wrong with API, contact the administration.",
-                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorResponse.class))),})
-    @GetMapping(value = "/naturals")
+    @GetMapping("/naturals")
+    @FindAllNaturalsRouteDescription
     Flux<NaturalPersonResponse> findAllNaturals();
 
-    @Operation(
-            summary = "Responsible route for return NaturalPerson by your own CPF.",
-            responses = {
-                    @ApiResponse(
-                            responseCode = "200",
-                            description = "OK",
-                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = LegalPersonResponse.class))),
-
-                    @ApiResponse(
-                            responseCode = "204",
-                            description = "Neither NaturalPerson was found.",
-                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorEmptyResponse.class))),
-
-                    @ApiResponse(
-                            responseCode = "400",
-                            description = "Some(s) parameter(s) could not match, revise that and try again with right parameters!",
-                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorResponse.class))),
-
-                    @ApiResponse(
-                            responseCode = "404",
-                            description = "Not Found. Resources are not found to complete the service provided by this endpoint.",
-                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorResponse.class))),
-
-                    @ApiResponse(
-                            responseCode = "500",
-                            description = "Internal Server Error. Something went wrong with API, contact the administration.",
-                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorResponse.class)))})
-    @GetMapping(value = "/naturals/{cpf}")
+    @GetMapping("/naturals/{cpf}")
+    @FindNaturalByCPFRouteDescription
     Mono<NaturalPersonResponse> findNaturalByCPF(@PathVariable String cpf);
 
     @Operation(

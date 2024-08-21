@@ -11,10 +11,12 @@ import com.carbonaro.ReactiveSimplifiedPicPay.services.exceptions.TransactionVal
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -47,6 +49,7 @@ public class TransactionService {
                 .flatMap(this::validateTransactionDocuments)
                 .flatMap(this::validateTransactionValue)
                 .flatMap(transactionRepository::save)
+                .flatMap(this::saveBalanceChange)
                 .doOnSuccess(transactionResponse -> log.info("New Transaction was saved with success! New Transaction ID: {}", transactionResponse.getId()))
                 .doOnError(errorResponse -> Mono.error(new Exception(errorResponse.getMessage())))
                 .then();
@@ -112,8 +115,32 @@ public class TransactionService {
     }
     private Mono<Transaction> saveBalanceChange(Transaction transaction) {
 
-        //TODO-> TO IMPLEMENTATE
-        return null;
+        return Mono
+                .zip(transactionMapperHelper.getSenderForTransaction(transaction),
+                        transactionMapperHelper.getReceiverForTransaction(transaction))
+                .flatMap(tuple -> {
+
+                    var sender = tuple.getT1();
+                    var receiver = tuple.getT2();
+
+                    Query senderQuery = new Query(Criteria.where("id").is(sender.getId()));
+                    Query receiverQuery = new Query(Criteria.where("id").is(receiver.getId()));
+
+                    Update senderUpdate = new Update();
+                    Update receiverUpdate = new Update();
+
+                    var newSenderBalance = setNewSenderBalance(sender, transaction);
+                    var newReceiverBalance = setNewReceiverBalance(receiver, transaction);
+
+                    senderUpdate.set("balance", newSenderBalance);
+                    receiverUpdate.set("balance", newReceiverBalance);
+
+                    mongoTemplate.updateFirst(senderQuery, senderUpdate, sender.getClass()).subscribe();
+                    mongoTemplate.updateFirst(receiverQuery, receiverUpdate, sender.getClass()).subscribe();
+
+                    return Mono.just(transaction);
+
+                });
     }
     private BigDecimal setNewSenderBalance(Person sender, Transaction transaction) {
 

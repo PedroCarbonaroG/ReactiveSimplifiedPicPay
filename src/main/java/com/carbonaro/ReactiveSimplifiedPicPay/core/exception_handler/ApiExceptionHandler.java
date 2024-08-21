@@ -1,7 +1,7 @@
-package com.carbonaro.ReactiveSimplifiedPicPay.core.exceptionHandler;
+package com.carbonaro.ReactiveSimplifiedPicPay.core.exception_handler;
 
-import com.carbonaro.ReactiveSimplifiedPicPay.core.exceptionHandler.response.ErrorEmptyResponse;
-import com.carbonaro.ReactiveSimplifiedPicPay.core.exceptionHandler.response.ErrorResponse;
+import com.carbonaro.ReactiveSimplifiedPicPay.core.exception_handler.response.ErrorEmptyResponse;
+import com.carbonaro.ReactiveSimplifiedPicPay.core.exception_handler.response.ErrorResponse;
 import com.carbonaro.ReactiveSimplifiedPicPay.core.helper.ApiExceptionsHandlerHelper;
 import com.carbonaro.ReactiveSimplifiedPicPay.core.helper.MessageHelper;
 import com.carbonaro.ReactiveSimplifiedPicPay.services.exceptions.*;

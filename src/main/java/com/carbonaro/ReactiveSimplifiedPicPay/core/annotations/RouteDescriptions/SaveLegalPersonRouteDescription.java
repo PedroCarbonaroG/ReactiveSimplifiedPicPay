@@ -1,6 +1,6 @@
 package com.carbonaro.ReactiveSimplifiedPicPay.core.annotations.RouteDescriptions;
 
-import com.carbonaro.ReactiveSimplifiedPicPay.core.exceptionHandler.response.ErrorResponse;
+import com.carbonaro.ReactiveSimplifiedPicPay.core.exception_handler.response.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
