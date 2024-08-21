@@ -1,7 +1,7 @@
 package com.carbonaro.ReactiveSimplifiedPicPay.api;
 
-import com.carbonaro.ReactiveSimplifiedPicPay.core.exceptionHandler.response.ErrorEmptyResponse;
-import com.carbonaro.ReactiveSimplifiedPicPay.core.exceptionHandler.response.ErrorResponse;
+import com.carbonaro.ReactiveSimplifiedPicPay.core.exception_handler.response.ErrorEmptyResponse;
+import com.carbonaro.ReactiveSimplifiedPicPay.core.exception_handler.response.ErrorResponse;
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.requests.TransactionRequest;
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.responses.transaction.TransactionResponse;
 import io.swagger.v3.oas.annotations.Operation;
