@@ -2,15 +2,19 @@ package com.carbonaro.ReactiveSimplifiedPicPay.services;
 
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.entities.LegalPerson;
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.entities.NaturalPerson;
+import com.carbonaro.ReactiveSimplifiedPicPay.domain.entities.Person;
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.entities.Transaction;
+import com.carbonaro.ReactiveSimplifiedPicPay.domain.mappers.helpers.ITransactionMapperHelper;
 import com.carbonaro.ReactiveSimplifiedPicPay.repositories.TransactionRepository;
 import com.carbonaro.ReactiveSimplifiedPicPay.services.exceptions.EmptyException;
 import com.carbonaro.ReactiveSimplifiedPicPay.services.exceptions.TransactionValidationException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -24,6 +28,8 @@ public class TransactionService {
     private final TransactionRepository transactionRepository;
     private final NaturalPersonService naturalPersonService;
     private final LegalPersonService legalPersonService;
+    private final ITransactionMapperHelper transactionMapperHelper;
+    private final ReactiveMongoTemplate mongoTemplate;
 
     public Flux<Transaction> findAllTransactions() {
 
@@ -55,15 +61,15 @@ public class TransactionService {
                     var listOfLegals = tuple.getT2();
 
                     if (isLegalPerson(listOfLegals, transaction.getSenderDocument())) {
-                        return Mono.error(new TransactionValidationException(LEGAL_SENDER_ERROR));
+                        return Mono.error(new TransactionValidationException(TRANSACTION_LEGAL_SENDER_ERROR));
                     }
 
                     if (!isNaturalPerson(listOfNaturals, transaction.getSenderDocument())) {
-                        return Mono.error(new TransactionValidationException(NATURAL_SENDER_ERROR));
+                        return Mono.error(new TransactionValidationException(TRANSACTION_NATURAL_SENDER_ERROR));
                     }
 
                     if (!isValidReceiver(listOfNaturals, listOfLegals, transaction.getReceiverDocument())) {
-                        return Mono.error(new TransactionValidationException(RECEIVER_ERROR));
+                        return Mono.error(new TransactionValidationException(TRANSACTION_RECEIVER_ERROR));
                     }
 
                     return Mono.just(transaction);
@@ -84,14 +90,42 @@ public class TransactionService {
     private Mono<Transaction> validateTransactionValue(Transaction transaction) {
 
         return Mono
-                .zip(Mono.just(transaction), naturalPersonService.findNaturalByCPF(transaction.getSenderDocument()))
-                .flatMap(tuple -> {
+                .just(transaction)
+                .flatMap(transactionMapperHelper::getSenderForTransaction)
+                .flatMap(self -> {
 
-                    var senderBalance = tuple.getT2().getBalance();
-                    return transaction.getTransactionValue().compareTo(BigDecimal.valueOf(1)) > 0 && transaction.getTransactionValue().compareTo(senderBalance) > 0
-                            ? Mono.just(transaction)
-                            : Mono.error(new TransactionValidationException(TRANSACTION_VALUES_ERROR));
+                    if (transaction.getTransactionValue().compareTo(BigDecimal.ZERO) < 0) {
+                        return Mono.error(new TransactionValidationException(TRANSACTION_NEGATIVE_VALUE));
+                    }
+
+                    if (validateSenderBalance(self, transaction)) {
+                        return Mono.error(new TransactionValidationException(TRANSACTION_INSUFFICIENT_BALANCE));
+                    }
+
+                    return Mono.just(transaction);
                 });
+    }
+    private boolean validateSenderBalance(Person sender, Transaction transaction) {
+
+        return sender instanceof NaturalPerson && ((NaturalPerson) sender).getBalance().compareTo(transaction.getTransactionValue()) < 0 ||
+                sender instanceof LegalPerson && ((LegalPerson) sender).getBalance().compareTo(transaction.getTransactionValue()) < 0;
+    }
+    private Mono<Transaction> saveBalanceChange(Transaction transaction) {
+
+        //TODO-> TO IMPLEMENTATE
+        return null;
+    }
+    private BigDecimal setNewSenderBalance(Person sender, Transaction transaction) {
+
+        return sender instanceof NaturalPerson
+                ? ((NaturalPerson) sender).getBalance().subtract(transaction.getTransactionValue())
+                : ((LegalPerson) sender).getBalance().subtract(transaction.getTransactionValue());
+    }
+    private BigDecimal setNewReceiverBalance(Person receiver, Transaction transaction) {
+
+        return receiver instanceof NaturalPerson
+                ? ((NaturalPerson) receiver).getBalance().subtract(transaction.getTransactionValue())
+                : ((LegalPerson) receiver).getBalance().subtract(transaction.getTransactionValue());
     }
 
 }
