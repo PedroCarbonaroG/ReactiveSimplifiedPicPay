@@ -2,9 +2,11 @@ package com.carbonaro.ReactiveSimplifiedPicPay.core.exceptionHandler;
 
 import com.carbonaro.ReactiveSimplifiedPicPay.core.exceptionHandler.response.ErrorEmptyResponse;
 import com.carbonaro.ReactiveSimplifiedPicPay.core.exceptionHandler.response.ErrorResponse;
+import com.carbonaro.ReactiveSimplifiedPicPay.core.helper.ApiExceptionsHandlerHelper;
+import com.carbonaro.ReactiveSimplifiedPicPay.core.helper.MessageHelper;
 import com.carbonaro.ReactiveSimplifiedPicPay.services.exceptions.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,20 +17,23 @@ import org.springframework.web.server.MissingRequestValueException;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.ServerWebInputException;
 
+@Slf4j
 @RestControllerAdvice
-public class ApiExceptionHandler extends ApiExceptionsConstants {
+@RequiredArgsConstructor
+public class ApiExceptionHandler extends ApiExceptionsHandlerHelper {
+
+    private final MessageHelper messageHelper;
 
     private static final String SEPARATOR = " • ";
-    private static final Logger log = LoggerFactory.getLogger(ApiExceptionHandler.class);
 
     private void getPrivateStackTrace(Exception e) {
 
         if (e instanceof EmptyException) {
-            log.warn("WARN           ====> {}", e.getMessage());
+            log.warn("WARN           ====> {}", messageHelper.getMessage(e.getMessage()));
             log.warn("WARNING CLASS  ====> {}", e.getClass());
             log.warn("STACKTRACE     ====> {}", (Object) e.getStackTrace());
         } else {
-            log.error("ERROR        ====> {}", e.getMessage());
+            log.error("ERROR        ====> {}", messageHelper.getMessage(e.getMessage()));
             log.error("ERROR CLASS  ====> {}", e.getClass());
             log.error("STACKTRACE   ====> {}", (Object) e.getStackTrace());
         }
@@ -43,7 +48,7 @@ public class ApiExceptionHandler extends ApiExceptionsConstants {
                 .timestamp(TIMESTEMP)
                 .path(getPath(request))
                 .status(NO_CONTENT_STATUS.value())
-                .warningMessage(e.getMessage().concat(SEPARATOR).concat(NO_CONTENT_WARNING_MESSAGE))
+                .warningMessage(messageHelper.getMessage(e.getMessage()).concat(SEPARATOR).concat(NO_CONTENT_WARNING_MESSAGE))
                 .build();
 
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -59,7 +64,7 @@ public class ApiExceptionHandler extends ApiExceptionsConstants {
                 .timestamp(TIMESTEMP)
                 .path(getPath(request))
                 .status(BAD_REQUEST_STATUS.value())
-                .errorMessage(e.getMessage().concat(SEPARATOR).concat(BAD_REQUEST_ERROR_MESSAGE))
+                .errorMessage(messageHelper.getMessage(e.getMessage()).concat(SEPARATOR).concat(BAD_REQUEST_ERROR_MESSAGE))
                 .build();
 
         return new ResponseEntity<>(response, BAD_REQUEST_STATUS);
@@ -74,7 +79,7 @@ public class ApiExceptionHandler extends ApiExceptionsConstants {
                 .timestamp(TIMESTEMP)
                 .path(getPath(request))
                 .status(NOT_FOUND_STATUS.value())
-                .errorMessage(e.getMessage().concat(SEPARATOR).concat(NOT_FOUND_ERROR_MESSAGE))
+                .errorMessage(messageHelper.getMessage(e.getMessage()).concat(SEPARATOR).concat(NOT_FOUND_ERROR_MESSAGE))
                 .build();
 
         return new ResponseEntity<>(response, NOT_FOUND_STATUS);
@@ -89,7 +94,7 @@ public class ApiExceptionHandler extends ApiExceptionsConstants {
                 .path(getPath(request))
                 .error(INTERNAL_SERVER_ERROR)
                 .status(INTERNAL_SERVER_STATUS.value())
-                .errorMessage(e.getMessage().concat(SEPARATOR).concat(INTERNAL_SERVER_ERROR_MESSAGE))
+                .errorMessage(messageHelper.getMessage(e.getMessage()).concat(SEPARATOR).concat(INTERNAL_SERVER_ERROR_MESSAGE))
                 .build();
 
         return new ResponseEntity<>(response, INTERNAL_SERVER_STATUS);
