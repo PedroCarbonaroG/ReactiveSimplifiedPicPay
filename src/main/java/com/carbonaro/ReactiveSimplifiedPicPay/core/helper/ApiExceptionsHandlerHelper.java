@@ -1,12 +1,13 @@
-package com.carbonaro.ReactiveSimplifiedPicPay.core.exceptionHandler;
+package com.carbonaro.ReactiveSimplifiedPicPay.core.helper;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.util.UriUtils;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
-public abstract class ApiExceptionsConstants {
+public abstract class ApiExceptionsHandlerHelper {
 
     protected final String getPath(ServerWebExchange request) { return UriUtils.decode(request.getRequest().getPath().toString(), "UTF-8"); }
     protected static final LocalDateTime TIMESTEMP = LocalDateTime.now();
@@ -31,4 +32,11 @@ public abstract class ApiExceptionsConstants {
     protected static final HttpStatus NO_CONTENT_STATUS = HttpStatus.NO_CONTENT;
     protected static final HttpStatus BAD_REQUEST_STATUS = HttpStatus.BAD_REQUEST;
     protected static final HttpStatus INTERNAL_SERVER_STATUS = HttpStatus.INTERNAL_SERVER_ERROR;
+
+    // <=====================================================================================================================================================> //
+
+    protected static String validateException(List<? extends Exception> e) {
+
+        return null;
+    }
 }

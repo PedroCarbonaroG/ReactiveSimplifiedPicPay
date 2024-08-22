@@ -1,6 +1,7 @@
 package com.carbonaro.ReactiveSimplifiedPicPay.core.configs;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.models.OpenAPI;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,5 +24,21 @@ public class SwaggerConfig {
                         .version(DEFAULT_API_VERSION)
                         .description(DEFAULT_API_DESCRIPTION)
                 );
+    }
+
+//    @Bean
+//    public OpenApiCustomizer custumizer() {
+//
+//        return null;
+//    }
+
+    private Parameter getAdminToken() {
+
+        return null;
+    }
+
+    private Parameter getUserToken() {
+
+        return null;
     }
 }

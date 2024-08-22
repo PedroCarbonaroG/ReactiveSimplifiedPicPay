@@ -2,8 +2,8 @@ package com.carbonaro.ReactiveSimplifiedPicPay.api;
 
 import com.carbonaro.ReactiveSimplifiedPicPay.core.annotations.RouteDescriptions.*;
 import com.carbonaro.ReactiveSimplifiedPicPay.core.annotations.RouteParams.LegalPersonRequestAsQueryParam;
-import com.carbonaro.ReactiveSimplifiedPicPay.core.exceptionHandler.response.ErrorEmptyResponse;
-import com.carbonaro.ReactiveSimplifiedPicPay.core.exceptionHandler.response.ErrorResponse;
+import com.carbonaro.ReactiveSimplifiedPicPay.core.exception_handler.response.ErrorEmptyResponse;
+import com.carbonaro.ReactiveSimplifiedPicPay.core.exception_handler.response.ErrorResponse;
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.requests.LegalPersonRequest;
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.requests.NaturalPersonRequest;
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.responses.person.LegalPersonResponse;

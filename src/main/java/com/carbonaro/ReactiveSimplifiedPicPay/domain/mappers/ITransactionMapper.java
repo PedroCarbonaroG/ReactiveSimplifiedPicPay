@@ -25,8 +25,8 @@ public abstract class ITransactionMapper {
         TransactionResponse transactionResponse = new TransactionResponse();
         return Mono
                 .just(transactionResponse)
-                .flatMap(response -> transactionMapper.getSender(transaction.getSenderDocument()))
-                .zipWith(transactionMapper.getReceiver(transaction.getReceiverDocument()))
+                .flatMap(response -> transactionMapper.getSenderToMapper(transaction))
+                .zipWith(transactionMapper.getReceiverToMapper(transaction))
                 .map(tuple -> {
                     transactionResponse.setId(transaction.getId());
                     transactionResponse.setTransactionValue(transaction.getTransactionValue());

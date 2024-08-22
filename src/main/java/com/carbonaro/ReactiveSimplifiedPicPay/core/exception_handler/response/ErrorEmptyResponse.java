@@ -1,4 +1,4 @@
-package com.carbonaro.ReactiveSimplifiedPicPay.core.exceptionHandler.response;
+package com.carbonaro.ReactiveSimplifiedPicPay.core.exception_handler.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
