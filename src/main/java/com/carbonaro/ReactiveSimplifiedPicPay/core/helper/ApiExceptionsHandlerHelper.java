@@ -3,9 +3,7 @@ package com.carbonaro.ReactiveSimplifiedPicPay.core.helper;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.util.UriUtils;
-
 import java.time.LocalDateTime;
-import java.util.List;
 
 public abstract class ApiExceptionsHandlerHelper {
 
@@ -33,10 +31,4 @@ public abstract class ApiExceptionsHandlerHelper {
     protected static final HttpStatus BAD_REQUEST_STATUS = HttpStatus.BAD_REQUEST;
     protected static final HttpStatus INTERNAL_SERVER_STATUS = HttpStatus.INTERNAL_SERVER_ERROR;
 
-    // <=====================================================================================================================================================> //
-
-    protected static String validateException(List<? extends Exception> e) {
-
-        return null;
-    }
 }
