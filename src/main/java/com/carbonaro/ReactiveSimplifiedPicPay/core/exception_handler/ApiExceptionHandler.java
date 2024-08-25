@@ -7,15 +7,11 @@ import com.carbonaro.ReactiveSimplifiedPicPay.core.helper.MessageHelper;
 import com.carbonaro.ReactiveSimplifiedPicPay.services.exceptions.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.server.MissingRequestValueException;
 import org.springframework.web.server.ServerWebExchange;
-import org.springframework.web.server.ServerWebInputException;
 
 @Slf4j
 @RestControllerAdvice
@@ -48,14 +44,13 @@ public class ApiExceptionHandler extends ApiExceptionsHandlerHelper {
                 .timestamp(TIMESTEMP)
                 .path(getPath(request))
                 .status(NO_CONTENT_STATUS.value())
-                .warningMessage(messageHelper.getMessage(e.getMessage().concat(SEPARATOR).concat(NO_CONTENT_WARNING_MESSAGE)))
+                .warningMessage(messageHelper.getMessage(e.getMessage()).concat(SEPARATOR).concat(NO_CONTENT_WARNING_MESSAGE))
                 .build();
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @ExceptionHandler({MethodArgumentNotValidException.class, MissingRequestValueException.class, ServerWebInputException.class,
-    EmptyOrNullObjectException.class, DataIntegrityViolationException.class, TransactionValidationException.class, BadRequestException.class})
+    @ExceptionHandler({TransactionValidationException.class, BadRequestException.class})
     private ResponseEntity<ErrorResponse> badRequestExceptionHandler(Exception e, ServerWebExchange request) {
 
         getPrivateStackTrace(e);
@@ -64,7 +59,7 @@ public class ApiExceptionHandler extends ApiExceptionsHandlerHelper {
                 .timestamp(TIMESTEMP)
                 .path(getPath(request))
                 .status(BAD_REQUEST_STATUS.value())
-                .errorMessage(messageHelper.getMessage(e.getMessage().concat(SEPARATOR).concat(BAD_REQUEST_ERROR_MESSAGE)))
+                .errorMessage(messageHelper.getMessage(e.getMessage()).concat(SEPARATOR).concat(BAD_REQUEST_ERROR_MESSAGE))
                 .build();
 
         return new ResponseEntity<>(response, BAD_REQUEST_STATUS);
@@ -79,7 +74,7 @@ public class ApiExceptionHandler extends ApiExceptionsHandlerHelper {
                 .timestamp(TIMESTEMP)
                 .path(getPath(request))
                 .status(NOT_FOUND_STATUS.value())
-                .errorMessage(messageHelper.getMessage(e.getMessage().concat(SEPARATOR).concat(NOT_FOUND_ERROR_MESSAGE)))
+                .errorMessage(messageHelper.getMessage(e.getMessage()).concat(SEPARATOR).concat(NOT_FOUND_ERROR_MESSAGE))
                 .build();
 
         return new ResponseEntity<>(response, NOT_FOUND_STATUS);
@@ -94,7 +89,7 @@ public class ApiExceptionHandler extends ApiExceptionsHandlerHelper {
                 .path(getPath(request))
                 .error(INTERNAL_SERVER_ERROR)
                 .status(INTERNAL_SERVER_STATUS.value())
-                .errorMessage(messageHelper.getMessage(e.getMessage().concat(SEPARATOR).concat(INTERNAL_SERVER_ERROR_MESSAGE)))
+                .errorMessage(INTERNAL_SERVER_ERROR_MESSAGE)
                 .build();
 
         return new ResponseEntity<>(response, INTERNAL_SERVER_STATUS);
