@@ -29,10 +29,10 @@ public class IPersonImpl implements IPersonAPI {
     }
 
     @Override
-    public Mono<LegalPersonResponse> findLegalByCNPJ(String cnpj) {
+    public Mono<LegalPersonResponse> findLegalByCNPJ(String companyCNPJ) {
 
         return legalPersonService
-                .findLegalByCNPJ(cnpj)
+                .findLegalByCNPJ(companyCNPJ)
                 .map(IPersonMapper.INSTANCE::toLegalPersonResponse);
     }
 
@@ -110,7 +110,7 @@ public class IPersonImpl implements IPersonAPI {
         return Mono
                 .just(naturalPerson)
                 .map(IPersonMapper.INSTANCE::toNaturalPersonByRequest)
-                .flatMap(self -> naturalPersonService.saveNaturalPerson(self));
+                .flatMap(naturalPersonService::saveNaturalPerson);
     }
 
     @Override
