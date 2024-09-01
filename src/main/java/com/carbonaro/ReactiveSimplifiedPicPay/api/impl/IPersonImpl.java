@@ -69,7 +69,7 @@ public class IPersonImpl implements IPersonAPI {
     }
 
     @Override
-    public Mono<Void> deleteLegalPerson(String legalPersonCNPJ) {
+    public Mono<Void> deleteLegalPerson(String companyCNPJ) {
 
         return null;
     }
@@ -114,7 +114,7 @@ public class IPersonImpl implements IPersonAPI {
     }
 
     @Override
-    public Mono<Void> updateNaturalPerson(NaturalPersonRequest naturalPerson, String cpf) {
+    public Mono<Void> updateNaturalPerson(String cpf, NaturalPersonRequest naturalPerson) {
 
         return Mono
                 .just(naturalPerson)
@@ -123,7 +123,7 @@ public class IPersonImpl implements IPersonAPI {
     }
 
     @Override
-    public Mono<Void> deleteNaturalPerson(NaturalPersonRequest naturalPerson) {
+    public Mono<Void> deleteNaturalPerson(String cpf) {
 
         return null;
     }
