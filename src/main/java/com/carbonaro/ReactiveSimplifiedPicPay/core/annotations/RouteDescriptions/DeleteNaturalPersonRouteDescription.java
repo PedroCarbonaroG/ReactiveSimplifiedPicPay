@@ -12,8 +12,8 @@ import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Operation(
-        summary = "Responsible route for save a new partner to an company.",
-        description = "If everything went right, saves a new partner to the company by it's CNPJ",
+        summary = "Responsible route to delete a NaturalPerson by it's CPF",
+        description = "If everything went right, deletes a specified NaturalPerson by it's CPF",
         responses = {
                 @ApiResponse(
                         responseCode = "200",
@@ -26,5 +26,5 @@ import java.lang.annotation.RetentionPolicy;
                         responseCode = " 400 • 404  500",
                         description = "If something goes wrong if data or application resources, returns treated error.",
                         content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorResponse.class)))})
-public @interface SavePartnerToLegalPersonRouteDescription {
+public @interface DeleteNaturalPersonRouteDescription {
 }

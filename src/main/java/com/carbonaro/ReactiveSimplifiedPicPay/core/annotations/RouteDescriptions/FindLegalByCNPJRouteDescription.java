@@ -25,7 +25,7 @@ import java.lang.annotation.RetentionPolicy;
                         description = "If everything went right however don't find any data, returns no content.",
                         content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorEmptyResponse.class))),
                 @ApiResponse(
-                        responseCode = "400 • 404    500",
+                        responseCode = " 400 • 404  500",
                         description = "If something goes wrong if data or application resources, returns treated error.",
                         content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorResponse.class)))})
 public @interface FindLegalByCNPJRouteDescription {

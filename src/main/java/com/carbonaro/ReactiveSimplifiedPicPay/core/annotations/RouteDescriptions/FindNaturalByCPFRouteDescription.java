@@ -8,14 +8,17 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.http.MediaType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
+@Retention(RetentionPolicy.RUNTIME)
 @Operation(
         summary = "Responsible route for return NaturalPerson by your own CPF.",
-        description = "Nothing yet",
+        description = "If everything goes right, return the specified NaturalPerson by it's CPF",
         responses = {
                 @ApiResponse(
                         responseCode = "200",
-                        description = "OK",
+                        description = "If everything goes right, returns OK",
                         content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = LegalPersonResponse.class))),
                 @ApiResponse(
                         responseCode = "204",
