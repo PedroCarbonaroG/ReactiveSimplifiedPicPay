@@ -23,7 +23,7 @@ import reactor.core.publisher.Mono;
 @RequestMapping(value = "/person", produces = MediaType.APPLICATION_JSON_VALUE)
 public interface IPersonAPI {
 
-    @GetMapping("/legals")
+    @GetMapping("/list-all/legals")
     @FindAllLegalsRouteDescription
     Flux<LegalPersonResponse> findAllLegals();
 
@@ -31,16 +31,16 @@ public interface IPersonAPI {
     @FindLegalByCNPJRouteDescription
     Mono<LegalPersonResponse> findLegalByCNPJ(@PathVariable String companyCNPJ);
 
-    @GetMapping("/legals/id/{id}")
+    @GetMapping("/legals/id")
     @FindLegalByIdRouteDescription
-    Mono<LegalPersonResponse> findLegalById(@PathVariable String id);
+    Mono<LegalPersonResponse> findLegalById(@Parameter String id);
 
     @PostMapping("/legal/save")
     @LegalPersonRequestAsQueryParam
     @SaveLegalPersonRouteDescription
     Mono<Void> saveLegalPerson(@Parameter(hidden = true) LegalPersonRequest legalPerson);
 
-    @PostMapping("/legal/partner")
+    @PostMapping("/legal/save/partner")
     @SavePartnerToLegalPersonRouteDescription
     Mono<Void> savePartnerToLegalPerson(@RequestParam String companyCNPJ, @RequestParam String partnerCPF);
 
@@ -57,59 +57,12 @@ public interface IPersonAPI {
     @DeletePartnerByLegalPersonRouteDescription
     Mono<Void> deletePartnerByLegalPerson(@RequestParam String companyCNPJ, @RequestParam String partnerCPF);
 
-    @Operation(
-            summary = "Responsible route to return all NaturalPersons.",
-            responses = {
-                    @ApiResponse(
-                            responseCode = "200",
-                            description = "OK",
-                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = NaturalPersonResponse.class))),
-
-                    @ApiResponse(
-                            responseCode = "204",
-                            description = "Neither NaturalPerson was found.",
-                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorEmptyResponse.class))),
-
-                    @ApiResponse(
-                            responseCode = "404",
-                            description = "Not Found. Resources are not found to complete the service provided by this endpoint.",
-                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorResponse.class))),
-
-                    @ApiResponse(
-                            responseCode = "500",
-                            description = "Internal Server Error. Something went wrong with API, contact the administration.",
-                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorResponse.class))),})
-    @GetMapping(value = "/naturals")
+    @GetMapping("/list-all/naturals")
+    @FindAllNaturalsRouteDescription
     Flux<NaturalPersonResponse> findAllNaturals();
 
-    @Operation(
-            summary = "Responsible route for return NaturalPerson by your own CPF.",
-            responses = {
-                    @ApiResponse(
-                            responseCode = "200",
-                            description = "OK",
-                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = LegalPersonResponse.class))),
-
-                    @ApiResponse(
-                            responseCode = "204",
-                            description = "Neither NaturalPerson was found.",
-                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorEmptyResponse.class))),
-
-                    @ApiResponse(
-                            responseCode = "400",
-                            description = "Some(s) parameter(s) could not match, revise that and try again with right parameters!",
-                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorResponse.class))),
-
-                    @ApiResponse(
-                            responseCode = "404",
-                            description = "Not Found. Resources are not found to complete the service provided by this endpoint.",
-                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorResponse.class))),
-
-                    @ApiResponse(
-                            responseCode = "500",
-                            description = "Internal Server Error. Something went wrong with API, contact the administration.",
-                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorResponse.class)))})
-    @GetMapping(value = "/naturals/{cpf}")
+    @GetMapping("/naturals/{cpf}")
+    @FindNaturalByCPFRouteDescription
     Mono<NaturalPersonResponse> findNaturalByCPF(@PathVariable String cpf);
 
     @Operation(
@@ -139,11 +92,11 @@ public interface IPersonAPI {
                             responseCode = "500",
                             description = "Internal Server Error. Something went wrong with API, contact the administration.",
                             content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorResponse.class)))})
-    @GetMapping(value = "/naturals/id/{id}")
-    Mono<NaturalPersonResponse> findNaturalByID(@PathVariable String id);
+    @GetMapping(value = "/naturals/id")
+    Mono<NaturalPersonResponse> findNaturalByID(@Parameter String id);
 
     @Operation
-    @PostMapping("/natural")
+    @PostMapping("/natural/save")
     Mono<Void> saveNaturalPerson(@RequestBody NaturalPersonRequest naturalPerson);
 
     @Operation(
