@@ -14,19 +14,16 @@ import java.lang.annotation.Target;
         in = ParameterIn.QUERY,
         name = "senderDocument",
         description = "Sender Document",
-        schema = @Schema(type = "String"),
-        required = true)
+        schema = @Schema(type = "String"))
 @Parameter(
         in = ParameterIn.QUERY,
         name = "receiverDocument",
         description = "Receiver Document",
-        schema = @Schema(type = "String"),
-        required = true)
+        schema = @Schema(type = "String"))
 @Parameter(
         in = ParameterIn.QUERY,
         name = "transactionValue",
         description = "Transaction Value",
-        schema = @Schema(type = "BigDecimal"),
-        required = true)
+        schema = @Schema(type = "BigDecimal"))
 public @interface TransactionRequestAsQueryParam {
 }
