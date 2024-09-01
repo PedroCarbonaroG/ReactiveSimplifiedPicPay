@@ -14,31 +14,26 @@ import java.lang.annotation.Target;
         in = ParameterIn.QUERY,
         name = "birthDate",
         description = "Day of birth from natural person",
-        schema = @Schema(description = "Format dd/MM/yyyy", type = "LocalDate"),
-        required = true)
+        schema = @Schema(description = "Format dd/MM/yyyy", type = "LocalDate"))
 @Parameter(
         in = ParameterIn.QUERY,
         name = "name",
         description = "Natural person full name.",
-        schema = @Schema(type = "String"),
-        required = true)
+        schema = @Schema(type = "String"))
 @Parameter(
         in = ParameterIn.QUERY,
         name = "email",
         description = "Natural person full email.",
-        schema = @Schema(type = "String"),
-        required = true)
+        schema = @Schema(type = "String"))
 @Parameter(
         in = ParameterIn.QUERY,
         name = "address",
         description = "Natural person full address.",
-        schema = @Schema(type = "String"),
-        required = true)
+        schema = @Schema(type = "String"))
 @Parameter(
         in = ParameterIn.QUERY,
         name = "password",
         description = "Natural person full and secret password.",
-        schema = @Schema(type = "String"),
-        required = true)
+        schema = @Schema(type = "String"))
 public @interface NaturalPersonRequestAsQueryParam {
 }
