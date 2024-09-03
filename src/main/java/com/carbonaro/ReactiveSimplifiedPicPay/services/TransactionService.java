@@ -37,7 +37,7 @@ public class TransactionService {
 
         return transactionRepository
                 .findAll()
-                .switchIfEmpty(Flux.error(new EmptyException()))
+                .switchIfEmpty(Flux.error(new EmptyException(GENERAL_WARNING_EMPTY)))
                 .doOnComplete(() -> log.info("List of all transactions was deployed with success!"))
                 .doOnError(errorResponse -> Flux.error(new Exception(errorResponse.getMessage())));
     }

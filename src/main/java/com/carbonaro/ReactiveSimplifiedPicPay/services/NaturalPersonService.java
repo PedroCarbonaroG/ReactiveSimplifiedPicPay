@@ -12,6 +12,8 @@ import reactor.core.publisher.Mono;
 
 import java.util.Objects;
 
+import static com.carbonaro.ReactiveSimplifiedPicPay.AppConstants.GENERAL_WARNING_EMPTY;
+
 @Slf4j
 @Service
 @AllArgsConstructor
@@ -23,7 +25,7 @@ public class NaturalPersonService {
 
         return repositoryNP
                 .findAll()
-                .switchIfEmpty(Flux.error(new EmptyException()))
+                .switchIfEmpty(Flux.error(new EmptyException(GENERAL_WARNING_EMPTY)))
                 .doOnError(errorResponse -> Flux.error(new Exception(errorResponse.getMessage())))
                 .doOnComplete(() -> log.info("Naturals list was deployed with success!"));
     }
@@ -32,7 +34,7 @@ public class NaturalPersonService {
 
         return repositoryNP
                 .findById(id)
-                .switchIfEmpty(Mono.error(new EmptyException()))
+                .switchIfEmpty(Mono.error(new EmptyException(GENERAL_WARNING_EMPTY)))
                 .doOnError(errorResponse -> Mono.error(new Exception(errorResponse.getMessage())));
     }
 
@@ -40,7 +42,7 @@ public class NaturalPersonService {
 
         return repositoryNP
                 .findByCpf(cpf)
-                .switchIfEmpty(Mono.error(new EmptyException()))
+                .switchIfEmpty(Mono.error(new EmptyException(GENERAL_WARNING_EMPTY)))
                 .doOnError(errorResponse -> Mono.error(new Exception(errorResponse.getMessage())));
     }
 
@@ -65,7 +67,7 @@ public class NaturalPersonService {
                         (Objects.nonNull(self.getAddress()) && !self.getAddress().isEmpty()) &&
                         (Objects.nonNull(self.getPassword()) && !self.getPassword().isEmpty())
                         ? Mono.just(self)
-                        : Mono.error(new BadRequestException()));
+                        : Mono.error(new Exception()));
     }
 
     public Mono<Void> updateNaturalPerson(NaturalPerson naturalPerson, String cpf) {
