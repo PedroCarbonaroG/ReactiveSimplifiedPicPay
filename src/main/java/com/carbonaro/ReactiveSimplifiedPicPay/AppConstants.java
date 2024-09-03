@@ -10,5 +10,11 @@ public class AppConstants {
     public static final String TRANSACTION_LEGAL_SENDER_ERROR = "transaction.err.legal.sender";
     public static final String TRANSACTION_NATURAL_SENDER_ERROR = "transaction.err.natural.sender";
     public static final String TRANSACTION_RECEIVER_ERROR = "transaction.err.receiver";
+    public static final String GENERAL_WARNING_EMPTY = "general.warn.empty";
+    public static final String GENERAL_UNKNOWN_EXCEPTION_ERROR = "general.err.unknown.exception";
 
+    public static final String USER_READ_SCOPE = "user:read";
+    public static final String USER_WRITE_SCOPE = "user:write";
+    public static final String ADMIN_READ_SCOPE = "admin:read";
+    public static final String ADMIN_WRITE_SCOPE = "admin:write";
 }
