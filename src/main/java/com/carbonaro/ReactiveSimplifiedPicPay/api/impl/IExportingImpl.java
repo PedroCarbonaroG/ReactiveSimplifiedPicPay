@@ -1,6 +1,7 @@
 package com.carbonaro.ReactiveSimplifiedPicPay.api.impl;
 
 import com.carbonaro.ReactiveSimplifiedPicPay.api.IExportingAPI;
+import com.carbonaro.ReactiveSimplifiedPicPay.core.security.SecuredDelegate;
 import lombok.SneakyThrows;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Row;
@@ -14,10 +15,13 @@ import reactor.core.publisher.Mono;
 
 import java.io.ByteArrayOutputStream;
 
+import static com.carbonaro.ReactiveSimplifiedPicPay.AppConstants.ADMIN_READ_SCOPE;
+
 @RestController
 public class IExportingImpl implements IExportingAPI {
 
     @Override
+    @SecuredDelegate(scopes = ADMIN_READ_SCOPE)
     public Mono<ResponseEntity<byte[]>> getPdfExtraction() {
 
         return Mono
@@ -25,6 +29,7 @@ public class IExportingImpl implements IExportingAPI {
     }
 
     @Override
+    @SecuredDelegate(scopes = ADMIN_READ_SCOPE)
     public Mono<ResponseEntity<byte[]>> getExcelExtraction() {
         return null;
     }

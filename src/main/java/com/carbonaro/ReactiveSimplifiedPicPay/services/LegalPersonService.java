@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 
+import static com.carbonaro.ReactiveSimplifiedPicPay.AppConstants.GENERAL_WARNING_EMPTY;
+
 @Slf4j
 @Service
 @AllArgsConstructor
@@ -38,7 +40,7 @@ public class LegalPersonService {
 
         return Mono
                 .just(legalPerson)
-                .switchIfEmpty(Mono.error(new EmptyOrNullObjectException()))
+                .switchIfEmpty(Mono.error(new EmptyOrNullObjectException(GENERAL_WARNING_EMPTY)))
                 .flatMap(this::validateLegalPerson)
                 .flatMap(repositoryLP::save)
                 .doOnSuccess(person -> log.info("New LegalPerson was persisted with success!"))
@@ -128,7 +130,7 @@ public class LegalPersonService {
 
         return repositoryLP
                 .findAll()
-                .switchIfEmpty(Flux.error(new EmptyException()))
+                .switchIfEmpty(Flux.error(new EmptyException(GENERAL_WARNING_EMPTY)))
                 .doOnError(errorResponse -> Flux.error(new Exception(errorResponse.getMessage())))
                 .doOnComplete(() -> log.info("Legals list was deployed with success!"));
     }
@@ -137,7 +139,7 @@ public class LegalPersonService {
 
         return repositoryLP
                 .findById(id)
-                .switchIfEmpty(Mono.error(new EmptyException()))
+                .switchIfEmpty(Mono.error(new EmptyException(GENERAL_WARNING_EMPTY)))
                 .doOnError(errorResponse -> Mono.error(new Exception(errorResponse.getMessage())));
     }
 
@@ -145,7 +147,7 @@ public class LegalPersonService {
 
         return repositoryLP
                 .findByCnpj(cnpj)
-                .switchIfEmpty(Mono.error(new EmptyException()))
+                .switchIfEmpty(Mono.error(new EmptyException(GENERAL_WARNING_EMPTY)))
                 .doOnError(errorResponse -> Mono.error(new Exception(errorResponse.getMessage())));
     }
 
@@ -181,7 +183,7 @@ public class LegalPersonService {
                 .toList()
                 .isEmpty()
 
-                ? Mono.error(new BadRequestException())
+                ? Mono.error(new Exception())
                 : Mono.just(legalPerson);
     }
 
