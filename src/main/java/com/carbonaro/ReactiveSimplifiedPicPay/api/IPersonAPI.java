@@ -22,7 +22,7 @@ public interface IPersonAPI {
     @FindAllLegalsRouteDescription
     Flux<LegalPersonResponse> findAllLegals();
 
-    @GetMapping("/legal/{cnpj}")
+    @GetMapping("/legal/companyCNPJ")
     @FindLegalByCNPJRouteDescription
     Mono<LegalPersonResponse> findLegalByCNPJ(@Parameter String companyCNPJ);
 
@@ -69,7 +69,7 @@ public interface IPersonAPI {
     @SaveNaturalPersonRouteDescription
     Mono<Void> saveNaturalPerson(@Parameter(hidden = true) NaturalPersonRequest naturalPerson);
 
-    @PutMapping("/natural/update")
+    @PatchMapping("/natural/update")
     @NaturalPersonRequestAsQueryParam
     @UpdateNaturalPersonRouteDescription
     Mono<Void> updateNaturalPerson(@Parameter String cpf, @Parameter(hidden = true) NaturalPersonRequest naturalPerson);
