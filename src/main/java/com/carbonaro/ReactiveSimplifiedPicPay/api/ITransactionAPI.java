@@ -1,9 +1,9 @@
 package com.carbonaro.ReactiveSimplifiedPicPay.api;
 
-import com.carbonaro.ReactiveSimplifiedPicPay.core.annotations.RouteDescriptions.FindAllTransactionsRouteDescription;
-import com.carbonaro.ReactiveSimplifiedPicPay.core.annotations.RouteDescriptions.SaveTransactionRouteDescription;
-import com.carbonaro.ReactiveSimplifiedPicPay.core.annotations.RouteParams.TransactionRequestAsQueryParam;
-import com.carbonaro.ReactiveSimplifiedPicPay.domain.requests.TransactionRequest;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.RouteDescriptions.FindAllTransactionsRouteDescription;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.RouteDescriptions.SaveTransactionRouteDescription;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.RouteParams.TransactionRequestAsQueryParam;
+import com.carbonaro.ReactiveSimplifiedPicPay.domain.requests.transaction.TransactionRequest;
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.responses.transaction.TransactionResponse;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;

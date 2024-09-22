@@ -14,4 +14,5 @@ public class LegalPersonTransactionResponse extends PersonResponse {
 
     @Schema(description = "Demonstration of the unique LegalPerson CNPJ.")
     private String cnpj;
+
 }

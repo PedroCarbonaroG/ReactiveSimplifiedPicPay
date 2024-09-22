@@ -3,7 +3,7 @@ package com.carbonaro.ReactiveSimplifiedPicPay.api.impl;
 import com.carbonaro.ReactiveSimplifiedPicPay.api.ITransactionAPI;
 import com.carbonaro.ReactiveSimplifiedPicPay.core.security.SecuredDelegate;
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.mappers.ITransactionMapper;
-import com.carbonaro.ReactiveSimplifiedPicPay.domain.requests.TransactionRequest;
+import com.carbonaro.ReactiveSimplifiedPicPay.domain.requests.transaction.TransactionRequest;
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.responses.transaction.TransactionResponse;
 import com.carbonaro.ReactiveSimplifiedPicPay.services.TransactionService;
 import lombok.AllArgsConstructor;

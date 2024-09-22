@@ -24,4 +24,5 @@ public class TransactionResponse {
 
     @Schema(description = "Total transaction amount.")
     private BigDecimal transactionValue;
+
 }

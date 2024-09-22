@@ -1,10 +1,10 @@
 package com.carbonaro.ReactiveSimplifiedPicPay.api;
 
-import com.carbonaro.ReactiveSimplifiedPicPay.core.annotations.RouteDescriptions.*;
-import com.carbonaro.ReactiveSimplifiedPicPay.core.annotations.RouteParams.LegalPersonRequestAsQueryParam;
-import com.carbonaro.ReactiveSimplifiedPicPay.core.annotations.RouteParams.NaturalPersonRequestAsQueryParam;
-import com.carbonaro.ReactiveSimplifiedPicPay.domain.requests.LegalPersonRequest;
-import com.carbonaro.ReactiveSimplifiedPicPay.domain.requests.NaturalPersonRequest;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.RouteDescriptions.*;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.RouteParams.LegalPersonRequestAsQueryParam;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.RouteParams.NaturalPersonRequestAsQueryParam;
+import com.carbonaro.ReactiveSimplifiedPicPay.domain.requests.person.LegalPersonRequest;
+import com.carbonaro.ReactiveSimplifiedPicPay.domain.requests.person.NaturalPersonRequest;
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.responses.person.LegalPersonResponse;
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.responses.person.NaturalPersonResponse;
 import io.swagger.v3.oas.annotations.Parameter;
