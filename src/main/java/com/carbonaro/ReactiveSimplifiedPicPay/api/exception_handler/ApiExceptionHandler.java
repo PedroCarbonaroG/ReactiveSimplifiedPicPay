@@ -5,18 +5,25 @@ import com.carbonaro.ReactiveSimplifiedPicPay.api.exception_handler.helper.Messa
 import com.carbonaro.ReactiveSimplifiedPicPay.api.exception_handler.response.ErrorEmptyResponse;
 import com.carbonaro.ReactiveSimplifiedPicPay.api.exception_handler.response.ErrorResponse;
 import com.carbonaro.ReactiveSimplifiedPicPay.services.exceptions.*;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.swagger.v3.core.util.Json;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.server.ServerWebExchange;
+import org.springframework.web.server.WebExceptionHandler;
+import reactor.core.publisher.Mono;
+import java.nio.charset.StandardCharsets;
+import java.security.SignatureException;
 
 @Slf4j
 @RestControllerAdvice
 @RequiredArgsConstructor
-public class ApiExceptionHandler extends ApiExceptionsHandlerHelper {
+public class ApiExceptionHandler extends ApiExceptionsHandlerHelper implements WebExceptionHandler {
 
     private final MessageHelper messageHelper;
 
@@ -26,14 +33,16 @@ public class ApiExceptionHandler extends ApiExceptionsHandlerHelper {
 
         if (e instanceof EmptyException) {
 
-            log.warn("WARN           ====> {}", messageHelper.getMessage(e.getMessage()));
-            log.warn("WARNING CLASS  ====> {}", e.getClass());
+            log.warn("WARN           ====> {}", e.getMessage());
+            log.warn("WARN MESSAGE   ====> {}", e.getLocalizedMessage());
+            log.warn("WARN CLASS     ====> {}", e.getClass());
             log.warn("STACKTRACE     ====> {}", (Object) e.getStackTrace());
         } else {
 
-            log.error("ERROR        ====> {}", messageHelper.getMessage(e.getMessage()));
-            log.error("ERROR CLASS  ====> {}", e.getClass());
-            log.error("STACKTRACE   ====> {}", (Object) e.getStackTrace());
+            log.error("ERROR         ====> {}", e.getMessage());
+            log.error("ERROR MESSAGE ====> {}", e.getLocalizedMessage());
+            log.error("ERROR CLASS   ====> {}", e.getClass());
+            log.error("STACKTRACE    ====> {}", (Object) e.getStackTrace());
         }
     }
 
@@ -96,4 +105,33 @@ public class ApiExceptionHandler extends ApiExceptionsHandlerHelper {
 
         return new ResponseEntity<>(response, INTERNAL_SERVER_STATUS);
     }
+
+    @Override
+    public Mono<Void> handle(ServerWebExchange exchange, Throwable ex) {
+
+        HttpStatus status = HttpStatus.UNAUTHORIZED;
+        String message = UNAUTHORIZED_ERROR_MESSAGE;
+
+        if (ex instanceof ExpiredJwtException) {
+            message = "ExpiredJwtException";
+        } else if (ex instanceof SignatureException) {
+            message = "SignatureException";
+        }
+
+        ErrorResponse response = ErrorResponse
+                .builder()
+                .error(UNAUTHORIZED)
+                .timestamp(TIMESTEMP)
+                .path(getPath(exchange))
+                .status(UNAUTHORIZED_STATUS.value())
+                .errorMessage(message)
+                .build();
+
+        exchange.getResponse().setStatusCode(status);
+        exchange.getResponse().getHeaders().setContentType(MediaType.APPLICATION_JSON);
+        byte[] responseBytes = Json.pretty(response).getBytes(StandardCharsets.UTF_8);
+
+        return exchange.getResponse().writeWith(Mono.just(exchange.getResponse().bufferFactory().wrap(responseBytes)));
+    }
+
 }
