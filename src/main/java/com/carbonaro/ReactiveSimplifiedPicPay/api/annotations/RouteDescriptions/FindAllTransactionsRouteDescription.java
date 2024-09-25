@@ -19,20 +19,13 @@ import java.lang.annotation.RetentionPolicy;
                         responseCode = "200",
                         description = "OK",
                         content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = TransactionResponse.class))),
-
                 @ApiResponse(
                         responseCode = "204",
                         description = "Neither Transactions was found.",
                         content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorEmptyResponse.class))),
-
                 @ApiResponse(
-                        responseCode = "404",
-                        description = "Not Found. Resources are not found to complete the service provided by this endpoint..",
-                        content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorResponse.class))),
-
-                @ApiResponse(
-                        responseCode = "500",
-                        description = "Internal Server Error. Something went wrong with API, contact the administration.",
-                        content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorResponse.class)))})
+                        responseCode = " 404 • 500",
+                        description = "If something goes wrong if data or application resources, returns treated error.",
+                        content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorResponse.class))),})
 public @interface FindAllTransactionsRouteDescription {
 }
