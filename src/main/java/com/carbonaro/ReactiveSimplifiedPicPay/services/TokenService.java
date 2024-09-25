@@ -15,7 +15,7 @@ public class TokenService {
     private static final long EXPIRATION_TIME = ONE_HOUR;
 
     private static final String SCOPES = "scopes";
-    private static final String SECRET_KEY = UUID.randomUUID().toString();
+    public static final String SECRET_KEY = UUID.randomUUID().toString();
     private static final String MICROSERVICE_NAME = "reactive-simplified-picpay";
 
     private static final String[] USER_SCOPES = {
@@ -33,10 +33,10 @@ public class TokenService {
 
         return Jwts
                 .builder()
-                .subject(MICROSERVICE_NAME)
+                .setSubject(MICROSERVICE_NAME)
                 .claim(SCOPES, USER_SCOPES)
-                .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .signWith(getSigningKey())
                 .compact();
     }
@@ -45,10 +45,10 @@ public class TokenService {
 
         return Jwts
                 .builder()
-                .subject(MICROSERVICE_NAME)
+                .setSubject(MICROSERVICE_NAME)
                 .claim(SCOPES, ADMIN_SCOPES)
-                .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .signWith(getSigningKey())
                 .compact();
     }
