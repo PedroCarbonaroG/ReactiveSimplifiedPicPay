@@ -15,4 +15,5 @@ public enum CompanySizeEnum {
 
     @Schema(description = "Companies with revenues higher than R$300M - ANNUAL BILLING")
     LARGE_ENTERPRISE;
+
 }

@@ -13,10 +13,19 @@ import reactor.core.publisher.Mono;
 public interface IExportingAPI {
 
     @Operation()
-    @GetMapping("/pdf")
-    Mono<ResponseEntity<byte[]>> getPdfExtraction();
+    @GetMapping("/persons/pdf")
+    Mono<ResponseEntity<byte[]>> getPersonPdfExtraction();
 
     @Operation()
-    @GetMapping("/excel")
-    Mono<ResponseEntity<byte[]>> getExcelExtraction();
+    @GetMapping("/persons/excel")
+    Mono<ResponseEntity<byte[]>> getPersonExcelExtraction();
+
+    @Operation()
+    @GetMapping("/transactions/pdf")
+    Mono<ResponseEntity<byte[]>> getTransactionPdfExtraction();
+
+    @Operation()
+    @GetMapping("/transactions/excel")
+    Mono<ResponseEntity<byte[]>> getTransactionExcelExtraction();
+
 }
