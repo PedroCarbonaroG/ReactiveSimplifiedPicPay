@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-@Tag(name = "Person API - Natural and Legal Do's")
+@Tag(name = "Person API - Person management")
 @RequestMapping(value = "/person", produces = MediaType.APPLICATION_JSON_VALUE)
 public interface IPersonAPI {
 

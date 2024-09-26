@@ -6,7 +6,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-@Tag(name = "ITokenAPI - Responsible API for generate authorization tokens")
+@Tag(name = "TokenAPI - Authorization tokens generator")
 @RequestMapping(value = "/token")
 public interface ITokenAPI {
 
