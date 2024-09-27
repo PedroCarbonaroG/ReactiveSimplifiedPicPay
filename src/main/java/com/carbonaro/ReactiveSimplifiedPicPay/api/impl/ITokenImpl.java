@@ -22,4 +22,5 @@ public class ITokenImpl implements ITokenAPI {
 
         return tokenService.generateAdminToken();
     }
+
 }
