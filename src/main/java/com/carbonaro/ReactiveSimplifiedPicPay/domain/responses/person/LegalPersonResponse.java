@@ -4,7 +4,6 @@ import com.carbonaro.ReactiveSimplifiedPicPay.domain.enums.CompanySizeEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-
 import java.util.List;
 
 @Getter

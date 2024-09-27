@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-@Tag(name = "Transaction API - The NaturalPerson and LegalPerson transactions handler.")
+@Tag(name = "Transaction API - Person transactions handler")
 @RequestMapping(value = "/transaction", produces = MediaType.APPLICATION_JSON_VALUE)
 public interface ITransactionAPI {
 

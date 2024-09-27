@@ -27,4 +27,5 @@ public class Transaction {
 
     @Description("Total transaction amount.")
     private BigDecimal transactionValue;
+
 }

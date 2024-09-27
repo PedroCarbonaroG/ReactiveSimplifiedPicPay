@@ -3,7 +3,7 @@ package com.carbonaro.ReactiveSimplifiedPicPay.services;
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.entities.NaturalPerson;
 import com.carbonaro.ReactiveSimplifiedPicPay.repositories.NaturalPersonRepository;
 import com.carbonaro.ReactiveSimplifiedPicPay.services.exceptions.BadRequestException;
-import com.carbonaro.ReactiveSimplifiedPicPay.services.exceptions.EmptyException;
+import com.carbonaro.ReactiveSimplifiedPicPay.services.exceptions.EmptyReturnException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -25,7 +25,7 @@ public class NaturalPersonService {
 
         return repositoryNP
                 .findAll()
-                .switchIfEmpty(Flux.error(new EmptyException(GENERAL_WARNING_EMPTY)))
+                .switchIfEmpty(Flux.error(new EmptyReturnException(GENERAL_WARNING_EMPTY)))
                 .doOnError(errorResponse -> Flux.error(new Exception(errorResponse.getMessage())))
                 .doOnComplete(() -> log.info("Naturals list was deployed with success!"));
     }
@@ -34,7 +34,7 @@ public class NaturalPersonService {
 
         return repositoryNP
                 .findById(id)
-                .switchIfEmpty(Mono.error(new EmptyException(GENERAL_WARNING_EMPTY)))
+                .switchIfEmpty(Mono.error(new EmptyReturnException(GENERAL_WARNING_EMPTY)))
                 .doOnError(errorResponse -> Mono.error(new Exception(errorResponse.getMessage())));
     }
 
@@ -42,7 +42,7 @@ public class NaturalPersonService {
 
         return repositoryNP
                 .findByCpf(cpf)
-                .switchIfEmpty(Mono.error(new EmptyException(GENERAL_WARNING_EMPTY)))
+                .switchIfEmpty(Mono.error(new EmptyReturnException(GENERAL_WARNING_EMPTY)))
                 .doOnError(errorResponse -> Mono.error(new Exception(errorResponse.getMessage())));
     }
 

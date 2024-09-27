@@ -11,4 +11,5 @@ public interface LegalPersonRepository extends ReactiveMongoRepository<LegalPers
 
     @Description("Returns a LegalPerson by it's unique CNPJ.")
     Mono<LegalPerson> findByCnpj(String cnpj);
+
 }
