@@ -1,7 +1,7 @@
 package com.carbonaro.ReactiveSimplifiedPicPay.domain.requests.person;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jdk.jfr.Description;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,7 +19,7 @@ public class NaturalPersonRequest extends PersonRequest {
 
     @JsonFormat(pattern = "dd/MM/yyyy")
     @DateTimeFormat(pattern = "dd/MM/yyyy")
-    @Description("NaturalPerson birthdate.")
+    @Schema(description = "NaturalPerson birthdate.")
     private LocalDate birthDate;
 
 }

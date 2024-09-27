@@ -1,13 +1,11 @@
 package com.carbonaro.ReactiveSimplifiedPicPay.domain.entities;
 
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.enums.CompanySizeEnum;
-import com.carbonaro.ReactiveSimplifiedPicPay.domain.responses.person.NaturalPersonResponse;
 import jdk.jfr.Description;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -51,4 +49,5 @@ public class LegalPerson extends Person {
         else if (annualBilling.doubleValue() <= 300000000) { this.companySize = CompanySizeEnum.MEDIUM_ENTERPRISE; }
         else { this.companySize = CompanySizeEnum.LARGE_ENTERPRISE; }
     }
+
 }

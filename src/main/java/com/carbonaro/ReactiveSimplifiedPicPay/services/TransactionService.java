@@ -6,7 +6,7 @@ import com.carbonaro.ReactiveSimplifiedPicPay.domain.entities.Person;
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.entities.Transaction;
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.mappers.helpers.ITransactionMapperHelper;
 import com.carbonaro.ReactiveSimplifiedPicPay.repositories.TransactionRepository;
-import com.carbonaro.ReactiveSimplifiedPicPay.services.exceptions.EmptyException;
+import com.carbonaro.ReactiveSimplifiedPicPay.services.exceptions.EmptyReturnException;
 import com.carbonaro.ReactiveSimplifiedPicPay.services.exceptions.TransactionValidationException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,7 +37,7 @@ public class TransactionService {
 
         return transactionRepository
                 .findAll()
-                .switchIfEmpty(Flux.error(new EmptyException(GENERAL_WARNING_EMPTY)))
+                .switchIfEmpty(Flux.error(new EmptyReturnException(GENERAL_WARNING_EMPTY)))
                 .doOnComplete(() -> log.info("List of all transactions was deployed with success!"))
                 .doOnError(errorResponse -> Flux.error(new Exception(errorResponse.getMessage())));
     }

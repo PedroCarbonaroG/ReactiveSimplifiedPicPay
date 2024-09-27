@@ -15,10 +15,11 @@ public interface IPersonMapper {
 
     IPersonMapper INSTANCE = Mappers.getMapper(IPersonMapper.class);
 
-    LegalPersonResponse toLegalPersonResponse(LegalPerson legalPerson);
-    NaturalPersonResponse toNaturalPersonResponse(NaturalPerson naturalPerson);
-    LegalPersonTransactionResponse toLegalPersonTransactionResponse(LegalPerson legalPerson);
-    LegalPerson toLegalPersonByRequest(LegalPersonRequest legalPersonRequest);
     NaturalPerson toNaturalPersonByRequest(NaturalPersonRequest naturalPersonRequest);
+    NaturalPersonResponse toNaturalPersonResponse(NaturalPerson naturalPerson);
+
+    LegalPerson toLegalPersonByRequest(LegalPersonRequest legalPersonRequest);
+    LegalPersonResponse toLegalPersonResponse(LegalPerson legalPerson);
+    LegalPersonTransactionResponse toLegalPersonTransactionResponse(LegalPerson legalPerson);
 
 }
