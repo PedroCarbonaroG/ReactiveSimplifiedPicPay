@@ -17,7 +17,7 @@ import java.lang.annotation.RetentionPolicy;
                         responseCode = "200",
                         description = "OK"),
                 @ApiResponse(
-                        responseCode = " 400 • 404  500",
+                        responseCode = " 400 • 401  404 • 500",
                         description = "If something goes wrong if data or application resources, returns treated error.",
                         content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorResponse.class))),})
 public @interface SaveTransactionRouteDescription {

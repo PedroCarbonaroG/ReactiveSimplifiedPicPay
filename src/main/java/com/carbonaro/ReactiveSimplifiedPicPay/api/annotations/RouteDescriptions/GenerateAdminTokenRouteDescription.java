@@ -19,7 +19,7 @@ import java.lang.annotation.RetentionPolicy;
                         description = "If everything went right, returns the token.",
                         content = @Content(schema = @Schema(implementation = String.class))),
                 @ApiResponse(
-                        responseCode = " 404 • 500",
+                        responseCode = " 401 • 404  500",
                         description = "If something goes wrong if data or application resources, returns treated error.",
                         content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorResponse.class)))})
 public @interface GenerateAdminTokenRouteDescription {

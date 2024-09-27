@@ -25,7 +25,7 @@ import java.lang.annotation.RetentionPolicy;
                         description = "Neither NaturalPerson was found.",
                         content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorEmptyResponse.class))),
                 @ApiResponse(
-                        responseCode = " 404 • 500",
+                        responseCode = " 401 • 404  500",
                         description = "If something goes wrong if data or application resources, returns treated error.",
                         content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorResponse.class))),})
 public @interface FindAllNaturalsRouteDescription {
