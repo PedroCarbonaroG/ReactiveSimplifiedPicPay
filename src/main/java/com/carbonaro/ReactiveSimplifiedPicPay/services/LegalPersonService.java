@@ -3,10 +3,7 @@ package com.carbonaro.ReactiveSimplifiedPicPay.services;
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.entities.LegalPerson;
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.entities.NaturalPerson;
 import com.carbonaro.ReactiveSimplifiedPicPay.repositories.LegalPersonRepository;
-import com.carbonaro.ReactiveSimplifiedPicPay.services.exceptions.BadRequestException;
-import com.carbonaro.ReactiveSimplifiedPicPay.services.exceptions.EmptyException;
-import com.carbonaro.ReactiveSimplifiedPicPay.services.exceptions.EmptyOrNullObjectException;
-import com.carbonaro.ReactiveSimplifiedPicPay.services.exceptions.NotFoundException;
+import com.carbonaro.ReactiveSimplifiedPicPay.services.exceptions.EmptyReturnException;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -40,7 +37,6 @@ public class LegalPersonService {
 
         return Mono
                 .just(legalPerson)
-                .switchIfEmpty(Mono.error(new EmptyOrNullObjectException(GENERAL_WARNING_EMPTY)))
                 .flatMap(this::validateLegalPerson)
                 .flatMap(repositoryLP::save)
                 .doOnSuccess(person -> log.info("New LegalPerson was persisted with success!"))
@@ -123,14 +119,14 @@ public class LegalPersonService {
                 .just(tuple)
                 .flatMap(self -> self.getT1().getPartners().removeIf(it -> it.getCpf().equals(self.getT2().getCpf()))
                         ? this.saveLegalPerson(tuple.getT1())
-                        : Mono.error(new NotFoundException("Don't exist any partner with that CPF in this company.")));
+                        : Mono.error(new EmptyReturnException("Don't exist any partner with that CPF in this company.")));
     }
 
     public Flux<LegalPerson> findAllLegals() {
 
         return repositoryLP
                 .findAll()
-                .switchIfEmpty(Flux.error(new EmptyException(GENERAL_WARNING_EMPTY)))
+                .switchIfEmpty(Flux.error(new EmptyReturnException(GENERAL_WARNING_EMPTY)))
                 .doOnError(errorResponse -> Flux.error(new Exception(errorResponse.getMessage())))
                 .doOnComplete(() -> log.info("Legals list was deployed with success!"));
     }
@@ -139,7 +135,7 @@ public class LegalPersonService {
 
         return repositoryLP
                 .findById(id)
-                .switchIfEmpty(Mono.error(new EmptyException(GENERAL_WARNING_EMPTY)))
+                .switchIfEmpty(Mono.error(new EmptyReturnException(GENERAL_WARNING_EMPTY)))
                 .doOnError(errorResponse -> Mono.error(new Exception(errorResponse.getMessage())));
     }
 
@@ -147,7 +143,7 @@ public class LegalPersonService {
 
         return repositoryLP
                 .findByCnpj(cnpj)
-                .switchIfEmpty(Mono.error(new EmptyException(GENERAL_WARNING_EMPTY)))
+                .switchIfEmpty(Mono.error(new EmptyReturnException(GENERAL_WARNING_EMPTY)))
                 .doOnError(errorResponse -> Mono.error(new Exception(errorResponse.getMessage())));
     }
 

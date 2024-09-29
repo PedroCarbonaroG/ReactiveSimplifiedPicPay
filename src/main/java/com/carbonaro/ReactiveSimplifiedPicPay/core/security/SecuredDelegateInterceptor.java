@@ -1,9 +1,9 @@
 package com.carbonaro.ReactiveSimplifiedPicPay.core.security;
 
-import com.carbonaro.ReactiveSimplifiedPicPay.services.exceptions.TransactionValidationException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import lombok.AllArgsConstructor;
@@ -34,6 +34,8 @@ import static com.carbonaro.ReactiveSimplifiedPicPay.services.TokenService.SECRE
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class SecuredDelegateInterceptor implements WebFilter {
 
+    private static final String AUTH_TOKEN = "AUTH-API-TOKEN";
+
     private Map<String, HandlerMapping> handlerMappings;
 
     @Override
@@ -49,7 +51,7 @@ public class SecuredDelegateInterceptor implements WebFilter {
 
     private Mono<Boolean> validateTokenInterceptor(ServerWebExchange exchange) {
 
-        String token = resolveToken(exchange.getResponse().getHeaders().toString());
+        String token = resolveToken(exchange.getRequest().getHeaders().toString());
         if (token == null) return Mono.just(Boolean.TRUE);
         List<String> routeScopes = getScopesFromRoute(exchange);
 
@@ -57,8 +59,7 @@ public class SecuredDelegateInterceptor implements WebFilter {
     }
     private String resolveToken(String bearerToken) {
 
-        String tokenName = "AUTH-API-TOKEN";
-        Pattern pattern = Pattern.compile(tokenName + ":\"(.*?)\"");
+        Pattern pattern = Pattern.compile(AUTH_TOKEN + ":\"(.*?)\"");
         Matcher matcher = pattern.matcher(bearerToken);
 
         return matcher.find() ? matcher.group(1) : null;
@@ -131,16 +132,14 @@ public class SecuredDelegateInterceptor implements WebFilter {
             Set<String> tokenScopesSet = new HashSet<>(tokenScopes);
             Set<String> routeScopesSet = new HashSet<>(routeScopes);
 
-            if (tokenScopesSet.containsAll(routeScopesSet)) {
-                return true;
-            } else {
-                throw new TransactionValidationException("dale");
-            }
+            if (tokenScopesSet.containsAll(routeScopesSet)) { return true; }
+            else { throw new IllegalArgumentException(); }
 
         }
         catch (ExpiredJwtException e) { throw new ExpiredJwtException(e.getHeader(), e.getClaims(), e.getMessage()); }
         catch (SignatureException e) { throw new SignatureException(e.getMessage()); }
-        catch (TransactionValidationException e) { throw new TransactionValidationException(e.getMessage()); }
+        catch (MalformedJwtException e) { throw new MalformedJwtException(e.getMessage()); }
+        catch (IllegalArgumentException e) { throw new IllegalArgumentException(e.getMessage()); }
 
     }
 

@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 import java.nio.charset.StandardCharsets;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
 import static com.carbonaro.ReactiveSimplifiedPicPay.AppConstants.*;
@@ -35,7 +36,7 @@ public class ApiExceptionHandler extends ApiExceptionsHandlerHelper implements E
 
     private void getPrivateStackTrace(Exception e) {
 
-        if (e instanceof EmptyException) {
+        if (e instanceof EmptyReturnException) {
 
             log.warn("WARN           ====> {}", messageHelper.getMessage(e.getMessage()));
             log.warn("WARN MESSAGE   ====> {}", e.getLocalizedMessage());
@@ -56,7 +57,7 @@ public class ApiExceptionHandler extends ApiExceptionsHandlerHelper implements E
         log.error("STACKTRACE     ====> {}", (Object) e.getStackTrace());
     }
 
-    @ExceptionHandler({EmptyException.class})
+    @ExceptionHandler({EmptyReturnException.class})
     private ResponseEntity<ErrorEmptyResponse> noContentExceptionHandler(Exception e, ServerWebExchange request) {
 
         getPrivateStackTrace(e);
@@ -86,7 +87,7 @@ public class ApiExceptionHandler extends ApiExceptionsHandlerHelper implements E
         return new ResponseEntity<>(response, BAD_REQUEST_STATUS);
     }
 
-    @ExceptionHandler({NotFoundException.class})
+    @ExceptionHandler({NoSuchElementException.class})
     private ResponseEntity<ErrorResponse> notFoundExceptionHandler(Exception e, ServerWebExchange request) {
 
         getPrivateStackTrace(e);

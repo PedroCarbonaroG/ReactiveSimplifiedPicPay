@@ -26,4 +26,3 @@ public class LegalPersonResponse extends PersonResponse {
     List<NaturalPersonResponse> partners;
 
 }
-

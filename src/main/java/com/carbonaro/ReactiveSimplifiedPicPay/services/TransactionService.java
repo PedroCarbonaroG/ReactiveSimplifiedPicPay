@@ -80,11 +80,15 @@ public class TransactionService {
     }
     private boolean isLegalPerson(List<LegalPerson> listOfLegals, String document) {
 
-        return listOfLegals.stream().anyMatch(self -> self.getCnpj().equals(document));
+        return listOfLegals
+                .stream()
+                .anyMatch(self -> self.getCnpj().equals(document));
     }
     private boolean isNaturalPerson(List<NaturalPerson> listOfNaturals, String document) {
 
-        return listOfNaturals.stream().anyMatch(self -> self.getCpf().equals(document));
+        return listOfNaturals
+                .stream()
+                .anyMatch(self -> self.getCpf().equals(document));
     }
     private boolean isValidReceiver(List<NaturalPerson> listOfNaturals, List<LegalPerson> listOfLegals, String document) {
 
@@ -139,7 +143,6 @@ public class TransactionService {
                     mongoTemplate.updateFirst(receiverQuery, receiverUpdate, sender.getClass()).subscribe();
 
                     return Mono.just(transaction);
-
                 });
     }
     private BigDecimal setNewSenderBalance(Person sender, Transaction transaction) {
