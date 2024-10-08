@@ -81,14 +81,16 @@ public class IPersonImpl implements IPersonAPI {
     @SecuredDelegate(scopes = {ADMIN_WRITE_SCOPE})
     public Mono<Void> deleteLegalPerson(String companyCNPJ) {
 
-        return null;
+        return legalPersonService
+                .deleteLegal(companyCNPJ);
     }
 
     @Override
     @SecuredDelegate(scopes = {ADMIN_WRITE_SCOPE})
     public Mono<Void> deletePartnerByLegalPerson(String companyCNPJ, String partnerCPF) {
 
-        return null;
+        return legalPersonService
+                .deletePartner(companyCNPJ, partnerCPF);
     }
 
     @Override
@@ -125,7 +127,7 @@ public class IPersonImpl implements IPersonAPI {
         return Mono
                 .just(naturalPerson)
                 .map(IPersonMapper.INSTANCE::toNaturalPersonByRequest)
-                .flatMap(natural -> naturalPersonService.saveNaturalPerson(natural, cpf));
+                .flatMap(natural -> naturalPersonService.saveNatural(natural, cpf));
     }
 
     @Override
@@ -135,13 +137,15 @@ public class IPersonImpl implements IPersonAPI {
         return Mono
                 .just(naturalPersonRequest)
                 .map(IPersonMapper.INSTANCE::toNaturalPersonByRequest)
-                .flatMap(naturalPerson -> naturalPersonService.updateNaturalPerson(naturalPerson, cpf));
+                .flatMap(naturalPerson -> naturalPersonService.updateNatural(naturalPerson, cpf));
     }
 
     @Override
     @SecuredDelegate(scopes = {ADMIN_WRITE_SCOPE})
     public Mono<Void> deleteNaturalPerson(String cpf) {
 
-        return null;
+        return naturalPersonService
+                .deleteNatural(cpf);
     }
+
 }

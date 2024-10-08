@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
-
 import java.util.Objects;
 
 import static com.carbonaro.ReactiveSimplifiedPicPay.AppConstants.*;
@@ -48,7 +47,7 @@ public class NaturalPersonService {
                 .doOnError(errorResponse -> Mono.error(new Exception(errorResponse.getMessage())));
     }
 
-    public Mono<Void> saveNaturalPerson(NaturalPerson naturalPerson, String newNaturalCPF) {
+    public Mono<Void> saveNatural(NaturalPerson naturalPerson, String newNaturalCPF) {
 
         return Mono.just(naturalPerson)
                 .flatMap(self -> {
@@ -56,14 +55,14 @@ public class NaturalPersonService {
                     return findNaturalByCPF(self.getCpf());  //TODO PROBLEMA AQUI, QND N ACHA NGM DA EXCEPTION NO FIND -- NAO DEVE
                 })
                 .flatMap(alreadyExistentNatural -> Mono.error(new BadRequestException(NATURAL_SAVE_ALREADY_EXISTS)))
-                .switchIfEmpty(validateNewNaturalPerson(naturalPerson)
+                .switchIfEmpty(validateNewNatural(naturalPerson)
                         .publishOn(Schedulers.boundedElastic())
                         .map(newNatural -> repositoryNP.save(newNatural).subscribe())
                         .doOnSuccess(unused -> log.info("NaturalPerson | Saving new natural with CPF: {}", naturalPerson.getCpf())))
                 .doOnError(errorResponse -> Mono.error(new Exception(errorResponse.getMessage())))
                 .then();
     }
-    private Mono<NaturalPerson> validateNewNaturalPerson(NaturalPerson naturalPerson) {
+    private Mono<NaturalPerson> validateNewNatural(NaturalPerson naturalPerson) {
 
         return Mono.just(naturalPerson)
                 .filter(self -> validateCPF(self.getCpf())
@@ -80,7 +79,7 @@ public class NaturalPersonService {
         return Objects.nonNull(cpf) && BooleanUtils.isFalse(cpf.isEmpty()) && cpf.length() == 11 && cpf.matches(onlyNumbers);
     }
 
-    public Mono<Void> updateNaturalPerson(NaturalPerson naturalPerson, String cpf) {
+    public Mono<Void> updateNatural(NaturalPerson naturalPerson, String cpf) {
 
         return fillEmptyFieldsIfHas(naturalPerson, cpf)
                 .publishOn(Schedulers.boundedElastic())
@@ -105,6 +104,16 @@ public class NaturalPersonService {
     private <T> boolean validateField(T field) {
 
         return Objects.nonNull(field) && BooleanUtils.isFalse(field.toString().isEmpty());
+    }
+
+    public Mono<Void> deleteNatural(String cpf) {
+
+        //TODO (1) -> AO DELETAR UM NATURAL VERIFICAR SE É PARCEIRO DE ALGUMA EMPRESA E EXCLUIR-LO LA TAMBÉM
+        //TODO (2) -> OTIMIZAR DELEÇÃO DE PARCEIROS, EX: PASSAR SO O CPF AO DELETAR O PARCEIRO E O SISTEMA PROCURA A EMPRESA PARA DELETAR
+        return findNaturalByCPF(cpf)
+                .map(self -> repositoryNP.deleteByCpf(self.getCpf()).subscribe())
+                .doOnSuccess(unused -> log.info("Natural with CPF: {}, was deleted with success!", cpf))
+                .then();
     }
 
 }

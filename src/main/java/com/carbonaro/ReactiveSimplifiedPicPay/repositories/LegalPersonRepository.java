@@ -12,4 +12,7 @@ public interface LegalPersonRepository extends ReactiveMongoRepository<LegalPers
     @Description("Returns a LegalPerson by it's unique CNPJ.")
     Mono<LegalPerson> findByCnpj(String cnpj);
 
+    @Description("Deletes a legal person by it's unique CNPJ.")
+    Mono<Void> deleteByCnpj(String cnpj);
+
 }
