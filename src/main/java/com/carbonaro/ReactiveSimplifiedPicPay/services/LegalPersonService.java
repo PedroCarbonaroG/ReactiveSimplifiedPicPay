@@ -23,6 +23,7 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 import static com.carbonaro.ReactiveSimplifiedPicPay.AppConstants.GENERAL_WARNING_EMPTY;
+import static com.carbonaro.ReactiveSimplifiedPicPay.AppConstants.LEGAL_DELETE_PARTNER_NOT_FOUND_ERROR;
 
 @Slf4j
 @Service
@@ -41,6 +42,14 @@ public class LegalPersonService {
                 .flatMap(repositoryLP::save)
                 .doOnSuccess(person -> log.info("New LegalPerson was persisted with success!"))
                 .doOnError(errorResponse -> Mono.error(new Exception(errorResponse.getMessage())))
+                .then();
+    }
+
+    public Mono<Void> deleteLegal(String companyCNPJ) {
+
+        return findLegalByCNPJ(companyCNPJ)
+                .map(company -> repositoryLP.deleteByCnpj(company.getCnpj()).subscribe())
+                .doOnSuccess(unused -> log.info("Company with CNPJ: {}, was deleted with success!", companyCNPJ))
                 .then();
     }
 
@@ -105,21 +114,25 @@ public class LegalPersonService {
                 });
     }
 
-    public Mono<Void> deletePartner(String cnpj, String partnerCNPJ) {
+    public Mono<Void> deletePartner(String companyCNPJ, String partnerCPF) {
 
-        log.info("LegalPerson | Deleting partner: {}, from company: {}", partnerCNPJ, cnpj);
+        log.info("LegalPerson | Deleting partner: {}, from company: {}", partnerCPF, companyCNPJ);
         return Mono
-                .zip(this.findLegalByCNPJ(cnpj), naturalPersonService.findNaturalByCPF(partnerCNPJ))
-                .flatMap(this::deletePartner)
+                .zip(
+                        findLegalByCNPJ(companyCNPJ),
+                        naturalPersonService.findNaturalByCPF(partnerCPF))
+                .flatMap(tuple -> removePartner(tuple.getT1(), tuple.getT2().getCpf()))
+                .map(updatedCompany -> repositoryLP.save(updatedCompany).subscribe())
+                .doOnSuccess(unused -> log.info("Partner of CPF: {}, was deleted with success from the company with CNPJ: {}", partnerCPF, companyCNPJ))
                 .then();
     }
-    private Mono<Void> deletePartner(Tuple2<LegalPerson, NaturalPerson> tuple) {
+    private Mono<LegalPerson> removePartner(LegalPerson company, String partnerCPF) {
 
-        return Mono
-                .just(tuple)
-                .flatMap(self -> self.getT1().getPartners().removeIf(it -> it.getCpf().equals(self.getT2().getCpf()))
-                        ? this.saveLegalPerson(tuple.getT1())
-                        : Mono.error(new EmptyReturnException("Don't exist any partner with that CPF in this company.")));
+        return company
+                .getPartners()
+                .removeIf(partner -> partner.getCpf().equals(partnerCPF))
+                ? Mono.just(company)
+                : Mono.error(new EmptyReturnException(LEGAL_DELETE_PARTNER_NOT_FOUND_ERROR));
     }
 
     public Flux<LegalPerson> findAllLegals() {
