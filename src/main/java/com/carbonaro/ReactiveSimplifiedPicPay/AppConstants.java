@@ -12,6 +12,8 @@ public class AppConstants {
     public static final String NATURAL_SAVE_ALREADY_EXISTS = "natural.err.save.already.exist";
     public static final String NATURAL_SAVE_INCORRECT_FIELD = "natural.err.save.incorrect.field";
 
+    public static final String LEGAL_DELETE_PARTNER_NOT_FOUND_ERROR = "legal.err.delete.partner.not-found";
+
     public static final String TRANSACTION_NEGATIVE_VALUE = "transaction.err.negative.value";
     public static final String TRANSACTION_INSUFFICIENT_BALANCE = "transaction.err.insufficient.balance";
     public static final String TRANSACTION_LEGAL_SENDER_ERROR = "transaction.err.legal.sender";
