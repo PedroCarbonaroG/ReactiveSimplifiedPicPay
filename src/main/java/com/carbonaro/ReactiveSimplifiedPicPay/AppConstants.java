@@ -9,6 +9,9 @@ public class AppConstants {
     public static final String GENERAL_WARNING_EMPTY = "general.warn.empty";
     public static final String GENERAL_UNKNOWN_EXCEPTION_ERROR = "general.err.unknown.exception";
 
+    public static final String NATURAL_SAVE_ALREADY_EXISTS = "natural.err.save.already.exist";
+    public static final String NATURAL_SAVE_INCORRECT_FIELD = "natural.err.save.incorrect.field";
+
     public static final String TRANSACTION_NEGATIVE_VALUE = "transaction.err.negative.value";
     public static final String TRANSACTION_INSUFFICIENT_BALANCE = "transaction.err.insufficient.balance";
     public static final String TRANSACTION_LEGAL_SENDER_ERROR = "transaction.err.legal.sender";
