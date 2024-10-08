@@ -118,24 +118,24 @@ public class IPersonImpl implements IPersonAPI {
                 .map(IPersonMapper.INSTANCE::toNaturalPersonResponse);
     }
 
-    @Override //TODO ERRO AQUI
-    @SecuredDelegate(scopes = {USER_WRITE_SCOPE})
-    public Mono<Void> saveNaturalPerson(NaturalPersonRequest naturalPerson) {
+    @Override
+    @SecuredDelegate(scopes = {ADMIN_WRITE_SCOPE})
+    public Mono<Void> saveNaturalPerson(NaturalPersonRequest naturalPerson, String cpf) {
 
         return Mono
                 .just(naturalPerson)
                 .map(IPersonMapper.INSTANCE::toNaturalPersonByRequest)
-                .flatMap(naturalPersonService::saveNaturalPerson);
+                .flatMap(natural -> naturalPersonService.saveNaturalPerson(natural, cpf));
     }
 
     @Override
     @SecuredDelegate(scopes = {ADMIN_WRITE_SCOPE})
-    public Mono<Void> updateNaturalPerson(String cpf, NaturalPersonRequest naturalPerson) {
+    public Mono<Void> updateNaturalPerson(String cpf, NaturalPersonRequest naturalPersonRequest) {
 
         return Mono
-                .just(naturalPerson)
+                .just(naturalPersonRequest)
                 .map(IPersonMapper.INSTANCE::toNaturalPersonByRequest)
-                .flatMap(self -> naturalPersonService.updateNaturalPerson(self, cpf));
+                .flatMap(naturalPerson -> naturalPersonService.updateNaturalPerson(naturalPerson, cpf));
     }
 
     @Override
