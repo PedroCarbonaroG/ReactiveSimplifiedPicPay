@@ -6,13 +6,15 @@ import com.carbonaro.ReactiveSimplifiedPicPay.services.exceptions.BadRequestExce
 import com.carbonaro.ReactiveSimplifiedPicPay.services.exceptions.EmptyReturnException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import java.util.Objects;
 
-import static com.carbonaro.ReactiveSimplifiedPicPay.AppConstants.GENERAL_WARNING_EMPTY;
+import static com.carbonaro.ReactiveSimplifiedPicPay.AppConstants.*;
 
 @Slf4j
 @Service
@@ -46,54 +48,63 @@ public class NaturalPersonService {
                 .doOnError(errorResponse -> Mono.error(new Exception(errorResponse.getMessage())));
     }
 
-    public Mono<Void> saveNaturalPerson(NaturalPerson naturalPerson) {
+    public Mono<Void> saveNaturalPerson(NaturalPerson naturalPerson, String newNaturalCPF) {
 
-        naturalPerson.setCpf("");
-        return repositoryNP
-                .findByCpf("")
-                .map(self -> Objects.nonNull(self) ? naturalPerson : Mono.error(new BadRequestException("This NaturalPerson already exists!")))
-                .flatMap(naturalPersonNotRegistered -> this.validateNewNaturalPerson((NaturalPerson) naturalPersonNotRegistered))
-                .flatMap(repositoryNP::save)
+        return Mono.just(naturalPerson)
+                .flatMap(self -> {
+                    self.setCpf(newNaturalCPF);
+                    return findNaturalByCPF(self.getCpf());  //TODO PROBLEMA AQUI, QND N ACHA NGM DA EXCEPTION NO FIND -- NAO DEVE
+                })
+                .flatMap(alreadyExistentNatural -> Mono.error(new BadRequestException(NATURAL_SAVE_ALREADY_EXISTS)))
+                .switchIfEmpty(validateNewNaturalPerson(naturalPerson)
+                        .publishOn(Schedulers.boundedElastic())
+                        .map(newNatural -> repositoryNP.save(newNatural).subscribe())
+                        .doOnSuccess(unused -> log.info("NaturalPerson | Saving new natural with CPF: {}", naturalPerson.getCpf())))
+                .doOnError(errorResponse -> Mono.error(new Exception(errorResponse.getMessage())))
                 .then();
     }
     private Mono<NaturalPerson> validateNewNaturalPerson(NaturalPerson naturalPerson) {
 
-        return Mono
-                .just(naturalPerson)
-                .flatMap(self -> (Objects.nonNull(self.getCpf()) && !self.getCpf().isEmpty()) &&
-                        (Objects.nonNull(self.getBirthDate()) && !self.getBirthDate().toString().isEmpty()) &&
-                        (Objects.nonNull(self.getName()) && !self.getName().isEmpty()) &&
-                        (Objects.nonNull(self.getEmail()) && !self.getEmail().isEmpty()) &&
-                        (Objects.nonNull(self.getAddress()) && !self.getAddress().isEmpty()) &&
-                        (Objects.nonNull(self.getPassword()) && !self.getPassword().isEmpty())
-                        ? Mono.just(self)
-                        : Mono.error(new Exception()));
+        return Mono.just(naturalPerson)
+                .filter(self -> validateCPF(self.getCpf())
+                        && validateField(self.getBirthDate())
+                        && validateField(self.getName())
+                        && validateField(self.getEmail())
+                        && validateField(self.getAddress())
+                        && validateField(self.getPassword()))
+                .switchIfEmpty(Mono.error(new BadRequestException(NATURAL_SAVE_INCORRECT_FIELD)));
+    }
+    private boolean validateCPF(String cpf) {
+
+        String onlyNumbers = "\\d+";
+        return Objects.nonNull(cpf) && BooleanUtils.isFalse(cpf.isEmpty()) && cpf.length() == 11 && cpf.matches(onlyNumbers);
     }
 
     public Mono<Void> updateNaturalPerson(NaturalPerson naturalPerson, String cpf) {
 
-        return this
-                .fillEmptyFieldsIfHas(naturalPerson, cpf)
-                .flatMap(self -> repositoryNP.deleteByCpf(cpf).thenReturn(self))
-                .flatMap(repositoryNP::save)
+        return fillEmptyFieldsIfHas(naturalPerson, cpf)
+                .publishOn(Schedulers.boundedElastic())
+                .map(updatedNatural -> repositoryNP.save(updatedNatural).subscribe())
                 .doOnSuccess(unused -> log.info("NaturalPerson was updated with success!"))
                 .doOnError(errorResponse -> Mono.error(new Exception(errorResponse.getMessage())))
                 .then();
     }
     private Mono<NaturalPerson> fillEmptyFieldsIfHas(NaturalPerson naturalPerson, String cpf) {
 
-        return this
-                .findNaturalByCPF(cpf)
-                .zipWith(Mono.just(naturalPerson))
-                .map(tuple -> NaturalPerson.builder()
-                        .id(tuple.getT1().getId())
-                        .cpf(tuple.getT1().getCpf())
-                        .balance(tuple.getT1().getBalance())
-                        .birthDate(Objects.nonNull(naturalPerson.getBirthDate()) && naturalPerson.getBirthDate().toString().isEmpty() ? tuple.getT1().getBirthDate() : tuple.getT2().getBirthDate())
-                        .name(Objects.nonNull(naturalPerson.getName()) && naturalPerson.getName().isEmpty() ? tuple.getT1().getName() : tuple.getT2().getName())
-                        .email(Objects.nonNull(naturalPerson.getEmail()) && naturalPerson.getEmail().isEmpty() ? tuple.getT1().getEmail() : tuple.getT2().getEmail())
-                        .address(Objects.nonNull(naturalPerson.getAddress()) && naturalPerson.getAddress().isEmpty() ? tuple.getT1().getAddress() : tuple.getT2().getAddress())
-                        .password(Objects.nonNull(naturalPerson.getPassword()) && naturalPerson.getPassword().isEmpty() ? tuple.getT1().getPassword() : tuple.getT2().getPassword())
-                        .build());
+        return Mono
+                .zip(findNaturalByCPF(cpf), Mono.just(naturalPerson))
+                .map(tuple -> {
+                    tuple.getT1().setBirthDate(validateField(tuple.getT2().getBirthDate()) ? tuple.getT2().getBirthDate() : tuple.getT1().getBirthDate());
+                    tuple.getT1().setName(validateField(tuple.getT2().getName()) ? tuple.getT2().getName() : tuple.getT1().getName());
+                    tuple.getT1().setEmail(validateField(tuple.getT2().getEmail()) ? tuple.getT2().getEmail() : tuple.getT1().getEmail());
+                    tuple.getT1().setAddress(validateField(tuple.getT2().getAddress()) ? tuple.getT2().getAddress() : tuple.getT1().getAddress());
+                    tuple.getT1().setPassword(validateField(tuple.getT2().getPassword()) ? tuple.getT2().getPassword() : tuple.getT1().getPassword());
+                    return tuple.getT1();
+                });
     }
+    private <T> boolean validateField(T field) {
+
+        return Objects.nonNull(field) && BooleanUtils.isFalse(field.toString().isEmpty());
+    }
+
 }
