@@ -173,4 +173,5 @@ public class BuildDataBaseConfig implements CommandLineRunner {
         list.forEach(LegalPerson::setCompanySize);
         return list;
     }
+
 }
