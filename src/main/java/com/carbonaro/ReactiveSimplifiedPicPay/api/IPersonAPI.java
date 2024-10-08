@@ -67,7 +67,8 @@ public interface IPersonAPI {
     @PostMapping("/natural/save")
     @NaturalPersonRequestAsQueryParam
     @SaveNaturalPersonRouteDescription
-    Mono<Void> saveNaturalPerson(@Parameter(hidden = true) NaturalPersonRequest naturalPerson);
+    Mono<Void> saveNaturalPerson(@Parameter(hidden = true) NaturalPersonRequest naturalPerson,
+                                 @Parameter(required = true) String cpf);
 
     @PatchMapping("/natural/update")
     @NaturalPersonRequestAsQueryParam

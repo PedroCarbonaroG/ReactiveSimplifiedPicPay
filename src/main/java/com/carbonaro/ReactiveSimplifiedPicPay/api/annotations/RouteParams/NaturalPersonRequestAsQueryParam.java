@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
 @Parameter(
         in = ParameterIn.QUERY,
         name = "birthDate",
-        description = "Day of birth from natural person",
+        description = "Day of birth from natural person - (dd/mm/yyyy)",
         schema = @Schema(description = "Format dd/MM/yyyy", type = "LocalDate"))
 @Parameter(
         in = ParameterIn.QUERY,
