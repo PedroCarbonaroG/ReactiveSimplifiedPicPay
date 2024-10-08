@@ -1,7 +1,6 @@
 package com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.RouteDescriptions;
 
 import com.carbonaro.ReactiveSimplifiedPicPay.api.exception_handler.response.ErrorResponse;
-import com.carbonaro.ReactiveSimplifiedPicPay.domain.responses.person.LegalPersonResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -17,8 +16,7 @@ import java.lang.annotation.RetentionPolicy;
         responses = {
                 @ApiResponse(
                         responseCode = "200",
-                        description = "If everything goes right, returns OK",
-                        content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = LegalPersonResponse.class))),
+                        description = "If everything goes right, returns OK"),
                 @ApiResponse(
                         responseCode = " 400 • 401  404 • 500",
                         description = "If something goes wrong if data or application resources, returns treated error.",
