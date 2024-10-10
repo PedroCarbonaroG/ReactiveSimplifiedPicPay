@@ -50,7 +50,7 @@ public interface IPersonAPI {
 
     @DeleteMapping("/legal/partner/delete")
     @DeletePartnerByLegalPersonRouteDescription
-    Mono<Void> deletePartnerByLegalPerson(@RequestParam String companyCNPJ, @RequestParam String partnerCPF);
+    Mono<Void> deletePartnerByLegalPerson(@RequestParam String partnerCPF);
 
     @GetMapping("/list-all/naturals")
     @FindAllNaturalsRouteDescription
