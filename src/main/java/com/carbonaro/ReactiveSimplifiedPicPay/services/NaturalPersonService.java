@@ -1,5 +1,6 @@
 package com.carbonaro.ReactiveSimplifiedPicPay.services;
 
+import com.carbonaro.ReactiveSimplifiedPicPay.api.exception_handler.helper.MessageHelper;
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.entities.NaturalPerson;
 import com.carbonaro.ReactiveSimplifiedPicPay.repositories.NaturalPersonRepository;
 import com.carbonaro.ReactiveSimplifiedPicPay.services.exceptions.BadRequestException;
@@ -21,6 +22,7 @@ import static com.carbonaro.ReactiveSimplifiedPicPay.AppConstants.*;
 public class NaturalPersonService {
 
     private final NaturalPersonRepository repositoryNP;
+    private final MessageHelper messageHelper;
 
     public Flux<NaturalPerson> findAllNaturals() {
 
@@ -52,7 +54,7 @@ public class NaturalPersonService {
         return Mono.just(naturalPerson)
                 .flatMap(self -> {
                     self.setCpf(newNaturalCPF);
-                    return findNaturalByCPF(self.getCpf());  //TODO PROBLEMA AQUI, QND N ACHA NGM DA EXCEPTION NO FIND -- NAO DEVE
+                    return repositoryNP.findByCpf(self.getCpf());
                 })
                 .flatMap(alreadyExistentNatural -> Mono.error(new BadRequestException(NATURAL_SAVE_ALREADY_EXISTS)))
                 .switchIfEmpty(validateNewNatural(naturalPerson)
@@ -71,7 +73,7 @@ public class NaturalPersonService {
                         && validateField(self.getEmail())
                         && validateField(self.getAddress())
                         && validateField(self.getPassword()))
-                .switchIfEmpty(Mono.error(new BadRequestException(NATURAL_SAVE_INCORRECT_FIELD)));
+                .switchIfEmpty(Mono.error(new BadRequestException(messageHelper.getMessage(NATURAL_SAVE_INCORRECT_FIELD))));
     }
     private boolean validateCPF(String cpf) {
 
