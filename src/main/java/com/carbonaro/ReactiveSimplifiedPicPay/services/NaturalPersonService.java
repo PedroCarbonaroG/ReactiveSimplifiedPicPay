@@ -21,8 +21,9 @@ import static com.carbonaro.ReactiveSimplifiedPicPay.AppConstants.*;
 @AllArgsConstructor
 public class NaturalPersonService {
 
-    private final NaturalPersonRepository repositoryNP;
     private final MessageHelper messageHelper;
+    private final NaturalPersonRepository repositoryNP;
+    private final LegalPersonService legalPersonService;
 
     public Flux<NaturalPerson> findAllNaturals() {
 
@@ -56,7 +57,7 @@ public class NaturalPersonService {
                     self.setCpf(newNaturalCPF);
                     return repositoryNP.findByCpf(self.getCpf());
                 })
-                .flatMap(alreadyExistentNatural -> Mono.error(new BadRequestException(NATURAL_SAVE_ALREADY_EXISTS)))
+                .flatMap(alreadyExistentNatural -> Mono.error(new BadRequestException(messageHelper.getMessage(NATURAL_SAVE_ALREADY_EXISTS))))
                 .switchIfEmpty(validateNewNatural(naturalPerson)
                         .publishOn(Schedulers.boundedElastic())
                         .map(newNatural -> repositoryNP.save(newNatural).subscribe())
@@ -110,10 +111,9 @@ public class NaturalPersonService {
 
     public Mono<Void> deleteNatural(String cpf) {
 
-        //TODO (1) -> AO DELETAR UM NATURAL VERIFICAR SE É PARCEIRO DE ALGUMA EMPRESA E EXCLUIR-LO LA TAMBÉM
-        //TODO (2) -> OTIMIZAR DELEÇÃO DE PARCEIROS, EX: PASSAR SO O CPF AO DELETAR O PARCEIRO E O SISTEMA PROCURA A EMPRESA PARA DELETAR
         return findNaturalByCPF(cpf)
                 .map(self -> repositoryNP.deleteByCpf(self.getCpf()).subscribe())
+                .flatMap(unused -> legalPersonService.deletePartner(cpf))
                 .doOnSuccess(unused -> log.info("Natural with CPF: {}, was deleted with success!", cpf))
                 .then();
     }
