@@ -87,10 +87,10 @@ public class IPersonImpl implements IPersonAPI {
 
     @Override
     @SecuredDelegate(scopes = {ADMIN_WRITE_SCOPE})
-    public Mono<Void> deletePartnerByLegalPerson(String companyCNPJ, String partnerCPF) {
+    public Mono<Void> deletePartnerByLegalPerson(String partnerCPF) {
 
         return legalPersonService
-                .deletePartner(companyCNPJ, partnerCPF);
+                .deletePartner(partnerCPF);
     }
 
     @Override
