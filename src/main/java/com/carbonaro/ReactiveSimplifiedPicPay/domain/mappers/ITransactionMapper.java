@@ -1,13 +1,18 @@
 package com.carbonaro.ReactiveSimplifiedPicPay.domain.mappers;
 
+import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.TransactionRequest;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.responses.PageResponse;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.responses.person.PersonResponse;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.responses.transaction.TransactionResponse;
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.entities.Transaction;
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.mappers.helpers.ITransactionMapperHelper;
-import com.carbonaro.ReactiveSimplifiedPicPay.domain.requests.transaction.TransactionRequest;
-import com.carbonaro.ReactiveSimplifiedPicPay.domain.responses.transaction.TransactionResponse;
+import java.util.List;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.util.function.Tuple2;
 
 @Mapper(
         componentModel = "spring",
@@ -20,19 +25,47 @@ public abstract class ITransactionMapper {
 
     public abstract Transaction toTransactionByRequest(TransactionRequest transactionRequest);
 
-    public Mono<TransactionResponse> toTransactionResponse(Transaction transaction) {
+    public Mono<PageResponse<TransactionResponse>> toPageTransactionResponse(PageResponse<Transaction> pageOfTransactions) {
 
-        TransactionResponse transactionResponse = new TransactionResponse();
-        return Mono
-                .just(transactionResponse)
-                .flatMap(response -> transactionMapper.getSenderToMapper(transaction))
-                .zipWith(transactionMapper.getReceiverToMapper(transaction))
-                .map(tuple -> {
-                    transactionResponse.setId(transaction.getId());
-                    transactionResponse.setTransactionValue(transaction.getTransactionValue());
-                    transactionResponse.setSender(tuple.getT1());
-                    transactionResponse.setReceiver(tuple.getT2());
-                    return transactionResponse;
+        return Flux
+                .fromIterable(pageOfTransactions.getContent())
+                .flatMap(this::buildTupleForTransactionResponse)
+                .flatMap(this::setTransactionFields)
+                .collectList()
+                .map(transactionsResponse -> buildResponse(transactionsResponse, pageOfTransactions));
+    }
+
+    private PageResponse<TransactionResponse> buildResponse(List<TransactionResponse> transactions, PageResponse<Transaction> page) {
+
+        return new PageResponse<>(
+                page.getPageNumber(),
+                page.getPageSize(),
+                page.getTotalPages(),
+                page.getTotalElements(),
+                page.getNumberOfElements(),
+                transactions);
+    }
+
+    private Mono<Tuple2<Tuple2<PersonResponse, PersonResponse>, Transaction>> buildTupleForTransactionResponse(Transaction transaction) {
+
+        return Mono.just(transaction)
+                .flatMap(self -> transactionMapper.getSenderToMapper(self)
+                        .zipWith(transactionMapper.getReceiverToMapper(self))
+                        .zipWith(Mono.just(self)));
+    }
+
+    private Mono<TransactionResponse> setTransactionFields(Tuple2<Tuple2<PersonResponse, PersonResponse>, Transaction> tuple) {
+
+        return Mono.just(tuple)
+                .flatMap(self -> {
+                    TransactionResponse transactionResponse = new TransactionResponse();
+                    transactionResponse.setId(self.getT2().getId());
+                    transactionResponse.setTransactionValue(self.getT2().getTransactionValue());
+                    transactionResponse.setSender(self.getT1().getT1());
+                    transactionResponse.setReceiver(self.getT1().getT2());
+                    transactionResponse.setTransactionDate(self.getT2().getTransactionDate());
+                    return Mono.just(transactionResponse);
                 });
     }
+
 }
