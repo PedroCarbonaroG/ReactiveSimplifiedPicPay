@@ -7,16 +7,15 @@ import lombok.experimental.SuperBuilder;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.format.annotation.DateTimeFormat;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-@Getter
-@Setter
+@Data
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @Document(value = "NaturalPerson")
+@EqualsAndHashCode(callSuper = true)
 public class NaturalPerson extends Person {
 
     @Indexed(unique = true)

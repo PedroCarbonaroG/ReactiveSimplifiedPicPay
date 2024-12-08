@@ -1,21 +1,23 @@
 package com.carbonaro.ReactiveSimplifiedPicPay.services;
 
+import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.transaction.TransactionFilterRequest;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.responses.PageResponse;
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.entities.LegalPerson;
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.entities.NaturalPerson;
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.entities.Person;
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.entities.Transaction;
+import com.carbonaro.ReactiveSimplifiedPicPay.domain.mappers.PageMapper;
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.mappers.helpers.ITransactionMapperHelper;
 import com.carbonaro.ReactiveSimplifiedPicPay.repositories.TransactionRepository;
 import com.carbonaro.ReactiveSimplifiedPicPay.services.exceptions.EmptyReturnException;
 import com.carbonaro.ReactiveSimplifiedPicPay.services.exceptions.TransactionValidationException;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import java.math.BigDecimal;
 import java.util.List;
@@ -24,22 +26,22 @@ import static com.carbonaro.ReactiveSimplifiedPicPay.AppConstants.*;
 
 @Slf4j
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class TransactionService {
 
+    private final PageMapper<Transaction> pageMapper;
     private final TransactionRepository transactionRepository;
     private final NaturalPersonService naturalPersonService;
     private final LegalPersonService legalPersonService;
     private final ITransactionMapperHelper transactionMapperHelper;
-    private final ReactiveMongoTemplate mongoTemplate;
 
-    public Flux<Transaction> findAllTransactions() {
+    public Mono<PageResponse<Transaction>> findAllTransactions(Pageable page, TransactionFilterRequest filterRequest) {
 
         return transactionRepository
-                .findAll()
-                .switchIfEmpty(Flux.error(new EmptyReturnException(GENERAL_WARNING_EMPTY)))
-                .doOnComplete(() -> log.info("List of all transactions was deployed with success!"))
-                .doOnError(errorResponse -> Flux.error(new Exception(errorResponse.getMessage())));
+                .listAllPaged(page, filterRequest)
+                .switchIfEmpty(Mono.error(new EmptyReturnException(GENERAL_WARNING_EMPTY)))
+                .map(pageMapper::toPageResponse)
+                .doOnError(errorResponse -> Mono.error(new Exception(errorResponse.getMessage())));
     }
 
     public Mono<Void> saveTransaction(Transaction transaction) {
@@ -57,7 +59,7 @@ public class TransactionService {
     private Mono<Transaction> validateTransactionDocuments(Transaction transaction) {
 
         return Mono
-                .zip(naturalPersonService.findAllNaturals().collectList(), legalPersonService.findAllLegals().collectList())
+                .zip(naturalPersonService.findAllNaturals().collectList(), legalPersonService.listAll().collectList())
                 .flatMap(tuple -> {
 
                     var listOfNaturals = tuple.getT1();

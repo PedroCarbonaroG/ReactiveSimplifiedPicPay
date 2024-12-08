@@ -4,11 +4,10 @@ import jdk.jfr.Description;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
-@Getter
-@Setter
+@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -27,5 +26,8 @@ public class Transaction {
 
     @Description("Total transaction amount.")
     private BigDecimal transactionValue;
+
+    @Description("Transaction effective date")
+    private LocalDate transactionDate;
 
 }

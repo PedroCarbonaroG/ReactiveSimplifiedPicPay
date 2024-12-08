@@ -9,7 +9,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 import reactor.core.publisher.Mono;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -30,19 +29,27 @@ public class BuildDataBaseConfig implements CommandLineRunner {
     @Override
     public void run(String... args) {
 
-        buildDataBase(getNaturalPersons(), naturalPersonRepository, NaturalPersonRepository.class)
-                .doOnSubscribe(subscription -> buildDataBase(getLegalPersons(), legalPersonRepository, LegalPersonRepository.class).subscribe())
+        log.info("Running initial database -> LEGAL-PERSON | NATURAL-PERSON");
+        buildLegalPersonDataBase(getLegalPersons())
+                .doOnSubscribe(subscription -> buildNaturalPersonDataBase(getNaturalPersons()).subscribe())
                 .doOnSubscribe(subscription -> transactionRepository.deleteAll().subscribe())
                 .subscribe();
     }
 
-    private <T, R> Mono<Void> buildDataBase(List<T> list, ReactiveMongoRepository<T, R> repository, Class<?> repositoryClass) {
+    private Mono<Void> buildLegalPersonDataBase(List<LegalPerson> list) {
 
-        return repository
+        return legalPersonRepository
                 .deleteAll()
-                .then(repository.saveAll(list).then())
-                .doOnSuccess(unused -> log.info("List of {} was persisted with success!", repositoryClass.getSimpleName()))
-                .doOnError(throwable -> log.error("ERROR: {}", throwable.getMessage(), throwable));
+                .then(legalPersonRepository.saveAll(list).then())
+                .doOnError(throwable -> log.error("ERROR TO BUILD INITIAL LEGAL-PERSON DATABASE, ERROR: {}", throwable.getMessage(), throwable));
+    }
+
+    private Mono<Void> buildNaturalPersonDataBase(List<NaturalPerson> list) {
+
+        return naturalPersonRepository
+                .deleteAll()
+                .then(naturalPersonRepository.saveAll(list).then())
+                .doOnError(throwable -> log.error("ERROR TO BUILD INITIAL NATURAL-PERSON DATABASE, ERROR: {}", throwable.getMessage(), throwable));
     }
 
     private List<NaturalPerson> getNaturalPersons() {

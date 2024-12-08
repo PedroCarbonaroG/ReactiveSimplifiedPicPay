@@ -1,14 +1,17 @@
 package com.carbonaro.ReactiveSimplifiedPicPay.services;
 
+import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.person.LegalPersonFilterRequest;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.responses.PageResponse;
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.entities.LegalPerson;
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.entities.NaturalPerson;
+import com.carbonaro.ReactiveSimplifiedPicPay.domain.mappers.PageMapper;
 import com.carbonaro.ReactiveSimplifiedPicPay.repositories.LegalPersonRepository;
 import com.carbonaro.ReactiveSimplifiedPicPay.services.exceptions.EmptyReturnException;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
@@ -16,6 +19,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple2;
+
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
@@ -27,19 +31,19 @@ import static com.carbonaro.ReactiveSimplifiedPicPay.AppConstants.LEGAL_DELETE_P
 
 @Slf4j
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class LegalPersonService {
 
-    private final LegalPersonRepository repositoryLP;
-    private final ReactiveMongoTemplate mongoTemplate;
+    private final LegalPersonRepository legalPersonRepository;
     private final NaturalPersonService naturalPersonService;
+    private final PageMapper<LegalPerson> pageMapper;
 
     public Mono<Void> saveLegalPerson(LegalPerson legalPerson) {
 
         return Mono
                 .just(legalPerson)
                 .flatMap(this::validateLegalPerson)
-                .flatMap(repositoryLP::save)
+                .flatMap(legalPersonRepository::save)
                 .doOnSuccess(person -> log.info("New LegalPerson was persisted with success!"))
                 .doOnError(errorResponse -> Mono.error(new Exception(errorResponse.getMessage())))
                 .then();
@@ -48,48 +52,41 @@ public class LegalPersonService {
     public Mono<Void> deleteLegal(String companyCNPJ) {
 
         return findLegalByCNPJ(companyCNPJ)
-                .map(company -> repositoryLP.deleteByCnpj(company.getCnpj()).subscribe())
+                .map(company -> legalPersonRepository.deleteByCnpj(company.getCnpj()).subscribe())
                 .doOnSuccess(unused -> log.info("Company with CNPJ: {}, was deleted with success!", companyCNPJ))
                 .then();
     }
 
-    public Mono<Void> updateLegalPerson(String cnpj, LegalPerson legalPerson) {
+    public Mono<Void> updateLegalPerson(String cnpj, LegalPerson updatedLegalPerson) {
 
-        log.info("LegalPerson | Updating Legal");
-        return Mono
-                .just(legalPerson)
-                .flatMap(this::validateLegalPersonFields)
-                .flatMap(this::buildFields)
-                .flatMap(response -> this.buildQuery(response, cnpj, legalPerson));
+        log.info("LegalPerson | Updating Legal for CNPJ: {}", cnpj);
+        return Mono.just(updatedLegalPerson)
+                .flatMap(this::validateFields)
+                .zipWith(findLegalByCNPJ(cnpj))
+                .flatMap(legalPersonRepository::update)
+                .then();
     }
-    private Mono<List<Field>> buildFields(LegalPerson legalPerson) {
+    private Mono<LegalPerson> validateFields(LegalPerson legalPerson) {
 
-        return Mono.just(Stream
+        return Stream
                 .concat(
                         Arrays.stream(legalPerson.getClass().getDeclaredFields()),
                         Arrays.stream(legalPerson.getClass().getSuperclass().getDeclaredFields()))
                 .filter(field -> {
                     try {
                         field.setAccessible(true);
-                        return Objects.nonNull(field.get(legalPerson)) && !field.get(legalPerson).toString().isEmpty();
+                        return Objects.nonNull(field.get(legalPerson)) && !field.get(legalPerson).toString().isEmpty() && field.get(legalPerson).toString().length() != 1;
                     } catch (IllegalAccessException e) {
                         throw new DataIntegrityViolationException(e.getMessage());
                     }})
-                .toList());
-    }
-    @SneakyThrows
-    private Mono<Void> buildQuery(List<Field> fields, String cnpj, LegalPerson legalPerson) {
+                .toList()
+                .isEmpty()
 
-        Query query = new Query(Criteria.where("cnpj").is(cnpj));
-        Update update = new Update();
-
-        for (Field field : fields) update.set(field.getName(), field.get(legalPerson));
-
-        return mongoTemplate
-                .updateFirst(query, update, LegalPerson.class)
-                .then();
+                ? Mono.error(new Exception())
+                : Mono.just(legalPerson);
     }
 
+    //TODO REFAZER SAVEPARTNER
     public Mono<Void> savePartner(String cnpj, String partnerCPF) {
 
         log.info("LegalPerson | Saving new partner for company: {}", cnpj);
@@ -114,17 +111,9 @@ public class LegalPersonService {
                 });
     }
 
-    public Mono<Void> deletePartner(String companyCNPJ, String partnerCPF) {
+    public Mono<Void> deletePartner(String partnerCPF) {
 
-        log.info("LegalPerson | Deleting partner: {}, from company: {}", partnerCPF, companyCNPJ);
-        return Mono
-                .zip(
-                        findLegalByCNPJ(companyCNPJ),
-                        naturalPersonService.findNaturalByCPF(partnerCPF))
-                .flatMap(tuple -> removePartner(tuple.getT1(), tuple.getT2().getCpf()))
-                .map(updatedCompany -> repositoryLP.save(updatedCompany).subscribe())
-                .doOnSuccess(unused -> log.info("Partner of CPF: {}, was deleted with success from the company with CNPJ: {}", partnerCPF, companyCNPJ))
-                .then();
+        return null;
     }
     private Mono<LegalPerson> removePartner(LegalPerson company, String partnerCPF) {
 
@@ -135,18 +124,18 @@ public class LegalPersonService {
                 : Mono.error(new EmptyReturnException(LEGAL_DELETE_PARTNER_NOT_FOUND_ERROR));
     }
 
-    public Flux<LegalPerson> findAllLegals() {
+    public Mono<PageResponse<LegalPerson>> listAll(Pageable page, LegalPersonFilterRequest filterRequest) {
 
-        return repositoryLP
-                .findAll()
-                .switchIfEmpty(Flux.error(new EmptyReturnException(GENERAL_WARNING_EMPTY)))
-                .doOnError(errorResponse -> Flux.error(new Exception(errorResponse.getMessage())))
-                .doOnComplete(() -> log.info("Legals list was deployed with success!"));
+        return legalPersonRepository
+                .listAll(page, filterRequest)
+                .switchIfEmpty(Mono.error(new EmptyReturnException(GENERAL_WARNING_EMPTY)))
+                .map(pageMapper::toPageResponse)
+                .doOnError(errorResponse -> Mono.error(new Exception(errorResponse.getMessage())));
     }
 
     public Mono<LegalPerson> findLegalById(String id) {
 
-        return repositoryLP
+        return legalPersonRepository
                 .findById(id)
                 .switchIfEmpty(Mono.error(new EmptyReturnException(GENERAL_WARNING_EMPTY)))
                 .doOnError(errorResponse -> Mono.error(new Exception(errorResponse.getMessage())));
@@ -154,7 +143,7 @@ public class LegalPersonService {
 
     public Mono<LegalPerson> findLegalByCNPJ(String cnpj) {
 
-        return repositoryLP
+        return legalPersonRepository
                 .findByCnpj(cnpj)
                 .switchIfEmpty(Mono.error(new EmptyReturnException(GENERAL_WARNING_EMPTY)))
                 .doOnError(errorResponse -> Mono.error(new Exception(errorResponse.getMessage())));
@@ -165,7 +154,7 @@ public class LegalPersonService {
         String onlyNumbers = "\\d+";
         return Mono
                 .just(legalPerson)
-                .flatMap(unused -> repositoryLP
+                .flatMap(unused -> legalPersonRepository
                             .findByCnpj(legalPerson.getCnpj())
                             .hasElement()
                             .flatMap(hasValue -> Boolean.FALSE.equals(hasValue) ? Mono.just(legalPerson) : Mono.error(new DataIntegrityViolationException("Already have a LegalPerson with that CNPJ.")))
@@ -174,26 +163,6 @@ public class LegalPersonService {
                             ? Mono.just(legalPerson)
                             : Mono.error(new DataIntegrityViolationException("LegalPerson CNPJ contains more than 14 numbers or don't have only numbers"))
                 );
-    }
-
-    private Mono<LegalPerson> validateLegalPersonFields(LegalPerson legalPerson) {
-
-        return Stream
-                .concat(
-                        Arrays.stream(legalPerson.getClass().getDeclaredFields()),
-                        Arrays.stream(legalPerson.getClass().getSuperclass().getDeclaredFields()))
-                .filter(field -> {
-                    try {
-                        field.setAccessible(true);
-                        return Objects.nonNull(field.get(legalPerson)) && !field.get(legalPerson).toString().isEmpty() && field.get(legalPerson).toString().length() != 1;
-                    } catch (IllegalAccessException e) {
-                        throw new DataIntegrityViolationException(e.getMessage());
-                    }})
-                .toList()
-                .isEmpty()
-
-                ? Mono.error(new Exception())
-                : Mono.just(legalPerson);
     }
 
 }

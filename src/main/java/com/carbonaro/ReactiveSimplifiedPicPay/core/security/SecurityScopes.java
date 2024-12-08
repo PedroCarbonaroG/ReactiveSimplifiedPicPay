@@ -9,7 +9,7 @@ import java.lang.annotation.ElementType;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD})
-public @interface SecuredDelegate {
+public @interface SecurityScopes {
 
     String[] scopes() default {};
 

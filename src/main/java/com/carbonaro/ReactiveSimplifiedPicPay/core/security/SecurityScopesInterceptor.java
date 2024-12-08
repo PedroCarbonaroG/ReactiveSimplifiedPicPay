@@ -32,7 +32,7 @@ import static com.carbonaro.ReactiveSimplifiedPicPay.services.TokenService.SECRE
 @Component
 @AllArgsConstructor
 @Order(Ordered.HIGHEST_PRECEDENCE)
-public class SecuredDelegateInterceptor implements WebFilter {
+public class SecurityScopesInterceptor implements WebFilter {
 
     private static final String AUTH_TOKEN = "AUTH-API-TOKEN";
 
@@ -106,7 +106,7 @@ public class SecuredDelegateInterceptor implements WebFilter {
 
             if (pattern instanceof PathPattern pathPattern && pathPattern.matches(exchange.getRequest().getPath().pathWithinApplication())) {
 
-                SecuredDelegate annotation = handlerMethod.getMethodAnnotation(SecuredDelegate.class);
+                SecurityScopes annotation = handlerMethod.getMethodAnnotation(SecurityScopes.class);
 
                 if (annotation != null) {
 

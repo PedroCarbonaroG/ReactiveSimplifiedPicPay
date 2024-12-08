@@ -1,12 +1,12 @@
-package com.carbonaro.ReactiveSimplifiedPicPay.domain.responses.transaction;
+package com.carbonaro.ReactiveSimplifiedPicPay.api.responses.transaction;
 
-import com.carbonaro.ReactiveSimplifiedPicPay.domain.responses.person.PersonResponse;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.responses.person.PersonResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
-@Getter
-@Setter
+@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -23,5 +23,8 @@ public class TransactionResponse {
 
     @Schema(description = "Total transaction amount.")
     private BigDecimal transactionValue;
+
+    @Schema(description = "Transaction effective date")
+    private LocalDate transactionDate;
 
 }

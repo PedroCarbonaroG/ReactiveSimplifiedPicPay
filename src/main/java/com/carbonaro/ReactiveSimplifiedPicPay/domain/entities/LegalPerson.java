@@ -9,12 +9,12 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.math.BigDecimal;
 import java.util.List;
 
-@Getter
-@Setter
+@Data
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @Document(value = "LegalPerson")
+@EqualsAndHashCode(callSuper = true)
 public class LegalPerson extends Person {
 
     @Indexed(unique = true)
@@ -37,7 +37,7 @@ public class LegalPerson extends Person {
     List<NaturalPerson> partners;
 
     @Description("Number of employees in the company")
-    private int employeesNumber;
+    private Integer employeesNumber;
 
     public void setCompanySize() {
         setInternalCompanySize();

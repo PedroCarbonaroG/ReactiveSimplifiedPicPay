@@ -1,18 +1,29 @@
 package com.carbonaro.ReactiveSimplifiedPicPay.repositories;
 
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.entities.NaturalPerson;
-import jdk.jfr.Description;
-import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
-import org.springframework.stereotype.Repository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-@Repository
-public interface NaturalPersonRepository extends ReactiveMongoRepository<NaturalPerson, String> {
+import java.util.List;
 
-    @Description("Returns a NaturalPerson by it's unique CPF")
-    Mono<NaturalPerson> findByCpf(String cpf);
+@Slf4j
+@RequiredArgsConstructor
+public class NaturalPersonRepository extends BaseRepository {
 
-    @Description("Successfully delete an NaturalPerson by it's CPF")
-    Mono<Void> deleteByCpf(String cpf);
+    private final INaturalPersonRepository repository;
+
+    public Mono<NaturalPerson> findByCpf(String document) {
+        return repository.findByCpf(document);
+    }
+
+    public Mono<Void> deleteAll() {
+        return repository.deleteAll();
+    }
+
+    public Flux<NaturalPerson> saveAll(List<NaturalPerson> naturals) {
+        return repository.saveAll(naturals);
+    }
 
 }

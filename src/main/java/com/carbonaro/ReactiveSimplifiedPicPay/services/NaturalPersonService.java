@@ -5,7 +5,7 @@ import com.carbonaro.ReactiveSimplifiedPicPay.domain.entities.NaturalPerson;
 import com.carbonaro.ReactiveSimplifiedPicPay.repositories.NaturalPersonRepository;
 import com.carbonaro.ReactiveSimplifiedPicPay.services.exceptions.BadRequestException;
 import com.carbonaro.ReactiveSimplifiedPicPay.services.exceptions.EmptyReturnException;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.stereotype.Service;
@@ -18,12 +18,11 @@ import static com.carbonaro.ReactiveSimplifiedPicPay.AppConstants.*;
 
 @Slf4j
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class NaturalPersonService {
 
     private final MessageHelper messageHelper;
     private final NaturalPersonRepository repositoryNP;
-    private final LegalPersonService legalPersonService;
 
     public Flux<NaturalPerson> findAllNaturals() {
 
@@ -84,17 +83,18 @@ public class NaturalPersonService {
 
     public Mono<Void> updateNatural(NaturalPerson naturalPerson, String cpf) {
 
-        return fillEmptyFieldsIfHas(naturalPerson, cpf)
+        return findNaturalByCPF(cpf)
+                .flatMap(natural -> fillEmptyFieldsIfHas(natural, naturalPerson))
                 .publishOn(Schedulers.boundedElastic())
                 .map(updatedNatural -> repositoryNP.save(updatedNatural).subscribe())
                 .doOnSuccess(unused -> log.info("NaturalPerson was updated with success!"))
                 .doOnError(errorResponse -> Mono.error(new Exception(errorResponse.getMessage())))
                 .then();
     }
-    private Mono<NaturalPerson> fillEmptyFieldsIfHas(NaturalPerson naturalPerson, String cpf) {
+    private Mono<NaturalPerson> fillEmptyFieldsIfHas(NaturalPerson oldNatural, NaturalPerson newNatural) {
 
         return Mono
-                .zip(findNaturalByCPF(cpf), Mono.just(naturalPerson))
+                .zip(Mono.just(oldNatural), Mono.just(newNatural))
                 .map(tuple -> {
                     tuple.getT1().setBirthDate(validateField(tuple.getT2().getBirthDate()) ? tuple.getT2().getBirthDate() : tuple.getT1().getBirthDate());
                     tuple.getT1().setName(validateField(tuple.getT2().getName()) ? tuple.getT2().getName() : tuple.getT1().getName());
@@ -110,12 +110,12 @@ public class NaturalPersonService {
     }
 
     public Mono<Void> deleteNatural(String cpf) {
-
-        return findNaturalByCPF(cpf)
-                .map(self -> repositoryNP.deleteByCpf(self.getCpf()).subscribe())
-                .flatMap(unused -> legalPersonService.deletePartner(cpf))
-                .doOnSuccess(unused -> log.info("Natural with CPF: {}, was deleted with success!", cpf))
-                .then();
+            return null;
+//        return findNaturalByCPF(cpf)
+//                .map(self -> repositoryNP.deleteByCpf(self.getCpf()).subscribe())
+//                .flatMap(unused -> legalPersonService.deletePartner(cpf))
+//                .doOnSuccess(unused -> log.info("Natural with CPF: {}, was deleted with success!", cpf))
+//                .then();
     }
 
 }

@@ -1,15 +1,14 @@
-package com.carbonaro.ReactiveSimplifiedPicPay.domain.responses.person;
+package com.carbonaro.ReactiveSimplifiedPicPay.api.requests.person;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
-@Getter
-@Setter
+@Data
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public abstract class PersonResponse {
+public abstract class PersonRequest {
 
     @Schema(description = "Person full name.")
     protected String name;
@@ -19,5 +18,8 @@ public abstract class PersonResponse {
 
     @Schema(description = "Person full address.")
     private String address;
+
+    @Schema(description = "Person access password.")
+    private String password;
 
 }

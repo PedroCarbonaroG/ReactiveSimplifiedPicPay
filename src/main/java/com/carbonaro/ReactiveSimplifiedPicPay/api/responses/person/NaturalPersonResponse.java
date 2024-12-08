@@ -1,19 +1,17 @@
-package com.carbonaro.ReactiveSimplifiedPicPay.domain.responses.person;
+package com.carbonaro.ReactiveSimplifiedPicPay.api.responses.person;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jdk.jfr.Description;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.springframework.format.annotation.DateTimeFormat;
-
 import java.time.LocalDate;
 
-@Getter
-@Setter
+@Data
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 public class NaturalPersonResponse extends PersonResponse {
 
     @Schema(description = "Unique demonstration of the NaturalPerson CPF.")

@@ -41,5 +41,5 @@ import java.time.LocalDate;
         description = "Natural person full and secret password.",
         schema = @Schema(implementation = String.class),
         required = true)
-public @interface NaturalPersonRequestAsQueryParam {
+public @interface TransactionFilterRequestAsQueryParam {
 }

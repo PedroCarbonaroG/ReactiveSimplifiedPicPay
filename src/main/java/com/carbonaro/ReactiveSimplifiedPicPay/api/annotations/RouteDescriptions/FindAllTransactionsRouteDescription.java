@@ -2,7 +2,7 @@ package com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.RouteDescriptions
 
 import com.carbonaro.ReactiveSimplifiedPicPay.api.exception_handler.response.ErrorEmptyResponse;
 import com.carbonaro.ReactiveSimplifiedPicPay.api.exception_handler.response.ErrorResponse;
-import com.carbonaro.ReactiveSimplifiedPicPay.domain.responses.transaction.TransactionResponse;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.responses.transaction.TransactionResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;

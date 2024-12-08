@@ -8,6 +8,4 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping(value = "/transaction", produces = MediaType.APPLICATION_JSON_VALUE)
 public interface IWalletAPI {
 
-
-
 }

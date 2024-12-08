@@ -7,6 +7,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.math.BigDecimal;
 
 @Target({ElementType.METHOD, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
@@ -14,16 +15,19 @@ import java.lang.annotation.Target;
         in = ParameterIn.QUERY,
         name = "senderDocument",
         description = "Sender Document",
-        schema = @Schema(type = "String"))
+        schema = @Schema(implementation = String.class),
+        required = true)
 @Parameter(
         in = ParameterIn.QUERY,
         name = "receiverDocument",
         description = "Receiver Document",
-        schema = @Schema(type = "String"))
+        schema = @Schema(implementation = String.class),
+        required = true)
 @Parameter(
         in = ParameterIn.QUERY,
         name = "transactionValue",
         description = "Transaction Value",
-        schema = @Schema(type = "BigDecimal"))
+        schema = @Schema(implementation = BigDecimal.class),
+        required = true)
 public @interface TransactionRequestAsQueryParam {
 }

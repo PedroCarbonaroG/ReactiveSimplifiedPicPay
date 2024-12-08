@@ -2,11 +2,11 @@ package com.carbonaro.ReactiveSimplifiedPicPay.api.impl;
 
 import com.carbonaro.ReactiveSimplifiedPicPay.api.ITokenAPI;
 import com.carbonaro.ReactiveSimplifiedPicPay.services.TokenService;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ITokenImpl implements ITokenAPI {
 
     private final TokenService tokenService;

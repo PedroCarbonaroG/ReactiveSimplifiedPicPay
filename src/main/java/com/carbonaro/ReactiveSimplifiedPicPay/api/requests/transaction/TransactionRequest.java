@@ -1,4 +1,4 @@
-package com.carbonaro.ReactiveSimplifiedPicPay.domain.requests.transaction;
+package com.carbonaro.ReactiveSimplifiedPicPay.api.requests.transaction;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jdk.jfr.Description;
@@ -6,8 +6,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 
-@Getter
-@Setter
+@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

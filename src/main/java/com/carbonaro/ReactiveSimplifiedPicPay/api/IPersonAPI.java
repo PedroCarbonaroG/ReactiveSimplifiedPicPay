@@ -1,14 +1,18 @@
 package com.carbonaro.ReactiveSimplifiedPicPay.api;
 
 import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.RouteDescriptions.*;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.RouteParams.LegalPersonFilterRequestAsQueryParam;
 import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.RouteParams.LegalPersonRequestAsQueryParam;
 import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.RouteParams.NaturalPersonRequestAsQueryParam;
-import com.carbonaro.ReactiveSimplifiedPicPay.domain.requests.person.LegalPersonRequest;
-import com.carbonaro.ReactiveSimplifiedPicPay.domain.requests.person.NaturalPersonRequest;
-import com.carbonaro.ReactiveSimplifiedPicPay.domain.responses.person.LegalPersonResponse;
-import com.carbonaro.ReactiveSimplifiedPicPay.domain.responses.person.NaturalPersonResponse;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.person.LegalPersonFilterRequest;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.person.LegalPersonRequest;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.person.NaturalPersonRequest;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.responses.PageResponse;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.responses.person.LegalPersonResponse;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.responses.person.NaturalPersonResponse;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springdoc.core.converters.models.PageableAsQueryParam;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
@@ -19,8 +23,10 @@ import reactor.core.publisher.Mono;
 public interface IPersonAPI {
 
     @GetMapping("/list-all/legals")
+    @PageableAsQueryParam
     @FindAllLegalsRouteDescription
-    Flux<LegalPersonResponse> findAllLegals();
+    @LegalPersonFilterRequestAsQueryParam
+    Mono<PageResponse<LegalPersonResponse>> findAllLegals(@Parameter(hidden = true) LegalPersonFilterRequest filterRequest);
 
     @GetMapping("/legal/companyCNPJ")
     @FindLegalByCNPJRouteDescription
