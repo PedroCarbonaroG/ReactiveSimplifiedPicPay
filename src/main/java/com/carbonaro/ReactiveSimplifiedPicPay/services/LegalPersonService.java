@@ -8,21 +8,13 @@ import com.carbonaro.ReactiveSimplifiedPicPay.domain.mappers.PageMapper;
 import com.carbonaro.ReactiveSimplifiedPicPay.repositories.LegalPersonRepository;
 import com.carbonaro.ReactiveSimplifiedPicPay.services.exceptions.EmptyReturnException;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple2;
-
-import java.lang.reflect.Field;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 

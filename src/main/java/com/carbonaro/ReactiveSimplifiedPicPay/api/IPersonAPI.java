@@ -6,6 +6,7 @@ import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.RouteParams.LegalP
 import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.RouteParams.NaturalPersonRequestAsQueryParam;
 import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.person.LegalPersonFilterRequest;
 import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.person.LegalPersonRequest;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.person.NaturalPersonFilterRequest;
 import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.person.NaturalPersonRequest;
 import com.carbonaro.ReactiveSimplifiedPicPay.api.responses.PageResponse;
 import com.carbonaro.ReactiveSimplifiedPicPay.api.responses.person.LegalPersonResponse;
@@ -15,7 +16,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springdoc.core.converters.models.PageableAsQueryParam;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Tag(name = "Person API - Person management")
@@ -60,7 +60,7 @@ public interface IPersonAPI {
 
     @GetMapping("/list-all/naturals")
     @FindAllNaturalsRouteDescription
-    Flux<NaturalPersonResponse> findAllNaturals();
+    Mono<PageResponse<NaturalPersonResponse>> listAllNaturals(@Parameter(hidden = true) NaturalPersonFilterRequest request);
 
     @GetMapping("/natural/{cpf}")
     @FindNaturalByCPFRouteDescription

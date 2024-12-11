@@ -14,9 +14,6 @@ import com.carbonaro.ReactiveSimplifiedPicPay.services.exceptions.TransactionVal
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 import java.math.BigDecimal;
@@ -48,37 +45,11 @@ public class TransactionService {
 
         return Mono
                 .just(transaction)
-                .flatMap(this::validateTransactionDocuments)
                 .flatMap(this::validateTransactionValue)
                 .flatMap(transactionRepository::save)
-                .flatMap(this::saveBalanceChange)
                 .doOnSuccess(transactionResponse -> log.info("New Transaction was saved with success! New Transaction ID: {}", transactionResponse.getId()))
                 .doOnError(errorResponse -> Mono.error(new Exception(errorResponse.getMessage())))
                 .then();
-    }
-    private Mono<Transaction> validateTransactionDocuments(Transaction transaction) {
-
-        return Mono
-                .zip(naturalPersonService.findAllNaturals().collectList(), legalPersonService.listAll().collectList())
-                .flatMap(tuple -> {
-
-                    var listOfNaturals = tuple.getT1();
-                    var listOfLegals = tuple.getT2();
-
-                    if (isLegalPerson(listOfLegals, transaction.getSenderDocument())) {
-                        return Mono.error(new TransactionValidationException(TRANSACTION_LEGAL_SENDER_ERROR));
-                    }
-
-                    if (!isNaturalPerson(listOfNaturals, transaction.getSenderDocument())) {
-                        return Mono.error(new TransactionValidationException(TRANSACTION_NATURAL_SENDER_ERROR));
-                    }
-
-                    if (!isValidReceiver(listOfNaturals, listOfLegals, transaction.getReceiverDocument())) {
-                        return Mono.error(new TransactionValidationException(TRANSACTION_RECEIVER_ERROR));
-                    }
-
-                    return Mono.just(transaction);
-                });
     }
     private boolean isLegalPerson(List<LegalPerson> listOfLegals, String document) {
 
@@ -118,34 +89,6 @@ public class TransactionService {
 
         return sender instanceof NaturalPerson && ((NaturalPerson) sender).getBalance().compareTo(transaction.getTransactionValue()) < 0 ||
                 sender instanceof LegalPerson && ((LegalPerson) sender).getBalance().compareTo(transaction.getTransactionValue()) < 0;
-    }
-    private Mono<Transaction> saveBalanceChange(Transaction transaction) {
-
-        return Mono
-                .zip(transactionMapperHelper.getSenderForTransaction(transaction),
-                        transactionMapperHelper.getReceiverForTransaction(transaction))
-                .flatMap(tuple -> {
-
-                    var sender = tuple.getT1();
-                    var receiver = tuple.getT2();
-
-                    Query senderQuery = new Query(Criteria.where("id").is(sender.getId()));
-                    Query receiverQuery = new Query(Criteria.where("id").is(receiver.getId()));
-
-                    Update senderUpdate = new Update();
-                    Update receiverUpdate = new Update();
-
-                    var newSenderBalance = setNewSenderBalance(sender, transaction);
-                    var newReceiverBalance = setNewReceiverBalance(receiver, transaction);
-
-                    senderUpdate.set("balance", newSenderBalance);
-                    receiverUpdate.set("balance", newReceiverBalance);
-
-                    mongoTemplate.updateFirst(senderQuery, senderUpdate, sender.getClass()).subscribe();
-                    mongoTemplate.updateFirst(receiverQuery, receiverUpdate, sender.getClass()).subscribe();
-
-                    return Mono.just(transaction);
-                });
     }
     private BigDecimal setNewSenderBalance(Person sender, Transaction transaction) {
 

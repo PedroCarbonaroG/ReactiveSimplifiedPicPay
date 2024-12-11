@@ -32,7 +32,7 @@ public class ITransactionImpl implements ITransactionAPI {
         var pageRequest = PageRequest.of(filterRequest.getPage(), filterRequest.getSize());
         return transactionService
                 .findAllTransactions(pageRequest, filterRequest)
-                .flatMap(transactionMapper::toPageResponseTransactionResponse)
+                .flatMap(transactionMapper::toPageTransactionResponse)
                 .doOnSuccess(unused -> log.info("List of all transactions was deployed with success!"));
     }
 

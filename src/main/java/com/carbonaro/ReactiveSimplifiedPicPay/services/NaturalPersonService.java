@@ -1,15 +1,18 @@
 package com.carbonaro.ReactiveSimplifiedPicPay.services;
 
 import com.carbonaro.ReactiveSimplifiedPicPay.api.exception_handler.helper.MessageHelper;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.person.NaturalPersonFilterRequest;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.responses.PageResponse;
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.entities.NaturalPerson;
+import com.carbonaro.ReactiveSimplifiedPicPay.domain.mappers.PageMapper;
 import com.carbonaro.ReactiveSimplifiedPicPay.repositories.NaturalPersonRepository;
 import com.carbonaro.ReactiveSimplifiedPicPay.services.exceptions.BadRequestException;
 import com.carbonaro.ReactiveSimplifiedPicPay.services.exceptions.EmptyReturnException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 import java.util.Objects;
@@ -22,20 +25,21 @@ import static com.carbonaro.ReactiveSimplifiedPicPay.AppConstants.*;
 public class NaturalPersonService {
 
     private final MessageHelper messageHelper;
-    private final NaturalPersonRepository repositoryNP;
+    private final PageMapper<NaturalPerson> pageMapper;
+    private final NaturalPersonRepository repository;
 
-    public Flux<NaturalPerson> findAllNaturals() {
+    public Mono<PageResponse<NaturalPerson>> listAllNaturals(Pageable pageRequest, NaturalPersonFilterRequest filterRequest) {
 
-        return repositoryNP
-                .findAll()
-                .switchIfEmpty(Flux.error(new EmptyReturnException(GENERAL_WARNING_EMPTY)))
-                .doOnError(errorResponse -> Flux.error(new Exception(errorResponse.getMessage())))
-                .doOnComplete(() -> log.info("Naturals list was deployed with success!"));
+        return repository
+                .listAllNaturals(pageRequest, filterRequest)
+                .switchIfEmpty(Mono.error(new EmptyReturnException(GENERAL_WARNING_EMPTY)))
+                .map(pageMapper::toPageResponse)
+                .doOnError(errorResponse -> Mono.error(new Exception(errorResponse.getMessage())));
     }
 
     public Mono<NaturalPerson> findNaturalById(String id) {
 
-        return repositoryNP
+        return repository
                 .findById(id)
                 .switchIfEmpty(Mono.error(new EmptyReturnException(GENERAL_WARNING_EMPTY)))
                 .doOnError(errorResponse -> Mono.error(new Exception(errorResponse.getMessage())));
@@ -43,7 +47,7 @@ public class NaturalPersonService {
 
     public Mono<NaturalPerson> findNaturalByCPF(String cpf) {
 
-        return repositoryNP
+        return repository
                 .findByCpf(cpf)
                 .switchIfEmpty(Mono.error(new EmptyReturnException(GENERAL_WARNING_EMPTY)))
                 .doOnError(errorResponse -> Mono.error(new Exception(errorResponse.getMessage())));
@@ -54,12 +58,12 @@ public class NaturalPersonService {
         return Mono.just(naturalPerson)
                 .flatMap(self -> {
                     self.setCpf(newNaturalCPF);
-                    return repositoryNP.findByCpf(self.getCpf());
+                    return repository.findByCpf(self.getCpf());
                 })
                 .flatMap(alreadyExistentNatural -> Mono.error(new BadRequestException(messageHelper.getMessage(NATURAL_SAVE_ALREADY_EXISTS))))
                 .switchIfEmpty(validateNewNatural(naturalPerson)
                         .publishOn(Schedulers.boundedElastic())
-                        .map(newNatural -> repositoryNP.save(newNatural).subscribe())
+                        .map(newNatural -> repository.save(newNatural).subscribe())
                         .doOnSuccess(unused -> log.info("NaturalPerson | Saving new natural with CPF: {}", naturalPerson.getCpf())))
                 .doOnError(errorResponse -> Mono.error(new Exception(errorResponse.getMessage())))
                 .then();
@@ -86,7 +90,7 @@ public class NaturalPersonService {
         return findNaturalByCPF(cpf)
                 .flatMap(natural -> fillEmptyFieldsIfHas(natural, naturalPerson))
                 .publishOn(Schedulers.boundedElastic())
-                .map(updatedNatural -> repositoryNP.save(updatedNatural).subscribe())
+                .map(updatedNatural -> repository.save(updatedNatural).subscribe())
                 .doOnSuccess(unused -> log.info("NaturalPerson was updated with success!"))
                 .doOnError(errorResponse -> Mono.error(new Exception(errorResponse.getMessage())))
                 .then();
@@ -112,7 +116,7 @@ public class NaturalPersonService {
     public Mono<Void> deleteNatural(String cpf) {
             return null;
 //        return findNaturalByCPF(cpf)
-//                .map(self -> repositoryNP.deleteByCpf(self.getCpf()).subscribe())
+//                .map(self -> repository.deleteByCpf(self.getCpf()).subscribe())
 //                .flatMap(unused -> legalPersonService.deletePartner(cpf))
 //                .doOnSuccess(unused -> log.info("Natural with CPF: {}, was deleted with success!", cpf))
 //                .then();

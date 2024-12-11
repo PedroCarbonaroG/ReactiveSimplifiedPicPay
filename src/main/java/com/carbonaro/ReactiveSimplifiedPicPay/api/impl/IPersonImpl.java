@@ -2,6 +2,7 @@ package com.carbonaro.ReactiveSimplifiedPicPay.api.impl;
 
 import com.carbonaro.ReactiveSimplifiedPicPay.api.IPersonAPI;
 import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.person.LegalPersonFilterRequest;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.person.NaturalPersonFilterRequest;
 import com.carbonaro.ReactiveSimplifiedPicPay.api.responses.PageResponse;
 import com.carbonaro.ReactiveSimplifiedPicPay.core.security.SecurityScopes;
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.mappers.IPersonMapper;
@@ -15,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.RestController;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import static com.carbonaro.ReactiveSimplifiedPicPay.AppConstants.*;
@@ -103,11 +103,13 @@ public class IPersonImpl implements IPersonAPI {
 
     @Override
     @SecurityScopes(scopes = {ADMIN_READ_SCOPE})
-    public Flux<NaturalPersonResponse> findAllNaturals() {
+    public Mono<PageResponse<NaturalPersonResponse>> listAllNaturals(NaturalPersonFilterRequest filterRequest) {
 
+        var pageRequest = PageRequest.of(filterRequest.getPage(), filterRequest.getSize());
         return naturalPersonService
-                .findAllNaturals()
-                .map(IPersonMapper.INSTANCE::toNaturalPersonResponse);
+                .listAllNaturals(pageRequest, filterRequest)
+                .map(IPersonMapper.INSTANCE::toPageResponseNaturalPersonResponse)
+                .doOnSuccess(unused -> log.info("Naturals list was deployed with success!"));
     }
 
     @Override

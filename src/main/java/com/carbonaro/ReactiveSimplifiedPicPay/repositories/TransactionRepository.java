@@ -7,9 +7,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
 
 @Slf4j
+@Repository
 @RequiredArgsConstructor
 public class TransactionRepository extends BaseRepository {
 
