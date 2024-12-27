@@ -4,11 +4,15 @@ import com.carbonaro.ReactiveSimplifiedPicPay.api.exception_handler.helper.ApiEx
 import com.carbonaro.ReactiveSimplifiedPicPay.api.exception_handler.helper.MessageHelper;
 import com.carbonaro.ReactiveSimplifiedPicPay.api.exception_handler.response.ErrorEmptyResponse;
 import com.carbonaro.ReactiveSimplifiedPicPay.api.exception_handler.response.ErrorResponse;
-import com.carbonaro.ReactiveSimplifiedPicPay.services.exceptions.*;
+import com.carbonaro.ReactiveSimplifiedPicPay.services.exceptions.BadRequestException;
+import com.carbonaro.ReactiveSimplifiedPicPay.services.exceptions.EmptyException;
+import com.carbonaro.ReactiveSimplifiedPicPay.services.exceptions.NotFoundException;
+import com.carbonaro.ReactiveSimplifiedPicPay.services.exceptions.TransactionValidationException;
 import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.security.SignatureException;
 import io.swagger.v3.core.util.Json;
+import java.nio.charset.StandardCharsets;
+import javax.naming.AuthenticationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.reactive.error.ErrorWebExceptionHandler;
@@ -19,11 +23,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
-import java.nio.charset.StandardCharsets;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-
-import static com.carbonaro.ReactiveSimplifiedPicPay.AppConstants.*;
 
 @Slf4j
 @RestControllerAdvice
@@ -36,28 +35,24 @@ public class ApiExceptionHandler extends ApiExceptionsHandlerHelper implements E
 
     private void getPrivateStackTrace(Exception e) {
 
-        if (e instanceof EmptyReturnException) {
+        if (e instanceof EmptyException) {
 
             log.warn("WARN           ====> {}", messageHelper.getMessage(e.getMessage()));
-            log.warn("WARN MESSAGE   ====> {}", e.getLocalizedMessage());
-            log.warn("WARN CLASS     ====> {}", e.getClass());
+            log.warn("LOCALIZED WARN ====> {}", e.getLocalizedMessage());
+            log.warn("WARNING CLASS  ====> {}", e.getClass());
             log.warn("STACKTRACE     ====> {}", (Object) e.getStackTrace());
         } else {
-
-            log.error("ERROR         ====> {}", messageHelper.getMessage(e.getMessage()));
-            log.error("ERROR MESSAGE ====> {}", e.getLocalizedMessage());
-            log.error("ERROR CLASS   ====> {}", e.getClass());
-            log.error("STACKTRACE    ====> {}", (Object) e.getStackTrace());
+            log.error("ERROR            ====> {}", messageHelper.getMessage(e.getMessage()));
+            log.error("LOCALIZED ERROR  ====> {}", e.getLocalizedMessage());
+            log.error("ERROR CLASS      ====> {}", e.getClass());
+            for (int i = 0; i < e.getStackTrace().length; i++) {
+                System.out.println(e.getStackTrace()[i]);
+            }
+//            log.error("STACKTRACE       ====> {}", (Object) e.getStackTrace());
         }
     }
-    private void getPrivateInterceptorStackTrace(Exception e) {
 
-        log.error("ERROR MESSAGE  ====> {}", e.getMessage());
-        log.error("ERROR CLASS    ====> {}", e.getClass());
-        log.error("STACKTRACE     ====> {}", (Object) e.getStackTrace());
-    }
-
-    @ExceptionHandler({EmptyReturnException.class})
+    @ExceptionHandler({EmptyException.class})
     private ResponseEntity<ErrorEmptyResponse> noContentExceptionHandler(Exception e, ServerWebExchange request) {
 
         getPrivateStackTrace(e);
@@ -87,7 +82,7 @@ public class ApiExceptionHandler extends ApiExceptionsHandlerHelper implements E
         return new ResponseEntity<>(response, BAD_REQUEST_STATUS);
     }
 
-    @ExceptionHandler({NoSuchElementException.class})
+    @ExceptionHandler({NotFoundException.class})
     private ResponseEntity<ErrorResponse> notFoundExceptionHandler(Exception e, ServerWebExchange request) {
 
         getPrivateStackTrace(e);
@@ -102,7 +97,7 @@ public class ApiExceptionHandler extends ApiExceptionsHandlerHelper implements E
         return new ResponseEntity<>(response, NOT_FOUND_STATUS);
     }
 
-    @ExceptionHandler({Exception.class})
+   @ExceptionHandler({Exception.class})
     private ResponseEntity<ErrorResponse> internalServerErrorExceptionHandler(Exception e, ServerWebExchange request) {
 
         getPrivateStackTrace(e);
@@ -111,56 +106,107 @@ public class ApiExceptionHandler extends ApiExceptionsHandlerHelper implements E
                 .path(getPath(request))
                 .error(INTERNAL_SERVER_ERROR)
                 .status(INTERNAL_SERVER_STATUS.value())
-                .errorMessage(INTERNAL_SERVER_ERROR_MESSAGE)
+                .errorMessage(messageHelper.getMessage(e.getMessage()).concat(SEPARATOR).concat(INTERNAL_SERVER_ERROR_MESSAGE))
                 .build();
 
         return new ResponseEntity<>(response, INTERNAL_SERVER_STATUS);
     }
 
+//    @Override
+//    public Mono<Void> handle(ServerWebExchange exchange, Throwable ex) {
+//
+//        if (ex instanceof AuthenticationException) {
+//
+//            getPrivateStackTrace((Exception) ex);
+//            ErrorResponse response = ErrorResponse.builder()
+//                    .error(UNAUTHORIZED)
+//                    .timestamp(TIMESTEMP)
+//                    .path(getPath(exchange))
+//                    .status(UNAUTHORIZED_STATUS.value())
+//                    .errorMessage(UNAUTHORIZED_ERROR_MESSAGE)
+//                    .build();
+//
+//            exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+//            exchange.getResponse().getHeaders().setContentType(MediaType.APPLICATION_JSON);
+//            byte[] bytes = Json.pretty(response).getBytes(StandardCharsets.UTF_8);
+//
+//            return exchange.getResponse().writeWith(Mono.just(exchange.getResponse().bufferFactory().wrap(bytes)));
+//        } else if (ex instanceof ExpiredJwtException) {
+//
+//            getPrivateStackTrace((Exception) ex);
+//            ErrorResponse response = ErrorResponse.builder()
+//                    .error(UNAUTHORIZED)
+//                    .timestamp(TIMESTEMP)
+//                    .path(getPath(exchange))
+//                    .status(UNAUTHORIZED_STATUS.value())
+//                    .errorMessage("Token expired, generate another and try again.")
+//                    .build();
+//
+//            exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+//            exchange.getResponse().getHeaders().setContentType(MediaType.APPLICATION_JSON);
+//            byte[] bytes = Json.pretty(response).getBytes(StandardCharsets.UTF_8);
+//
+//            return exchange.getResponse().writeWith(Mono.just(exchange.getResponse().bufferFactory().wrap(bytes)));
+//        } else if (ex instanceof SignatureException) {
+//
+//            getPrivateStackTrace((Exception) ex);
+//            ErrorResponse response = ErrorResponse.builder()
+//                    .error(UNAUTHORIZED)
+//                    .timestamp(TIMESTEMP)
+//                    .path(getPath(exchange))
+//                    .status(UNAUTHORIZED_STATUS.value())
+//                    .errorMessage("Token not existent or wrong, generate another and try again.")
+//                    .build();
+//
+//            exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+//            exchange.getResponse().getHeaders().setContentType(MediaType.APPLICATION_JSON);
+//            byte[] bytes = Json.pretty(response).getBytes(StandardCharsets.UTF_8);
+//
+//            return exchange.getResponse().writeWith(Mono.just(exchange.getResponse().bufferFactory().wrap(bytes)));
+//        }
+//
+//        var x = internalServerErrorExceptionHandler((Exception) ex, exchange).getBody();
+//        byte[] bytes = Json.pretty(x).getBytes(StandardCharsets.UTF_8);
+//        exchange.getResponse().setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
+//        exchange.getResponse().getHeaders().setContentType(MediaType.APPLICATION_JSON);
+//
+//        return exchange.getResponse().writeWith(Mono.just(exchange.getResponse().bufferFactory().wrap(bytes)));
+//    }
+
     @Override
     public Mono<Void> handle(ServerWebExchange exchange, Throwable ex) {
 
-        byte[] responseBytes = buildExceptionResponse(exchange, ex);
-        return exchange
-                .getResponse()
-                .writeWith(Mono.just(exchange.getResponse().bufferFactory().wrap(responseBytes)));
-    }
-    private byte[] buildExceptionResponse(ServerWebExchange exchange, Throwable exception) {
+        HttpStatus status = HttpStatus.UNAUTHORIZED;
+        String errorMessage;
 
-        HttpStatus status = UNAUTHORIZED_STATUS;
-        String error = UNAUTHORIZED;
-        String message = validateException(exception);
-
-        if (Objects.isNull(message)) {
+        if (ex instanceof AuthenticationException) {
+            errorMessage = UNAUTHORIZED_ERROR_MESSAGE;
+        } else if (ex instanceof ExpiredJwtException) {
+            errorMessage = "Token expired, generate another and try again.";
+        } else if (ex instanceof SignatureException) {
+            errorMessage = "Token not existent or wrong, generate another and try again.";
+        } else {
             status = HttpStatus.INTERNAL_SERVER_ERROR;
-            error = INTERNAL_SERVER_ERROR;
-            message = INTERNAL_SERVER_ERROR_MESSAGE;
+            errorMessage = INTERNAL_SERVER_ERROR_MESSAGE;
         }
 
-        getPrivateInterceptorStackTrace((Exception) exception);
-        ErrorResponse response = ErrorResponse
-                .builder()
-                .error(error)
+        getPrivateStackTrace((Exception) ex);
+        ErrorResponse response = ErrorResponse.builder()
+                .error(status.getReasonPhrase())
                 .timestamp(TIMESTEMP)
                 .path(getPath(exchange))
                 .status(status.value())
-                .errorMessage(message)
+                .errorMessage(errorMessage)
                 .build();
 
         exchange.getResponse().setStatusCode(status);
         exchange.getResponse().getHeaders().setContentType(MediaType.APPLICATION_JSON);
+        byte[] bytes = Json.pretty(response).getBytes(StandardCharsets.UTF_8);
 
-        return Json.pretty(response).getBytes(StandardCharsets.UTF_8);
-    }
-    private String validateException(Throwable ex) {
-
-        String defaultMessage = UNAUTHORIZED_ERROR_MESSAGE;
-        if (ex instanceof ExpiredJwtException) return messageHelper.getMessage(TOKEN_EXPIRED_ERROR).concat(SEPARATOR).concat(defaultMessage);
-        else if (ex instanceof SignatureException) return messageHelper.getMessage(TOKEN_SIGNATURE_ERROR).concat(SEPARATOR).concat(defaultMessage);
-        else if (ex instanceof MalformedJwtException) return messageHelper.getMessage(TOKEN_STRUCTURE_ERROR).concat(SEPARATOR).concat(defaultMessage);
-        else if (ex instanceof IllegalArgumentException) return messageHelper.getMessage(TOKEN_SCOPES_ERROR).concat(SEPARATOR).concat(defaultMessage);
-        else return null;
-
+        return exchange
+                .getResponse()
+                .writeWith(Mono.just(exchange.getResponse().bufferFactory().wrap(bytes)));
     }
 
 }
+

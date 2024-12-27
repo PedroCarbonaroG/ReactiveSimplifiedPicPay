@@ -1,151 +1,176 @@
 package com.carbonaro.ReactiveSimplifiedPicPay.api.impl;
 
+import static com.carbonaro.ReactiveSimplifiedPicPay.AppConstants.READ_ADMIN_SCOPE;
+
 import com.carbonaro.ReactiveSimplifiedPicPay.api.IPersonAPI;
-import com.carbonaro.ReactiveSimplifiedPicPay.core.security.SecuredDelegate;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.LegalPersonFilterRequest;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.LegalPersonRequest;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.NaturalPersonFilterRequest;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.NaturalPersonRequest;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.responses.PageResponse;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.responses.person.LegalPersonResponse;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.responses.person.NaturalPersonResponse;
+import com.carbonaro.ReactiveSimplifiedPicPay.core.security.SecurityScopes;
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.mappers.IPersonMapper;
-import com.carbonaro.ReactiveSimplifiedPicPay.domain.requests.person.LegalPersonRequest;
-import com.carbonaro.ReactiveSimplifiedPicPay.domain.requests.person.NaturalPersonRequest;
-import com.carbonaro.ReactiveSimplifiedPicPay.domain.responses.person.LegalPersonResponse;
-import com.carbonaro.ReactiveSimplifiedPicPay.domain.responses.person.NaturalPersonResponse;
 import com.carbonaro.ReactiveSimplifiedPicPay.services.LegalPersonService;
 import com.carbonaro.ReactiveSimplifiedPicPay.services.NaturalPersonService;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.RestController;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import static com.carbonaro.ReactiveSimplifiedPicPay.AppConstants.*;
-
+@Slf4j
 @RestController
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class IPersonImpl implements IPersonAPI {
 
     private final NaturalPersonService naturalPersonService;
     private final LegalPersonService legalPersonService;
 
     @Override
-    @SecuredDelegate(scopes = {USER_READ_SCOPE})
-    public Flux<LegalPersonResponse> findAllLegals() {
+    @SecurityScopes(scopes = {READ_ADMIN_SCOPE})
+    public Mono<PageResponse<LegalPersonResponse>> findAllLegals(LegalPersonFilterRequest filterRequest) {
 
+        var page = PageRequest.of(filterRequest.getPage(), filterRequest.getSize());
         return legalPersonService
-                .findAllLegals()
-                .map(IPersonMapper.INSTANCE::toLegalPersonResponse);
+                .findAllLegals(page, filterRequest)
+                .map(IPersonMapper.INSTANCE::toPageResponseLegalPersonResponse)
+                .doOnSuccess(unused -> log.warn("Legals list was deployed with success!"));
     }
 
     @Override
-    @SecuredDelegate(scopes = {USER_READ_SCOPE})
+    @SecurityScopes(scopes = {READ_ADMIN_SCOPE})
     public Mono<LegalPersonResponse> findLegalByCNPJ(String companyCNPJ) {
 
         return legalPersonService
                 .findLegalByCNPJ(companyCNPJ)
-                .map(IPersonMapper.INSTANCE::toLegalPersonResponse);
+                .map(IPersonMapper.INSTANCE::toLegalPersonResponse)
+                .doOnSuccess(unused -> log.warn("Legal person with CNPJ: {}, was found with success!", companyCNPJ));
     }
 
     @Override
-    @SecuredDelegate(scopes = {USER_READ_SCOPE})
+    @SecurityScopes(scopes = {READ_ADMIN_SCOPE})
     public Mono<LegalPersonResponse> findLegalById(String id) {
 
         return legalPersonService
                 .findLegalById(id)
-                .map(IPersonMapper.INSTANCE::toLegalPersonResponse);
+                .map(IPersonMapper.INSTANCE::toLegalPersonResponse)
+                .doOnSuccess(unused -> log.warn("Legal person with ID: {}, was found with success!", id));
     }
 
-    @Override //TODO ERRO AQUI
-    @SecuredDelegate(scopes = {USER_WRITE_SCOPE})
+    @Override
+    @SecurityScopes(scopes = {READ_ADMIN_SCOPE})
     public Mono<Void> saveLegalPerson(LegalPersonRequest legalPerson) {
 
         return Mono
                 .just(legalPerson)
                 .map(IPersonMapper.INSTANCE::toLegalPersonByRequest)
-                .flatMap(legalPersonService::saveLegalPerson);
+                .flatMap(legalPersonService::saveLegalPerson)
+                .doOnSuccess(unused -> log.warn("Legal person with CNPJ: {}, was saved with success!", legalPerson.getCnpj()));
     }
 
     @Override
-    @SecuredDelegate(scopes = {ADMIN_WRITE_SCOPE})
+    @SecurityScopes(scopes = {READ_ADMIN_SCOPE})
     public Mono<Void> savePartnerToLegalPerson(String cnpj, String partnerCPF) {
 
-        return null;
+        return legalPersonService
+                .savePartner(cnpj, partnerCPF)
+                .doOnSuccess(unused -> log.warn("Partner with CPF: {}, was saved successfully to company with CNPJ: {}", partnerCPF, cnpj));
     }
 
     @Override
-    @SecuredDelegate(scopes = {ADMIN_WRITE_SCOPE})
+    @SecurityScopes(scopes = {READ_ADMIN_SCOPE})
     public Mono<Void> updateLegalPerson(String cnpj, LegalPersonRequest legalPerson) {
 
         return Mono
                 .just(legalPerson)
                 .map(IPersonMapper.INSTANCE::toLegalPersonByRequest)
-                .flatMap(response -> legalPersonService.updateLegalPerson(cnpj, response));
+                .flatMap(response -> legalPersonService.updateLegalPerson(cnpj, response))
+                .doOnSuccess(unused -> log.warn("Legal person with CNPJ: {}, was updated with success!", cnpj))
+                .then();
     }
 
     @Override
-    @SecuredDelegate(scopes = {ADMIN_WRITE_SCOPE})
+    @SecurityScopes(scopes = {READ_ADMIN_SCOPE})
     public Mono<Void> deleteLegalPerson(String companyCNPJ) {
 
-        return legalPersonService
-                .deleteLegal(companyCNPJ);
+        return Mono
+                .just(companyCNPJ)
+                .flatMap(legalPersonService::deleteLegalPerson)
+                .doOnSuccess(unused -> log.warn("Legal person with CNPJ: {}, was deleted with success!", companyCNPJ));
     }
 
     @Override
-    @SecuredDelegate(scopes = {ADMIN_WRITE_SCOPE})
-    public Mono<Void> deletePartnerByLegalPerson(String partnerCPF) {
+    @SecurityScopes(scopes = {READ_ADMIN_SCOPE})
+    public Mono<Void> deletePartnerByLegalPerson(String companyCNPJ, String partnerCPF) {
 
         return legalPersonService
-                .deletePartner(partnerCPF);
+                .deletePartner(companyCNPJ, partnerCPF)
+                .doOnSuccess(unused -> log.warn("Partner with CPF: {}, was deleted successfully from company with CNPJ: {}", partnerCPF, companyCNPJ));
     }
 
     @Override
-    @SecuredDelegate(scopes = {USER_READ_SCOPE})
-    public Flux<NaturalPersonResponse> findAllNaturals() {
+    @SecurityScopes(scopes = {READ_ADMIN_SCOPE})
+    public Mono<PageResponse<NaturalPersonResponse>> findAllNaturals(NaturalPersonFilterRequest filterRequest) {
 
+        var page = PageRequest.of(filterRequest.getPage(), filterRequest.getSize());
         return naturalPersonService
-                .findAllNaturals()
-                .map(IPersonMapper.INSTANCE::toNaturalPersonResponse);
+                .findAllNaturals(page, filterRequest)
+                .map(IPersonMapper.INSTANCE::toPageResponseNaturalPersonResponse)
+                .doOnSuccess(unused -> log.warn("Naturals list was deployed with success!"));
     }
 
     @Override
-    @SecuredDelegate(scopes = {USER_READ_SCOPE})
+    @SecurityScopes(scopes = {READ_ADMIN_SCOPE})
     public Mono<NaturalPersonResponse> findNaturalByCPF(String cpf) {
 
         return naturalPersonService
                 .findNaturalByCPF(cpf)
-                .map(IPersonMapper.INSTANCE::toNaturalPersonResponse);
+                .map(IPersonMapper.INSTANCE::toNaturalPersonResponse)
+                .doOnSuccess(unused -> log.warn("Natural person with CPF: {}, was found with success!", cpf));
     }
 
     @Override
-    @SecuredDelegate(scopes = {USER_READ_SCOPE})
+    @SecurityScopes(scopes = {READ_ADMIN_SCOPE})
     public Mono<NaturalPersonResponse> findNaturalByID(String id) {
 
         return naturalPersonService
                 .findNaturalById(id)
-                .map(IPersonMapper.INSTANCE::toNaturalPersonResponse);
+                .map(IPersonMapper.INSTANCE::toNaturalPersonResponse)
+                .doOnSuccess(unused -> log.warn("Natural person with ID: {}, was found with success!", id));
     }
 
     @Override
-    @SecuredDelegate(scopes = {ADMIN_WRITE_SCOPE})
-    public Mono<Void> saveNaturalPerson(NaturalPersonRequest naturalPerson, String cpf) {
+    @SecurityScopes(scopes = {READ_ADMIN_SCOPE})
+    public Mono<Void> saveNaturalPerson(NaturalPersonRequest naturalPerson) {
 
         return Mono
                 .just(naturalPerson)
                 .map(IPersonMapper.INSTANCE::toNaturalPersonByRequest)
-                .flatMap(natural -> naturalPersonService.saveNatural(natural, cpf));
+                .flatMap(naturalPersonService::saveNaturalPerson)
+                .doOnSuccess(unused -> log.warn("Natural person with CPF: {}, was saved with success!", naturalPerson.getCpf()));
     }
 
     @Override
-    @SecuredDelegate(scopes = {ADMIN_WRITE_SCOPE})
-    public Mono<Void> updateNaturalPerson(String cpf, NaturalPersonRequest naturalPersonRequest) {
+    @SecurityScopes(scopes = {READ_ADMIN_SCOPE})
+    public Mono<Void> updateNaturalPerson(String cpf, NaturalPersonRequest naturalPerson) {
 
         return Mono
-                .just(naturalPersonRequest)
+                .just(naturalPerson)
                 .map(IPersonMapper.INSTANCE::toNaturalPersonByRequest)
-                .flatMap(naturalPerson -> naturalPersonService.updateNatural(naturalPerson, cpf));
+                .flatMap(self -> naturalPersonService.updateNaturalPerson(self, cpf))
+                .doOnSuccess(unused -> log.warn("Natural person with CPF: {}, was updated with success!", cpf));
     }
 
     @Override
-    @SecuredDelegate(scopes = {ADMIN_WRITE_SCOPE})
+    @SecurityScopes(scopes = {READ_ADMIN_SCOPE})
     public Mono<Void> deleteNaturalPerson(String cpf) {
 
-        return naturalPersonService
-                .deleteNatural(cpf);
+        return Mono
+                .just(cpf)
+                .flatMap(naturalPersonService::deleteNatural)
+                .doOnSuccess(unused -> log.warn("Natural person with CPF: {}, was deleted with success!", cpf));
     }
 
 }

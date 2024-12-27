@@ -1,42 +1,35 @@
 package com.carbonaro.ReactiveSimplifiedPicPay.api.impl;
 
 import com.carbonaro.ReactiveSimplifiedPicPay.api.IExportingAPI;
-import com.carbonaro.ReactiveSimplifiedPicPay.core.security.SecuredDelegate;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.TransactionFilterRequest;
+import com.carbonaro.ReactiveSimplifiedPicPay.domain.entities.Person;
+import com.carbonaro.ReactiveSimplifiedPicPay.domain.entities.Transaction;
+import com.carbonaro.ReactiveSimplifiedPicPay.domain.enums.FileTypeEnum;
+import com.carbonaro.ReactiveSimplifiedPicPay.services.ExportingService;
+import com.carbonaro.ReactiveSimplifiedPicPay.services.helper.ExportingServiceHelper;
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
-import static com.carbonaro.ReactiveSimplifiedPicPay.AppConstants.USER_READ_SCOPE;
-
 @RestController
+@AllArgsConstructor
 public class IExportingImpl implements IExportingAPI {
 
-    @Override
-    @SecuredDelegate(scopes = {USER_READ_SCOPE})
-    public Mono<ResponseEntity<byte[]>> getPersonPdfExtraction() {
+    private final ExportingService exportingService;
 
-        return null;
+    @Override
+    public Mono<ResponseEntity<byte[]>> getTransactionsExtraction(TransactionFilterRequest filterRequest, FileTypeEnum fileType) {
+
+        return exportingService.getTransactionsExtraction(filterRequest, fileType)
+                .flatMap(bytesToExport -> ExportingServiceHelper.exportingResponse(bytesToExport, fileType, Transaction.class));
     }
 
     @Override
-    @SecuredDelegate(scopes = {USER_READ_SCOPE})
-    public Mono<ResponseEntity<byte[]>> getPersonExcelExtraction() {
+    public Mono<ResponseEntity<byte[]>> getPersonsToExtraction(FileTypeEnum fileType) {
 
-        return null;
-    }
-
-    @Override
-    @SecuredDelegate(scopes = {USER_READ_SCOPE})
-    public Mono<ResponseEntity<byte[]>> getTransactionPdfExtraction() {
-
-        return null;
-    }
-
-    @Override
-    @SecuredDelegate(scopes = {USER_READ_SCOPE})
-    public Mono<ResponseEntity<byte[]>> getTransactionExcelExtraction() {
-
-        return null;
+        return exportingService.getPersonsToExtraction(fileType)
+                .flatMap(bytesToExport -> ExportingServiceHelper.exportingResponse(bytesToExport, fileType, Person.class));
     }
 
 }

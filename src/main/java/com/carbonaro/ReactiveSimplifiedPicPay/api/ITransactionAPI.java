@@ -1,26 +1,32 @@
 package com.carbonaro.ReactiveSimplifiedPicPay.api;
 
-import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.RouteDescriptions.FindAllTransactionsRouteDescription;
-import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.RouteDescriptions.SaveTransactionRouteDescription;
-import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.RouteParams.TransactionRequestAsQueryParam;
-import com.carbonaro.ReactiveSimplifiedPicPay.domain.requests.transaction.TransactionRequest;
-import com.carbonaro.ReactiveSimplifiedPicPay.domain.responses.transaction.TransactionResponse;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.route_description.FindAllTransactionsRouteDescription;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.route_description.SaveTransactionRouteDescription;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.route_params.TransactionFilterRequestAsQueryParam;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.route_params.TransactionRequestAsQueryParam;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.TransactionFilterRequest;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.TransactionRequest;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.responses.PageResponse;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.responses.transaction.TransactionResponse;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springdoc.core.converters.models.PageableAsQueryParam;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import reactor.core.publisher.Flux;
+import org.springframework.web.bind.annotation.RequestParam;
 import reactor.core.publisher.Mono;
 
-@Tag(name = "Transaction API - Person transactions handler")
+@Tag(name = "Transaction API - The NaturalPerson and LegalPerson transactions handler.")
 @RequestMapping(value = "/transaction", produces = MediaType.APPLICATION_JSON_VALUE)
 public interface ITransactionAPI {
 
     @GetMapping("/list-all")
+    @PageableAsQueryParam
     @FindAllTransactionsRouteDescription
-    Flux<TransactionResponse> findAllTransactions();
+    @TransactionFilterRequestAsQueryParam
+    Mono<PageResponse<TransactionResponse>> findAllTransactions(@Parameter(hidden = true) TransactionFilterRequest filterRequest);
 
     @PostMapping
     @TransactionRequestAsQueryParam

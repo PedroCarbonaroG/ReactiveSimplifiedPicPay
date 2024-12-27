@@ -28,7 +28,4 @@ public class NaturalPerson extends Person {
     @Description("NaturalPerson birthdate.")
     private LocalDate birthDate;
 
-    @Description("NaturalPerson unique bank balance.")
-    private BigDecimal balance;
-
 }

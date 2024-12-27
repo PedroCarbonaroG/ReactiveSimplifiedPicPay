@@ -1,5 +1,6 @@
 package com.carbonaro.ReactiveSimplifiedPicPay.domain.entities;
 
+import java.math.BigDecimal;
 import jdk.jfr.Description;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -24,6 +25,9 @@ public abstract class Person {
 
     @Description("Person full address.")
     private String address;
+
+    @Description("Person unique bank balance.")
+    private BigDecimal balance;
 
     @Description("Person access password.")
     private String password;
