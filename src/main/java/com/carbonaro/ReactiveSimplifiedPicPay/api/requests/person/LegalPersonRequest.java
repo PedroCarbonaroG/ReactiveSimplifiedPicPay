@@ -1,4 +1,4 @@
-package com.carbonaro.ReactiveSimplifiedPicPay.api.requests;
+package com.carbonaro.ReactiveSimplifiedPicPay.api.requests.person;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;

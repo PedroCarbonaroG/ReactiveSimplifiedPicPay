@@ -3,14 +3,15 @@ package com.carbonaro.ReactiveSimplifiedPicPay.api.responses.transaction;
 import com.carbonaro.ReactiveSimplifiedPicPay.api.responses.person.PersonResponse;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.time.LocalDateTime;
-import lombok.*;
-
-import java.math.BigDecimal;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
-@Getter
-@Setter
+@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

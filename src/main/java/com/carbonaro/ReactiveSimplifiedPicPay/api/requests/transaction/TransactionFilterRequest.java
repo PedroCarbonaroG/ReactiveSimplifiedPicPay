@@ -1,5 +1,6 @@
-package com.carbonaro.ReactiveSimplifiedPicPay.api.requests;
+package com.carbonaro.ReactiveSimplifiedPicPay.api.requests.transaction;
 
+import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.PagedRequest;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 import java.time.LocalDate;

@@ -1,5 +1,6 @@
-package com.carbonaro.ReactiveSimplifiedPicPay.api.requests;
+package com.carbonaro.ReactiveSimplifiedPicPay.api.requests.person;
 
+import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.PagedRequest;
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.enums.CompanySizeEnum;
 import java.math.BigDecimal;
 import lombok.AllArgsConstructor;
