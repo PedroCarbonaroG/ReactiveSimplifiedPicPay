@@ -1,6 +1,6 @@
 package com.carbonaro.ReactiveSimplifiedPicPay.api.exception_handler;
 
-import com.carbonaro.ReactiveSimplifiedPicPay.api.exception_handler.helper.ApiExceptionsHandlerHelper;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.exception_handler.helper.ApiExceptionHandlerHelper;
 import com.carbonaro.ReactiveSimplifiedPicPay.api.exception_handler.helper.MessageHelper;
 import com.carbonaro.ReactiveSimplifiedPicPay.api.exception_handler.response.ErrorEmptyResponse;
 import com.carbonaro.ReactiveSimplifiedPicPay.api.exception_handler.response.ErrorResponse;
@@ -9,10 +9,9 @@ import com.carbonaro.ReactiveSimplifiedPicPay.services.exceptions.EmptyException
 import com.carbonaro.ReactiveSimplifiedPicPay.services.exceptions.NotFoundException;
 import com.carbonaro.ReactiveSimplifiedPicPay.services.exceptions.TransactionValidationException;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.security.SignatureException;
 import io.swagger.v3.core.util.Json;
-import java.nio.charset.StandardCharsets;
-import javax.naming.AuthenticationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.reactive.error.ErrorWebExceptionHandler;
@@ -23,11 +22,14 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
+import java.nio.charset.StandardCharsets;
+
+import static com.carbonaro.ReactiveSimplifiedPicPay.AppConstants.*;
 
 @Slf4j
 @RestControllerAdvice
 @RequiredArgsConstructor
-public class ApiExceptionHandler extends ApiExceptionsHandlerHelper implements ErrorWebExceptionHandler {
+public class ApiExceptionHandler extends ApiExceptionHandlerHelper implements ErrorWebExceptionHandler {
 
     private final MessageHelper messageHelper;
 
@@ -45,6 +47,7 @@ public class ApiExceptionHandler extends ApiExceptionsHandlerHelper implements E
             log.error("ERROR            ====> {}", messageHelper.getMessage(e.getMessage()));
             log.error("LOCALIZED ERROR  ====> {}", e.getLocalizedMessage());
             log.error("ERROR CLASS      ====> {}", e.getClass());
+
             for (int i = 0; i < e.getStackTrace().length; i++) {
                 System.out.println(e.getStackTrace()[i]);
             }
@@ -58,10 +61,10 @@ public class ApiExceptionHandler extends ApiExceptionsHandlerHelper implements E
         getPrivateStackTrace(e);
         ErrorEmptyResponse response = ErrorEmptyResponse.builder()
                 .error(NO_CONTENT)
-                .timestamp(TIMESTEMP)
+                .timestamp(TIMESTAMP)
                 .path(getPath(request))
                 .status(NO_CONTENT_STATUS.value())
-                .warningMessage(messageHelper.getMessage(e.getMessage()).concat(SEPARATOR).concat(NO_CONTENT_WARNING_MESSAGE))
+                .warningMessage(messageHelper.getMessage(e.getMessage()).concat(SEPARATOR).concat(messageHelper.getMessage(HANDLER_NO_CONTENT_WARNING_MESSAGE)))
                 .build();
 
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -73,10 +76,10 @@ public class ApiExceptionHandler extends ApiExceptionsHandlerHelper implements E
         getPrivateStackTrace(e);
         ErrorResponse response = ErrorResponse.builder()
                 .error(BAD_REQUEST)
-                .timestamp(TIMESTEMP)
+                .timestamp(TIMESTAMP)
                 .path(getPath(request))
                 .status(BAD_REQUEST_STATUS.value())
-                .errorMessage(messageHelper.getMessage(e.getMessage()).concat(SEPARATOR).concat(BAD_REQUEST_ERROR_MESSAGE))
+                .errorMessage(messageHelper.getMessage(e.getMessage()).concat(SEPARATOR).concat(messageHelper.getMessage(HANDLER_BAD_REQUEST_ERROR_MESSAGE)))
                 .build();
 
         return new ResponseEntity<>(response, BAD_REQUEST_STATUS);
@@ -88,10 +91,10 @@ public class ApiExceptionHandler extends ApiExceptionsHandlerHelper implements E
         getPrivateStackTrace(e);
         ErrorResponse response = ErrorResponse.builder()
                 .error(NOT_FOUND)
-                .timestamp(TIMESTEMP)
+                .timestamp(TIMESTAMP)
                 .path(getPath(request))
                 .status(NOT_FOUND_STATUS.value())
-                .errorMessage(messageHelper.getMessage(e.getMessage()).concat(SEPARATOR).concat(NOT_FOUND_ERROR_MESSAGE))
+                .errorMessage(messageHelper.getMessage(e.getMessage()).concat(SEPARATOR).concat(messageHelper.getMessage(HANDLER_NOT_FOUND_ERROR_MESSAGE)))
                 .build();
 
         return new ResponseEntity<>(response, NOT_FOUND_STATUS);
@@ -102,101 +105,36 @@ public class ApiExceptionHandler extends ApiExceptionsHandlerHelper implements E
 
         getPrivateStackTrace(e);
         ErrorResponse response = ErrorResponse.builder()
-                .timestamp(TIMESTEMP)
+                .timestamp(TIMESTAMP)
                 .path(getPath(request))
                 .error(INTERNAL_SERVER_ERROR)
                 .status(INTERNAL_SERVER_STATUS.value())
-                .errorMessage(messageHelper.getMessage(e.getMessage()).concat(SEPARATOR).concat(INTERNAL_SERVER_ERROR_MESSAGE))
+                .errorMessage(messageHelper.getMessage(e.getMessage()).concat(SEPARATOR).concat(messageHelper.getMessage(HANDLER_INTERNAL_SERVER_ERROR_MESSAGE)))
                 .build();
 
         return new ResponseEntity<>(response, INTERNAL_SERVER_STATUS);
     }
 
-//    @Override
-//    public Mono<Void> handle(ServerWebExchange exchange, Throwable ex) {
-//
-//        if (ex instanceof AuthenticationException) {
-//
-//            getPrivateStackTrace((Exception) ex);
-//            ErrorResponse response = ErrorResponse.builder()
-//                    .error(UNAUTHORIZED)
-//                    .timestamp(TIMESTEMP)
-//                    .path(getPath(exchange))
-//                    .status(UNAUTHORIZED_STATUS.value())
-//                    .errorMessage(UNAUTHORIZED_ERROR_MESSAGE)
-//                    .build();
-//
-//            exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
-//            exchange.getResponse().getHeaders().setContentType(MediaType.APPLICATION_JSON);
-//            byte[] bytes = Json.pretty(response).getBytes(StandardCharsets.UTF_8);
-//
-//            return exchange.getResponse().writeWith(Mono.just(exchange.getResponse().bufferFactory().wrap(bytes)));
-//        } else if (ex instanceof ExpiredJwtException) {
-//
-//            getPrivateStackTrace((Exception) ex);
-//            ErrorResponse response = ErrorResponse.builder()
-//                    .error(UNAUTHORIZED)
-//                    .timestamp(TIMESTEMP)
-//                    .path(getPath(exchange))
-//                    .status(UNAUTHORIZED_STATUS.value())
-//                    .errorMessage("Token expired, generate another and try again.")
-//                    .build();
-//
-//            exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
-//            exchange.getResponse().getHeaders().setContentType(MediaType.APPLICATION_JSON);
-//            byte[] bytes = Json.pretty(response).getBytes(StandardCharsets.UTF_8);
-//
-//            return exchange.getResponse().writeWith(Mono.just(exchange.getResponse().bufferFactory().wrap(bytes)));
-//        } else if (ex instanceof SignatureException) {
-//
-//            getPrivateStackTrace((Exception) ex);
-//            ErrorResponse response = ErrorResponse.builder()
-//                    .error(UNAUTHORIZED)
-//                    .timestamp(TIMESTEMP)
-//                    .path(getPath(exchange))
-//                    .status(UNAUTHORIZED_STATUS.value())
-//                    .errorMessage("Token not existent or wrong, generate another and try again.")
-//                    .build();
-//
-//            exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
-//            exchange.getResponse().getHeaders().setContentType(MediaType.APPLICATION_JSON);
-//            byte[] bytes = Json.pretty(response).getBytes(StandardCharsets.UTF_8);
-//
-//            return exchange.getResponse().writeWith(Mono.just(exchange.getResponse().bufferFactory().wrap(bytes)));
-//        }
-//
-//        var x = internalServerErrorExceptionHandler((Exception) ex, exchange).getBody();
-//        byte[] bytes = Json.pretty(x).getBytes(StandardCharsets.UTF_8);
-//        exchange.getResponse().setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
-//        exchange.getResponse().getHeaders().setContentType(MediaType.APPLICATION_JSON);
-//
-//        return exchange.getResponse().writeWith(Mono.just(exchange.getResponse().bufferFactory().wrap(bytes)));
-//    }
-
     @Override
     public Mono<Void> handle(ServerWebExchange exchange, Throwable ex) {
 
         HttpStatus status = HttpStatus.UNAUTHORIZED;
-        String errorMessage;
 
-        if (ex instanceof AuthenticationException) {
-            errorMessage = UNAUTHORIZED_ERROR_MESSAGE;
-        } else if (ex instanceof ExpiredJwtException) {
-            errorMessage = "Token expired, generate another and try again.";
-        } else if (ex instanceof SignatureException) {
-            errorMessage = "Token not existent or wrong, generate another and try again.";
-        } else {
-            status = HttpStatus.INTERNAL_SERVER_ERROR;
-            errorMessage = INTERNAL_SERVER_ERROR_MESSAGE;
-        }
+        String errorMessage = switch (ex) {
+            case IllegalArgumentException ignored -> HANDLER_ILLEGAL_ARGUMENT_ERROR_MESSAGE;
+            case MalformedJwtException ignored -> HANDLER_MALFORMED_JWT_ERROR_MESSAGE;
+            case ExpiredJwtException ignored -> HANDLER_EXPIRED_JWT_ERROR_MESSAGE;
+            case SignatureException ignored -> HANDLER_SIGNATURE_ERROR_MESSAGE;
+            default -> HANDLER_INTERNAL_SERVER_ERROR_MESSAGE;
+        };
 
         getPrivateStackTrace((Exception) ex);
         ErrorResponse response = ErrorResponse.builder()
                 .error(status.getReasonPhrase())
-                .timestamp(TIMESTEMP)
+                .timestamp(TIMESTAMP)
                 .path(getPath(exchange))
                 .status(status.value())
-                .errorMessage(errorMessage)
+                .errorMessage(messageHelper.getMessage(errorMessage))
                 .build();
 
         exchange.getResponse().setStatusCode(status);
