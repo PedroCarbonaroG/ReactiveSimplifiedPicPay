@@ -1,25 +1,12 @@
 package com.carbonaro.ReactiveSimplifiedPicPay.core.security;
 
-import static com.carbonaro.ReactiveSimplifiedPicPay.services.TokenService.SECRET_KEY;
-
-import com.carbonaro.ReactiveSimplifiedPicPay.services.exceptions.TransactionValidationException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
-import jakarta.validation.ValidationException;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import lombok.AllArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -34,6 +21,12 @@ import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
 import org.springframework.web.util.pattern.PathPattern;
 import reactor.core.publisher.Mono;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static com.carbonaro.ReactiveSimplifiedPicPay.services.TokenService.SECRET_KEY;
 
 @Slf4j
 @Component
@@ -46,17 +39,17 @@ public class SecurityScopesFilter implements WebFilter {
     private Map<String, HandlerMapping> handlerMappings;
 
     @Override
-    @SneakyThrows
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
 
-        return Mono.just(exchange)
-                .flatMap(this::interceptToValidateToken)
+        return Mono
+                .just(exchange)
+                .flatMap(this::validateTokenInterceptor)
                 .flatMap(unused -> chain.filter(exchange))
                 .doOnError(errorResponse -> Mono.error(new Exception()))
                 .then();
     }
 
-    private Mono<Boolean> interceptToValidateToken(ServerWebExchange exchange) {
+    private Mono<Boolean> validateTokenInterceptor(ServerWebExchange exchange) {
 
         String token = resolveToken(exchange.getRequest().getHeaders().toString());
         if (token == null) return Mono.just(Boolean.TRUE);
@@ -119,7 +112,6 @@ public class SecurityScopesFilter implements WebFilter {
 
         return listOfScopes;
     }
-    @SneakyThrows
     private boolean validateToken(String token, List<String> routeScopes) {
 
         try {
@@ -135,16 +127,14 @@ public class SecurityScopesFilter implements WebFilter {
             Set<String> tokenScopesSet = new HashSet<>(tokenScopes);
             Set<String> routeScopesSet = new HashSet<>(routeScopes);
 
-            if (tokenScopesSet.containsAll(routeScopesSet)) {
-                return true;
-            } else {
-                throw new TransactionValidationException();
-            }
+            if (tokenScopesSet.containsAll(routeScopesSet)) { return true; }
+            else { throw new IllegalArgumentException(); }
 
         }
         catch (ExpiredJwtException e) { throw new ExpiredJwtException(e.getHeader(), e.getClaims(), e.getMessage()); }
         catch (SignatureException e) { throw new SignatureException(e.getMessage()); }
-        catch (TransactionValidationException e) { throw new ValidationException(e.getMessage()); }
+        catch (MalformedJwtException e) { throw new MalformedJwtException(e.getMessage()); }
+        catch (IllegalArgumentException e) { throw new IllegalArgumentException(e.getMessage()); }
 
     }
 
