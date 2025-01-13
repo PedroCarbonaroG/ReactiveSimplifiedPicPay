@@ -1,4 +1,4 @@
-package com.carbonaro.ReactiveSimplifiedPicPay.api.requests;
+package com.carbonaro.ReactiveSimplifiedPicPay.api.requests.person;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jdk.jfr.Description;
@@ -22,6 +22,7 @@ public class NaturalPersonRequest extends PersonRequest {
     @Description("NaturalPerson birthdate.")
     private LocalDate birthDate;
 
+    @Description("Natural unique CPF")
     private String cpf;
 
 }

@@ -1,5 +1,6 @@
-package com.carbonaro.ReactiveSimplifiedPicPay.api.requests;
+package com.carbonaro.ReactiveSimplifiedPicPay.api.requests.person;
 
+import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.PagedRequest;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;
 import lombok.AllArgsConstructor;

@@ -1,6 +1,6 @@
 package com.carbonaro.ReactiveSimplifiedPicPay.services;
 
-import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.NaturalPersonFilterRequest;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.person.NaturalPersonFilterRequest;
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.entities.NaturalPerson;
 import com.carbonaro.ReactiveSimplifiedPicPay.repositories.NaturalPersonRepository;
 import com.carbonaro.ReactiveSimplifiedPicPay.services.exceptions.BadRequestException;
@@ -66,12 +66,10 @@ public class NaturalPersonService {
 
         return Mono
                 .just(naturalPerson)
-                .flatMap(self -> (Objects.nonNull(self.getCpf()) && !self.getCpf().isEmpty()) &&
-                        (Objects.nonNull(self.getBirthDate()) && !self.getBirthDate().toString().isEmpty()) &&
-                        (Objects.nonNull(self.getName()) && !self.getName().isEmpty()) &&
-                        (Objects.nonNull(self.getEmail()) && !self.getEmail().isEmpty()) &&
-                        (Objects.nonNull(self.getAddress()) && !self.getAddress().isEmpty()) &&
-                        (Objects.nonNull(self.getPassword()) && !self.getPassword().isEmpty())
+                .flatMap(self ->
+                        isValidField(self.getCpf()) && isValidField(self.getBirthDate()) &&
+                        isValidField(self.getName()) && isValidField(self.getEmail()) &&
+                        isValidField(self.getAddress()) && isValidField(self.getPassword())
                         ? Mono.just(self)
                         : Mono.error(new BadRequestException()));
     }
@@ -95,19 +93,16 @@ public class NaturalPersonService {
                         .id(tuple.getT1().getId())
                         .cpf(tuple.getT1().getCpf())
                         .balance(tuple.getT1().getBalance())
-                        .birthDate(Objects.nonNull(naturalPerson.getBirthDate()) && naturalPerson.getBirthDate().toString().isEmpty() ? tuple.getT1().getBirthDate() : tuple.getT2().getBirthDate())
-                        .name(Objects.nonNull(naturalPerson.getName()) && naturalPerson.getName().isEmpty() ? tuple.getT1().getName() : tuple.getT2().getName())
-                        .email(Objects.nonNull(naturalPerson.getEmail()) && naturalPerson.getEmail().isEmpty() ? tuple.getT1().getEmail() : tuple.getT2().getEmail())
-                        .address(Objects.nonNull(naturalPerson.getAddress()) && naturalPerson.getAddress().isEmpty() ? tuple.getT1().getAddress() : tuple.getT2().getAddress())
-                        .password(Objects.nonNull(naturalPerson.getPassword()) && naturalPerson.getPassword().isEmpty() ? tuple.getT1().getPassword() : tuple.getT2().getPassword())
+                        .birthDate(isValidField(naturalPerson.getBirthDate()) ? tuple.getT1().getBirthDate() : tuple.getT2().getBirthDate())
+                        .name(isValidField(naturalPerson.getName()) ? tuple.getT1().getName() : tuple.getT2().getName())
+                        .email(isValidField(naturalPerson.getEmail()) ? tuple.getT1().getEmail() : tuple.getT2().getEmail())
+                        .address(isValidField(naturalPerson.getAddress()) ? tuple.getT1().getAddress() : tuple.getT2().getAddress())
+                        .password(isValidField(naturalPerson.getPassword()) ? tuple.getT1().getPassword() : tuple.getT2().getPassword())
                         .build());
     }
 
     public Mono<Void> deleteNatural(String cpf) {
-
-        return repositoryNP
-                .deleteByCpf(cpf)
-                .then();
+        return repositoryNP.deleteByCpf(cpf);
     }
 
     public Mono<Void> deposit(NaturalPerson naturalPerson, BigDecimal amount) {
@@ -119,6 +114,10 @@ public class NaturalPersonService {
                 })
                 .doOnError(errorResponse -> Mono.error(new Exception(errorResponse.getMessage())))
                 .then();
+    }
+
+    private <T> boolean isValidField(T field) {
+        return Objects.nonNull(field) && field.toString().isEmpty();
     }
 
 }
