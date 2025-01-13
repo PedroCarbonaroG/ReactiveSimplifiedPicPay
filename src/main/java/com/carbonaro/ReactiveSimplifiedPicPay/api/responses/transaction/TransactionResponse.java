@@ -1,10 +1,15 @@
 package com.carbonaro.ReactiveSimplifiedPicPay.api.responses.transaction;
 
 import com.carbonaro.ReactiveSimplifiedPicPay.api.responses.person.PersonResponse;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -24,7 +29,9 @@ public class TransactionResponse {
     @Schema(description = "Total transaction amount.")
     private BigDecimal transactionValue;
 
-    @Schema(description = "Transaction effective date")
-    private LocalDate transactionDate;
+    @Schema(description = "Transaction date.")
+    @JsonFormat(pattern = "dd/MM/yyyy - HH:mm:ss")
+    @DateTimeFormat(pattern = "dd/MM/yyyy - HH:mm:ss")
+    private LocalDateTime transactionDate;
 
 }

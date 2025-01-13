@@ -47,11 +47,11 @@ public class SwaggerConfig {
 
     private void getRequests(String path, PathItem pathItem) {
 
-        if (nonNull(pathItem.getGet())) {
+        if (nonNull(pathItem.getGet()) || nonNull(pathItem.getGet()) && path.startsWith("/wallet")) {
             pathItem.getGet().addParametersItem(createUserTokenParameter());
         }
 
-        if (nonNull(pathItem.getPost()) && !path.toLowerCase().contains("/token")) {
+        if (nonNull(pathItem.getPost()) && !path.toLowerCase().contains("/token") || nonNull(pathItem.getPost()) && path.startsWith("/wallet")) {
             pathItem.getPost().addParametersItem(createAdminTokenParameter());
         }
 

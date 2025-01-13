@@ -5,29 +5,25 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class AppConstants {
 
-    //# Global system messages
-    public static final String GENERAL_WARNING_EMPTY = "general.warn.empty";
-    public static final String GENERAL_UNKNOWN_EXCEPTION_ERROR = "general.err.unknown.exception";
-
-    public static final String NATURAL_SAVE_ALREADY_EXISTS = "natural.err.save.already.exist";
-    public static final String NATURAL_SAVE_INCORRECT_FIELD = "natural.err.save.incorrect.field";
-
-    public static final String LEGAL_DELETE_PARTNER_NOT_FOUND_ERROR = "legal.err.delete.partner.not-found";
-
+    /* REFERENCES TO EXCEPTION MESSAGES */
     public static final String TRANSACTION_NEGATIVE_VALUE = "transaction.err.negative.value";
     public static final String TRANSACTION_INSUFFICIENT_BALANCE = "transaction.err.insufficient.balance";
-    public static final String TRANSACTION_LEGAL_SENDER_ERROR = "transaction.err.legal.sender";
-    public static final String TRANSACTION_NATURAL_SENDER_ERROR = "transaction.err.natural.sender";
-    public static final String TRANSACTION_RECEIVER_ERROR = "transaction.err.receiver";
 
-    public static final String TOKEN_EXPIRED_ERROR = "token.err.expired";
-    public static final String TOKEN_SIGNATURE_ERROR = "token.err.signature";
-    public static final String TOKEN_STRUCTURE_ERROR = "token.err.structure";
-    public static final String TOKEN_SCOPES_ERROR = "token.err.scopes";
+    public static final String GENERAL_EMPTY_WARNING = "general.warning.empty";
+    public static final String GENERAL_MESSAGE_HELPER_DEFAULT_MESSAGE = "general.message.helper.default.message";
 
-    //# Scopes for routes permissions
-    public static final String USER_READ_SCOPE = "user:read";
-    public static final String USER_WRITE_SCOPE = "user:write";
-    public static final String ADMIN_READ_SCOPE = "admin:read";
-    public static final String ADMIN_WRITE_SCOPE = "admin:write";
+    public static final String HANDLER_NOT_FOUND_ERROR_MESSAGE = "handler.not.found.error.message";
+    public static final String HANDLER_BAD_REQUEST_ERROR_MESSAGE = "handler.bad.request.error.message";
+    public static final String HANDLER_NO_CONTENT_WARNING_MESSAGE = "handler.no.content.warning.message";
+    public static final String HANDLER_INTERNAL_SERVER_ERROR_MESSAGE =  "handler.internal.server.error.message";
+    public static final String HANDLER_ILLEGAL_ARGUMENT_ERROR_MESSAGE = "handler.illegal.argument.error.message";
+    public static final String HANDLER_MALFORMED_JWT_ERROR_MESSAGE = "handler.malformed.jwt.error.message";
+    public static final String HANDLER_EXPIRED_JWT_ERROR_MESSAGE = "handler.expired.jwt.error.message";
+    public static final String HANDLER_SIGNATURE_ERROR_MESSAGE = "handler.signature.error.message";
+
+    /* SCOPES FOR ROUTES */
+    public static final String READ_USER_SCOPE = "user:read";
+    public static final String WRITE_USER_SCOPE = "user:write";
+    public static final String READ_ADMIN_SCOPE = "admin:read";
+
 }

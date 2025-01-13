@@ -14,5 +14,4 @@ interface INaturalPersonRepository extends ReactiveMongoRepository<NaturalPerson
 
     @Description("Successfully delete an NaturalPerson by it's CPF")
     Mono<Void> deleteByCpf(String cpf);
-
 }

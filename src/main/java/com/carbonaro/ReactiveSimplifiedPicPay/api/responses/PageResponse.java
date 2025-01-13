@@ -1,22 +1,22 @@
 package com.carbonaro.ReactiveSimplifiedPicPay.api.responses;
 
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
-import java.util.List;
+import lombok.ToString;
 
 @Data
-@SuperBuilder
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class PageResponse<T> {
 
-    private int pageNumber;
-    private int pageSize;
-    private int totalPages;
-    private long totalElements;
-    private int numberOfElements;
+    private Integer pageNumber;
+    private Integer pageSize;
+    private Integer totalPages;
+    private Long totalElements;
+    private Integer numberOfElements;
     private List<T> content;
 
 }

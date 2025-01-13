@@ -18,7 +18,7 @@
 	<description>Demo project for Spring Boot</description>
 
 	<properties>
-		<java.version>17</java.version>
+		<java.version>21</java.version>
 	</properties>
 
 	<dependencies>
@@ -58,6 +58,16 @@
 		</dependency>
 
 		<!-- UTILITY LIBS -->
+		<dependency>
+			<groupId>com.openhtmltopdf</groupId>
+			<artifactId>openhtmltopdf-pdfbox</artifactId>
+			<version>1.0.10</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-thymeleaf</artifactId>
+			<version>3.3.2</version>
+		</dependency>
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi-ooxml</artifactId>
@@ -150,6 +160,8 @@
 					<compilerArgs>
 						<compilerArg>-Amapstruct.defaultComponentModel=spring</compilerArg>
 					</compilerArgs>
+					<source>21</source>
+					<target>21</target>
 
 				</configuration>
 

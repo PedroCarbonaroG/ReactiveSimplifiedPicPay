@@ -1,17 +1,20 @@
 package com.carbonaro.ReactiveSimplifiedPicPay.domain.entities;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import java.time.LocalDateTime;
 import jdk.jfr.Description;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import org.springframework.format.annotation.DateTimeFormat;
 
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(value = "Transaction")
+@Document(collection = "Transaction")
 public class Transaction {
 
     @Id
@@ -27,7 +30,9 @@ public class Transaction {
     @Description("Total transaction amount.")
     private BigDecimal transactionValue;
 
-    @Description("Transaction effective date")
-    private LocalDate transactionDate;
+    @Description("Transaction date.")
+    @JsonFormat(pattern = "dd/MM/yyyy - HH:mm:ss")
+    @DateTimeFormat(pattern = "dd/MM/yyyy - HH:mm:ss")
+    private LocalDateTime transactionDate;
 
 }

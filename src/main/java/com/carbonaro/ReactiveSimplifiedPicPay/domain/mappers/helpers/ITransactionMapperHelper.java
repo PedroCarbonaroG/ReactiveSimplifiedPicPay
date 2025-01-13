@@ -6,12 +6,12 @@ import com.carbonaro.ReactiveSimplifiedPicPay.domain.mappers.IPersonMapper;
 import com.carbonaro.ReactiveSimplifiedPicPay.api.responses.person.PersonResponse;
 import com.carbonaro.ReactiveSimplifiedPicPay.services.LegalPersonService;
 import com.carbonaro.ReactiveSimplifiedPicPay.services.NaturalPersonService;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
 @Component
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ITransactionMapperHelper {
 
     private final NaturalPersonService naturalPersonService;

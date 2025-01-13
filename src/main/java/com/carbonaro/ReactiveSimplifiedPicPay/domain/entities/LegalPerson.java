@@ -6,6 +6,7 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -20,9 +21,6 @@ public class LegalPerson extends Person {
     @Indexed(unique = true)
     @Description("Unique LegalPerson CNPJ.")
     private String cnpj;
-
-    @Description("Company unique bank balance.")
-    private BigDecimal balance;
 
     @Description("Company monthly income.")
     private BigDecimal monthlyBilling;
@@ -49,5 +47,4 @@ public class LegalPerson extends Person {
         else if (annualBilling.doubleValue() <= 300000000) { this.companySize = CompanySizeEnum.MEDIUM_ENTERPRISE; }
         else { this.companySize = CompanySizeEnum.LARGE_ENTERPRISE; }
     }
-
 }

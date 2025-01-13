@@ -1,9 +1,9 @@
 package com.carbonaro.ReactiveSimplifiedPicPay.api;
 
-import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.RouteDescriptions.FindAllTransactionsRouteDescription;
-import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.RouteDescriptions.SaveTransactionRouteDescription;
-import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.RouteParams.TransactionFilterRequestAsQueryParam;
-import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.RouteParams.TransactionRequestAsQueryParam;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.route_description.FindAllTransactionsRouteDescription;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.route_description.SaveTransactionRouteDescription;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.route_params.TransactionFilterRequestAsQueryParam;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.route_params.TransactionRequestAsQueryParam;
 import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.transaction.TransactionFilterRequest;
 import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.transaction.TransactionRequest;
 import com.carbonaro.ReactiveSimplifiedPicPay.api.responses.PageResponse;
@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import reactor.core.publisher.Mono;
 
-@Tag(name = "Transaction API - Person transactions handler")
+@Tag(name = "Transaction API - Person transaction handler.")
 @RequestMapping(value = "/transaction", produces = MediaType.APPLICATION_JSON_VALUE)
 public interface ITransactionAPI {
 

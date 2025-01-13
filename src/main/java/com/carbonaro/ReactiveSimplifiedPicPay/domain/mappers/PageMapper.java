@@ -1,12 +1,12 @@
 package com.carbonaro.ReactiveSimplifiedPicPay.domain.mappers;
 
 import com.carbonaro.ReactiveSimplifiedPicPay.api.responses.PageResponse;
-import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 @Component
-@AllArgsConstructor
+@NoArgsConstructor
 public class PageMapper<T> {
 
     public PageResponse<T> toPageResponse(Page<T> page) {
@@ -21,5 +21,4 @@ public class PageMapper<T> {
 
         return pageResponse;
     }
-
 }

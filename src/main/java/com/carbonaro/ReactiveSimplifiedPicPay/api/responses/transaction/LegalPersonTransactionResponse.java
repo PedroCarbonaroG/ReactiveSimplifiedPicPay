@@ -2,7 +2,10 @@ package com.carbonaro.ReactiveSimplifiedPicPay.api.responses.transaction;
 
 import com.carbonaro.ReactiveSimplifiedPicPay.api.responses.person.PersonResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 @Data
@@ -14,5 +17,4 @@ public class LegalPersonTransactionResponse extends PersonResponse {
 
     @Schema(description = "Demonstration of the unique LegalPerson CNPJ.")
     private String cnpj;
-
 }

@@ -2,12 +2,12 @@ package com.carbonaro.ReactiveSimplifiedPicPay.api.requests.person;
 
 import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.PagedRequest;
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.enums.CompanySizeEnum;
+import java.math.BigDecimal;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import java.math.BigDecimal;
 
 @Data
 @SuperBuilder

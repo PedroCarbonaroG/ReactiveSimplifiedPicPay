@@ -10,7 +10,6 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import java.util.List;
 
 @Slf4j
 @Repository
@@ -19,23 +18,15 @@ public class NaturalPersonRepository extends BaseRepository {
 
     private final INaturalPersonRepository repository;
 
-    private static final String CPF = "cpf";
     private static final String NAME = "name";
-    private static final String EMAIL = "email";
-    private static final String ADDRESS = "address";
-    private static final String BIRTH_DATE = "birthDate";
 
-    public Mono<Page<NaturalPerson>> listAllNaturals(Pageable pageRequest, NaturalPersonFilterRequest filterRequest) {
+    public Mono<Page<NaturalPerson>> findAll(Pageable page, NaturalPersonFilterRequest request) {
 
         Query query = new Query();
 
-        addParam(filterRequest.getCpf(), CPF, query);
-        addParam(filterRequest.getName(), NAME, query);
-        addParam(filterRequest.getEmail(), EMAIL, query);
-        addParam(filterRequest.getAddress(), ADDRESS, query);
-        addParamBetweenDates(filterRequest.getInitialBirthDate(), filterRequest.getFinalBirthDate(), BIRTH_DATE, query);
+        addParamToQuery(query, NAME, request.getName());
 
-        return toPage(query, pageRequest, NaturalPerson.class);
+        return toPage(query, page, NaturalPerson.class);
     }
 
     public Mono<NaturalPerson> findById(String id) {
@@ -46,15 +37,19 @@ public class NaturalPersonRepository extends BaseRepository {
         return repository.findByCpf(document);
     }
 
+    public Mono<Void> deleteByCpf(String document) {
+        return repository.deleteByCpf(document);
+    }
+
     public Mono<Void> deleteAll() {
         return repository.deleteAll();
     }
 
-    public Mono<NaturalPerson> save(NaturalPerson natural) {
-        return repository.save(natural);
+    public Mono<NaturalPerson> save(NaturalPerson naturalPerson) {
+        return repository.save(naturalPerson);
     }
 
-    public Flux<NaturalPerson> saveAll(List<NaturalPerson> naturals) {
+    public Flux<NaturalPerson> saveAll(Iterable<NaturalPerson> naturals) {
         return repository.saveAll(naturals);
     }
 
