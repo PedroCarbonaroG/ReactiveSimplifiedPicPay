@@ -1,7 +1,7 @@
 package com.carbonaro.ReactiveSimplifiedPicPay.api.impl;
 
 import com.carbonaro.ReactiveSimplifiedPicPay.api.IExportingAPI;
-import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.TransactionFilterRequest;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.transaction.TransactionFilterRequest;
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.entities.Person;
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.entities.Transaction;
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.enums.FileTypeEnum;
@@ -14,7 +14,7 @@ import reactor.core.publisher.Mono;
 
 @RestController
 @AllArgsConstructor
-public class IExportingImpl implements IExportingAPI {
+public class ExportingImpl implements IExportingAPI {
 
     private final ExportingService exportingService;
 

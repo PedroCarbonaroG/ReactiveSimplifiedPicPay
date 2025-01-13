@@ -1,6 +1,6 @@
 package com.carbonaro.ReactiveSimplifiedPicPay.services;
 
-import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.TransactionFilterRequest;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.transaction.TransactionFilterRequest;
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.enums.FileTypeEnum;
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.mappers.ITransactionMapper;
 import com.carbonaro.ReactiveSimplifiedPicPay.services.helper.ExportingBuilderExcelHelper;
@@ -18,8 +18,6 @@ public class ExportingService {
     private final ExportingBuilderExcelHelper excelBuilder;
     private final ITransactionMapper transactionMapper;
     private final TransactionService transactionService;
-    private final LegalPersonService legalPersonService;
-    private final NaturalPersonService naturalPersonService;
 
     public Mono<byte[]> getTransactionsExtraction(TransactionFilterRequest filterRequest, FileTypeEnum fileTypeEnum) {
 
