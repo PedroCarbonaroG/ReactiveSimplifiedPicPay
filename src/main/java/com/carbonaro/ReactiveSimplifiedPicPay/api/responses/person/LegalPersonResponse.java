@@ -2,16 +2,18 @@ package com.carbonaro.ReactiveSimplifiedPicPay.api.responses.person;
 
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.enums.CompanySizeEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-
 import java.util.List;
 
-@Getter
-@Setter
+@Data
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 public class LegalPersonResponse extends PersonResponse {
 
     @Schema(description = "Demonstration of the unique LegalPerson CNPJ.")

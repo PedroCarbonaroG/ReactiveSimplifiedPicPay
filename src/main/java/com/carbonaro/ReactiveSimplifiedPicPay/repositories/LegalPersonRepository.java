@@ -1,6 +1,6 @@
 package com.carbonaro.ReactiveSimplifiedPicPay.repositories;
 
-import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.LegalPersonFilterRequest;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.person.LegalPersonFilterRequest;
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.entities.LegalPerson;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

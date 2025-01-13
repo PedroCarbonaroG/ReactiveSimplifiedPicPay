@@ -1,6 +1,6 @@
 package com.carbonaro.ReactiveSimplifiedPicPay.services;
 
-import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.LegalPersonFilterRequest;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.person.LegalPersonFilterRequest;
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.entities.LegalPerson;
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.entities.NaturalPerson;
 import com.carbonaro.ReactiveSimplifiedPicPay.repositories.LegalPersonRepository;
