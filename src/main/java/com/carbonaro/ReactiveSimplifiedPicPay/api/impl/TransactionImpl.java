@@ -4,8 +4,8 @@ import static com.carbonaro.ReactiveSimplifiedPicPay.AppConstants.READ_ADMIN_SCO
 import static com.carbonaro.ReactiveSimplifiedPicPay.AppConstants.WRITE_USER_SCOPE;
 
 import com.carbonaro.ReactiveSimplifiedPicPay.api.ITransactionAPI;
-import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.TransactionFilterRequest;
-import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.TransactionRequest;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.transaction.TransactionFilterRequest;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.transaction.TransactionRequest;
 import com.carbonaro.ReactiveSimplifiedPicPay.api.responses.PageResponse;
 import com.carbonaro.ReactiveSimplifiedPicPay.api.responses.transaction.TransactionResponse;
 import com.carbonaro.ReactiveSimplifiedPicPay.core.security.SecurityScopes;
@@ -20,7 +20,7 @@ import reactor.core.publisher.Mono;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-public class ITransactionImpl implements ITransactionAPI {
+public class TransactionImpl implements ITransactionAPI {
 
     private final TransactionService transactionService;
     private final ITransactionMapper transactionMapper;
