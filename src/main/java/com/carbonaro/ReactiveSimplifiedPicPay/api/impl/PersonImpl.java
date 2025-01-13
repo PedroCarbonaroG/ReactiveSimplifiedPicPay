@@ -3,10 +3,10 @@ package com.carbonaro.ReactiveSimplifiedPicPay.api.impl;
 import static com.carbonaro.ReactiveSimplifiedPicPay.AppConstants.READ_ADMIN_SCOPE;
 
 import com.carbonaro.ReactiveSimplifiedPicPay.api.IPersonAPI;
-import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.LegalPersonFilterRequest;
-import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.LegalPersonRequest;
-import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.NaturalPersonFilterRequest;
-import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.NaturalPersonRequest;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.person.LegalPersonFilterRequest;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.person.LegalPersonRequest;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.person.NaturalPersonFilterRequest;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.person.NaturalPersonRequest;
 import com.carbonaro.ReactiveSimplifiedPicPay.api.responses.PageResponse;
 import com.carbonaro.ReactiveSimplifiedPicPay.api.responses.person.LegalPersonResponse;
 import com.carbonaro.ReactiveSimplifiedPicPay.api.responses.person.NaturalPersonResponse;
@@ -23,7 +23,7 @@ import reactor.core.publisher.Mono;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-public class IPersonImpl implements IPersonAPI {
+public class PersonImpl implements IPersonAPI {
 
     private final NaturalPersonService naturalPersonService;
     private final LegalPersonService legalPersonService;

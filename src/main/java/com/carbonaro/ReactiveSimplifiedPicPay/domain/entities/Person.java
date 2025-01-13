@@ -1,13 +1,14 @@
 package com.carbonaro.ReactiveSimplifiedPicPay.domain.entities;
 
-import java.math.BigDecimal;
 import jdk.jfr.Description;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.annotation.Id;
+import java.math.BigDecimal;
 
-@Getter
-@Setter
+@Data
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
