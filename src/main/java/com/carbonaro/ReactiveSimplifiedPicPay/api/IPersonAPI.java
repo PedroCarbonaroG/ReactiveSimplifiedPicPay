@@ -18,10 +18,10 @@ import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.route_description.
 import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.route_params.LegalPersonRequestAsQueryParam;
 import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.route_params.NaturalPersonFilterRequestAsQueryParam;
 import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.route_params.NaturalPersonRequestAsQueryParam;
-import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.LegalPersonFilterRequest;
-import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.LegalPersonRequest;
-import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.NaturalPersonFilterRequest;
-import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.NaturalPersonRequest;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.person.LegalPersonFilterRequest;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.person.LegalPersonRequest;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.person.NaturalPersonFilterRequest;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.person.NaturalPersonRequest;
 import com.carbonaro.ReactiveSimplifiedPicPay.api.responses.PageResponse;
 import com.carbonaro.ReactiveSimplifiedPicPay.api.responses.person.LegalPersonResponse;
 import com.carbonaro.ReactiveSimplifiedPicPay.api.responses.person.NaturalPersonResponse;
@@ -37,7 +37,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import reactor.core.publisher.Mono;
 
-@Tag(name = "Person API - Natural and Legal Do's")
+@Tag(name = "Person API - Natural and Legal environment")
 @RequestMapping(value = "/person", produces = MediaType.APPLICATION_JSON_VALUE)
 public interface IPersonAPI {
 
@@ -45,7 +45,7 @@ public interface IPersonAPI {
     @PageableAsQueryParam
     @FindAllLegalsRouteDescription
     @LegalPersonFilterRequestAsQueryParam
-    Mono<PageResponse<LegalPersonResponse>> findAllLegals(@Parameter(hidden = true)LegalPersonFilterRequest filterRequest);
+    Mono<PageResponse<LegalPersonResponse>> findAllLegals(@Parameter(hidden = true) LegalPersonFilterRequest filterRequest);
 
     @GetMapping("/legal/cnpj")
     @FindLegalByCNPJRouteDescription

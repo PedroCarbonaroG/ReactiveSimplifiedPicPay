@@ -1,7 +1,7 @@
 package com.carbonaro.ReactiveSimplifiedPicPay.api;
 
 import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.route_params.TransactionFilterRequestAsQueryParam;
-import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.TransactionFilterRequest;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.transaction.TransactionFilterRequest;
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.enums.FileTypeEnum;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

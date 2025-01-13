@@ -1,7 +1,7 @@
 package com.carbonaro.ReactiveSimplifiedPicPay.domain.mappers;
 
-import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.LegalPersonRequest;
-import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.NaturalPersonRequest;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.person.LegalPersonRequest;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.person.NaturalPersonRequest;
 import com.carbonaro.ReactiveSimplifiedPicPay.api.responses.PageResponse;
 import com.carbonaro.ReactiveSimplifiedPicPay.api.responses.person.LegalPersonResponse;
 import com.carbonaro.ReactiveSimplifiedPicPay.api.responses.person.NaturalPersonResponse;

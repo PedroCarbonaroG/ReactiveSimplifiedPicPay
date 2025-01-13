@@ -11,7 +11,7 @@ import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Operation(
-        summary = "Responsible route to to make available a valid token (ADMIN)",
+        summary = "Responsible route to make available a valid token (ADMIN)",
         description = "If everything went right, return a valid token(ADMIN LEVEL) for 1 hour",
         responses = {
                 @ApiResponse(
