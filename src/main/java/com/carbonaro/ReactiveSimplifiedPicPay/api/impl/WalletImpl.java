@@ -15,12 +15,12 @@ import reactor.core.publisher.Mono;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-public class IWalletImpl implements IWalletAPI {
+public class WalletImpl implements IWalletAPI {
 
     private final WalletService walletService;
 
     @Override
-    @SecurityScopes(scopes = WRITE_USER_SCOPE)
+    @SecurityScopes(scopes = {WRITE_USER_SCOPE})
     public Mono<Void> deposit(String document, BigDecimal amount) {
 
         return walletService
@@ -29,7 +29,7 @@ public class IWalletImpl implements IWalletAPI {
     }
 
     @Override
-    @SecurityScopes(scopes = READ_USER_SCOPE)
+    @SecurityScopes(scopes = {READ_USER_SCOPE})
     public Mono<BigDecimal> consultBalance(String document) {
 
         log.info("Consulting balance for account: {}", document);

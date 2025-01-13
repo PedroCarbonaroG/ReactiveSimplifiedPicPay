@@ -1,7 +1,5 @@
 package com.carbonaro.ReactiveSimplifiedPicPay.services;
 
-import static com.carbonaro.ReactiveSimplifiedPicPay.AppConstants.GENERAL_INVALID_DOCUMENT_FORMAT;
-
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.entities.LegalPerson;
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.entities.NaturalPerson;
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.entities.Person;
@@ -30,7 +28,8 @@ public class WalletService {
         return Mono.just(document)
                 .map(self -> {
                     if (document.length() != 11 && document.length() != 14) {
-                        throw new BadRequestException(GENERAL_INVALID_DOCUMENT_FORMAT);
+                        //TODO REFATORAR A MSG DE ERRO NO APPCONSTANTS
+                        throw new BadRequestException("Formato de documento inválido");
                     }
                     return self;
                 });
