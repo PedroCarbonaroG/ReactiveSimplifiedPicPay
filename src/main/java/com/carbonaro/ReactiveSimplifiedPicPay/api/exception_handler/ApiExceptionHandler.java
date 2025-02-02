@@ -8,28 +8,20 @@ import com.carbonaro.ReactiveSimplifiedPicPay.services.exceptions.BadRequestExce
 import com.carbonaro.ReactiveSimplifiedPicPay.services.exceptions.EmptyException;
 import com.carbonaro.ReactiveSimplifiedPicPay.services.exceptions.NotFoundException;
 import com.carbonaro.ReactiveSimplifiedPicPay.services.exceptions.TransactionValidationException;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.security.SignatureException;
-import io.swagger.v3.core.util.Json;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.web.reactive.error.ErrorWebExceptionHandler;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.server.ServerWebExchange;
-import reactor.core.publisher.Mono;
-import java.nio.charset.StandardCharsets;
 
 import static com.carbonaro.ReactiveSimplifiedPicPay.AppConstants.*;
 
 @Slf4j
 @RestControllerAdvice
 @RequiredArgsConstructor
-public class ApiExceptionHandler extends ApiExceptionHandlerHelper implements ErrorWebExceptionHandler {
+public class ApiExceptionHandler extends ApiExceptionHandlerHelper {
 
     private final MessageHelper messageHelper;
 
@@ -113,37 +105,6 @@ public class ApiExceptionHandler extends ApiExceptionHandlerHelper implements Er
                 .build();
 
         return new ResponseEntity<>(response, INTERNAL_SERVER_STATUS);
-    }
-
-    @Override
-    public Mono<Void> handle(ServerWebExchange exchange, Throwable ex) {
-
-        HttpStatus status = HttpStatus.UNAUTHORIZED;
-
-        String errorMessage = switch (ex) {
-            case IllegalArgumentException ignored -> HANDLER_ILLEGAL_ARGUMENT_ERROR_MESSAGE;
-            case MalformedJwtException ignored -> HANDLER_MALFORMED_JWT_ERROR_MESSAGE;
-            case ExpiredJwtException ignored -> HANDLER_EXPIRED_JWT_ERROR_MESSAGE;
-            case SignatureException ignored -> HANDLER_SIGNATURE_ERROR_MESSAGE;
-            default -> HANDLER_INTERNAL_SERVER_ERROR_MESSAGE;
-        };
-
-        getPrivateStackTrace((Exception) ex);
-        ErrorResponse response = ErrorResponse.builder()
-                .error(status.getReasonPhrase())
-                .timestamp(TIMESTAMP)
-                .path(getPath(exchange))
-                .status(status.value())
-                .errorMessage(messageHelper.getMessage(errorMessage))
-                .build();
-
-        exchange.getResponse().setStatusCode(status);
-        exchange.getResponse().getHeaders().setContentType(MediaType.APPLICATION_JSON);
-        byte[] bytes = Json.pretty(response).getBytes(StandardCharsets.UTF_8);
-
-        return exchange
-                .getResponse()
-                .writeWith(Mono.just(exchange.getResponse().bufferFactory().wrap(bytes)));
     }
 
 }
