@@ -4,7 +4,7 @@ import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.transaction.Transacti
 import com.carbonaro.ReactiveSimplifiedPicPay.api.responses.PageResponse;
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.entities.Person;
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.entities.Transaction;
-import com.carbonaro.ReactiveSimplifiedPicPay.domain.mappers.PageMapper;
+import com.carbonaro.ReactiveSimplifiedPicPay.domain.mappers.ITransactionMapper;
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.mappers.helpers.ITransactionMapperHelper;
 import com.carbonaro.ReactiveSimplifiedPicPay.repositories.TransactionRepository;
 import com.carbonaro.ReactiveSimplifiedPicPay.services.exceptions.EmptyException;
@@ -26,15 +26,15 @@ import static com.carbonaro.ReactiveSimplifiedPicPay.AppConstants.*;
 @RequiredArgsConstructor
 public class TransactionService {
 
+    private final ITransactionMapper transactionMapper;
     private final ITransactionMapperHelper transactionMapperHelper;
     private final TransactionRepository transactionRepository;
-    private final PageMapper<Transaction> pageMapper;
 
     public Mono<PageResponse<Transaction>> findAllTransactions(Pageable page, TransactionFilterRequest filterRequest) {
 
         return transactionRepository
                 .findAll(page, filterRequest)
-                .map(pageMapper::toPageResponse)
+                .map(transactionMapper::toPageResponseTransactionResponse)
                 .switchIfEmpty(Mono.error(new EmptyException(GENERAL_EMPTY_WARNING)))
                 .doOnError(errorResponse -> Flux.error(new Exception(errorResponse.getMessage())));
     }

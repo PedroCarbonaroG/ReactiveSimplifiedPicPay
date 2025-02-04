@@ -2,12 +2,15 @@ package com.carbonaro.ReactiveSimplifiedPicPay.domain.entities;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jdk.jfr.Description;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.format.annotation.DateTimeFormat;
-import java.math.BigDecimal;
+
 import java.time.LocalDate;
 
 @Data

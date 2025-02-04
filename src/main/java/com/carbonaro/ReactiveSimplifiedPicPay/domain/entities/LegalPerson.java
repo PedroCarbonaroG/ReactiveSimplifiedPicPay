@@ -2,11 +2,13 @@ package com.carbonaro.ReactiveSimplifiedPicPay.domain.entities;
 
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.enums.CompanySizeEnum;
 import jdk.jfr.Description;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-
 import java.math.BigDecimal;
 import java.util.List;
 

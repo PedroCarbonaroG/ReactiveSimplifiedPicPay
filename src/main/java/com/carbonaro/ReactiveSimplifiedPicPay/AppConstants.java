@@ -16,14 +16,9 @@ public class AppConstants {
     public static final String HANDLER_BAD_REQUEST_ERROR_MESSAGE = "handler.bad.request.error.message";
     public static final String HANDLER_NO_CONTENT_WARNING_MESSAGE = "handler.no.content.warning.message";
     public static final String HANDLER_INTERNAL_SERVER_ERROR_MESSAGE =  "handler.internal.server.error.message";
-    public static final String HANDLER_ILLEGAL_ARGUMENT_ERROR_MESSAGE = "handler.illegal.argument.error.message";
-    public static final String HANDLER_MALFORMED_JWT_ERROR_MESSAGE = "handler.malformed.jwt.error.message";
-    public static final String HANDLER_EXPIRED_JWT_ERROR_MESSAGE = "handler.expired.jwt.error.message";
-    public static final String HANDLER_SIGNATURE_ERROR_MESSAGE = "handler.signature.error.message";
 
     /* SCOPES FOR ROUTES */
-    public static final String READ_USER_SCOPE = "user:read";
-    public static final String WRITE_USER_SCOPE = "user:write";
-    public static final String READ_ADMIN_SCOPE = "admin:read";
+    public static final String LIST_ALL_NATURALS_SCOPES = "hasRole('USER')";
+    public static final String LIST_ALL_LEGALS_SCOPES = "hasRole('ADMIN')";
 
 }

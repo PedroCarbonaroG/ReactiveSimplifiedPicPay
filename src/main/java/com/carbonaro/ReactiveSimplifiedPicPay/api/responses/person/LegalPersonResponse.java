@@ -27,5 +27,6 @@ public class LegalPersonResponse extends PersonResponse {
 
     @Schema(description = "Demonstration of the company partners")
     List<NaturalPersonResponse> partners;
+
 }
 

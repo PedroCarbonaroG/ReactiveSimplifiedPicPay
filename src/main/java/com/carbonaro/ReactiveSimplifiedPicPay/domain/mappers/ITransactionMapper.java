@@ -3,14 +3,18 @@ package com.carbonaro.ReactiveSimplifiedPicPay.domain.mappers;
 
 import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.transaction.TransactionRequest;
 import com.carbonaro.ReactiveSimplifiedPicPay.api.responses.PageResponse;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.responses.person.LegalPersonResponse;
 import com.carbonaro.ReactiveSimplifiedPicPay.api.responses.person.PersonResponse;
 import com.carbonaro.ReactiveSimplifiedPicPay.api.responses.transaction.TransactionResponse;
+import com.carbonaro.ReactiveSimplifiedPicPay.domain.entities.LegalPerson;
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.entities.Transaction;
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.mappers.helpers.ITransactionMapperHelper;
 import java.util.List;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple2;
@@ -23,6 +27,10 @@ public abstract class ITransactionMapper {
 
     @Autowired
     protected ITransactionMapperHelper transactionMapper;
+
+    @Mapping(source = "pageTransaction.pageable.pageNumber", target = "pageNumber")
+    @Mapping(source = "pageTransaction.pageable.pageSize", target = "pageSize")
+    public abstract PageResponse<Transaction> toPageResponseTransactionResponse(Page<Transaction> pageTransaction);
 
     public abstract Transaction toTransactionByRequest(TransactionRequest transactionRequest);
 

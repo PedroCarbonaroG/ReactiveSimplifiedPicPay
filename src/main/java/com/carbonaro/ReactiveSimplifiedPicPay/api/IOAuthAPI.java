@@ -5,16 +5,20 @@ import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.route_description.
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import reactor.core.publisher.Mono;
 
-@Tag(name = "ITokenAPI - Token generation")
-@RequestMapping(value = "/token")
-public interface ITokenAPI {
+@Tag(name = "OAuthAPI - User authentication & Token generation")
+@RequestMapping(value = "/oauth")
+public interface IOAuthAPI {
 
-    @PostMapping("/user")
+    @PostMapping("/register")
+    String registerUser();
+
+    @PostMapping("/login/user")
     @GenerateUserTokenRouteDescription
-    String generateUserToken();
+    Mono<String> generateUserToken();
 
-    @PostMapping("/admin")
+    @PostMapping("/login/admin")
     @GenerateAdminTokenRouteDescription
     String generateAdminToken();
 

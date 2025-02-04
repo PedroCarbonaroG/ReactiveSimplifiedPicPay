@@ -26,8 +26,8 @@ import java.lang.annotation.Target;
         in = ParameterIn.QUERY,
         name = "email",
         description = "Enterprise full email.",
-        schema = @Schema(implementation = String.class,
-                required = true))
+        schema = @Schema(implementation = String.class),
+        required = true)
 @Parameter(
         in = ParameterIn.QUERY,
         name = "address",
