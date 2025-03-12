@@ -1,42 +1,46 @@
 package com.carbonaro.ReactiveSimplifiedPicPay.api.impl;
 
 import com.carbonaro.ReactiveSimplifiedPicPay.api.IOAuthAPI;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.responses.oauth.TokenResponse;
 import com.carbonaro.ReactiveSimplifiedPicPay.core.security.JwtHandler;
+import com.carbonaro.ReactiveSimplifiedPicPay.core.security.SecurityConfig;
+import com.carbonaro.ReactiveSimplifiedPicPay.domain.entities.SystemUser;
+import com.carbonaro.ReactiveSimplifiedPicPay.domain.enums.SystemUserEnum;
+import com.carbonaro.ReactiveSimplifiedPicPay.services.SystemUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
+import java.util.Set;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
 public class OAuthImpl implements IOAuthAPI {
 
-    private final PasswordEncoder passwordEncoder;
-    private final ReactiveUserDetailsService userDetailsService;
+    private final SystemUserService userService;
     private final JwtHandler jwtHandler;
 
     @Override
-    public String registerUser() {
-        return "";
+    public Mono<SystemUser> registerUser(String username, String password) {
+
+        var user = SystemUser.builder()
+                .username(username)
+                .password(SecurityConfig.passwordEncoder().encode(password))
+                .authorities(Set.of(new SimpleGrantedAuthority(SystemUserEnum.USER.getValue())))
+                .build();
+
+        return userService.save(user);
     }
 
     @Override
-    public Mono<String> generateUserToken() {
+    public Mono<TokenResponse> generateUserToken(String username, String password) {
 
-        String username = "user";
-        String password = "password";
-
-        return userDetailsService.findByUsername(username)
-                .filter(u -> passwordEncoder.matches(password, u.getPassword()))
+        return userService
+                .findByUsername(username)
+                .switchIfEmpty(Mono.error(new SecurityException("User not found")))
                 .map(jwtHandler::generateToken);
-    }
-
-    @Override
-    public String generateAdminToken() {
-        return null;
     }
 
 }

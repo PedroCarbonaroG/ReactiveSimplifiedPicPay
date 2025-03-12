@@ -4,10 +4,13 @@ import com.carbonaro.ReactiveSimplifiedPicPay.domain.entities.LegalPerson;
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.entities.NaturalPerson;
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.entities.Person;
 import com.carbonaro.ReactiveSimplifiedPicPay.services.exceptions.BadRequestException;
-import java.math.BigDecimal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
+import java.math.BigDecimal;
+
+import static com.carbonaro.ReactiveSimplifiedPicPay.AppConstants.WALLET_INVALID_DOCUMENT_FORMAT;
+import static com.carbonaro.ReactiveSimplifiedPicPay.AppConstants.WALLET_NEGATIVE_AMOUNT_FOR_DEPOSIT;
 
 @Service
 @RequiredArgsConstructor
@@ -18,18 +21,28 @@ public class WalletService {
 
     public Mono<Void> deposit(String document, BigDecimal amount) {
 
-        return Mono.just(document)
+        return this.checkDepositValue(amount, document)
                 .flatMap(this::isValidDocument)
                 .flatMap(this::checkAccountType)
                 .flatMap(person -> makeDeposit(person, amount));
+    }
+    private Mono<String> checkDepositValue(BigDecimal amount, String document) {
+
+        return Mono.just(amount)
+                .map(self -> {
+                    if (self.signum() == -1) {
+                        throw new BadRequestException(WALLET_NEGATIVE_AMOUNT_FOR_DEPOSIT);
+                    }
+                    return self;
+                })
+                .map(validatedAmount -> document);
     }
     private Mono<String> isValidDocument(String document) {
 
         return Mono.just(document)
                 .map(self -> {
                     if (document.length() != 11 && document.length() != 14) {
-                        //TODO REFATORAR A MSG DE ERRO NO APPCONSTANTS
-                        throw new BadRequestException("Formato de documento inválido");
+                        throw new BadRequestException(WALLET_INVALID_DOCUMENT_FORMAT);
                     }
                     return self;
                 });

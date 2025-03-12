@@ -2,20 +2,24 @@ package com.carbonaro.ReactiveSimplifiedPicPay.core.configs;
 
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.entities.LegalPerson;
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.entities.NaturalPerson;
+import com.carbonaro.ReactiveSimplifiedPicPay.domain.entities.Transaction;
 import com.carbonaro.ReactiveSimplifiedPicPay.repositories.LegalPersonRepository;
 import com.carbonaro.ReactiveSimplifiedPicPay.repositories.NaturalPersonRepository;
 import com.carbonaro.ReactiveSimplifiedPicPay.repositories.TransactionRepository;
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
 import reactor.core.publisher.Mono;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
 
 @Slf4j
 @Configuration
@@ -34,6 +38,7 @@ public class BuildDataBaseConfig implements CommandLineRunner {
                 .doOnSubscribe(subscription -> legalPersonRepository.deleteAll().subscribe())
                 .doOnSubscribe(subscription -> legalPersonRepository.saveAll(getLegalPersons()).subscribe())
                 .doOnSubscribe(subscription -> transactionRepository.deleteAll().subscribe())
+                .doOnSubscribe(subscription -> transactionRepository.saveAll(getTransactions()).subscribe())
                 .doOnSubscribe(subscription -> log.warn("Database has been reset and populated with default data successfully"))
                 .subscribe();
     }
@@ -163,6 +168,41 @@ public class BuildDataBaseConfig implements CommandLineRunner {
 
         list.forEach(LegalPerson::setCompanySize);
         return list;
+    }
+
+    private List<Transaction> getTransactions() {
+
+        List<NaturalPerson> naturalPersons = getNaturalPersons();
+        List<LegalPerson> legalPersons = getLegalPersons();
+        List<Transaction> transactions = new ArrayList<>();
+        Random random = new Random();
+
+        for (int i = 0; i < 40; i++) {
+
+            String sender = naturalPersons.get(random.nextInt(naturalPersons.size())).getCpf();
+            boolean receiverIsNatural = random.nextBoolean();
+            String receiver;
+
+            do {
+                receiver = receiverIsNatural
+                        ? naturalPersons.get(random.nextInt(naturalPersons.size())).getCpf()
+                        : legalPersons.get(random.nextInt(legalPersons.size())).getCnpj();
+            } while (receiver.equals(sender));
+
+            BigDecimal transactionValue = BigDecimal.valueOf(random.nextDouble() * 30000)
+                    .setScale(2, RoundingMode.HALF_UP);
+            LocalDateTime transactionDate = LocalDateTime.now().minusDays(random.nextInt(730));
+
+            transactions.add(Transaction.builder()
+                    .id(null)
+                    .senderDocument(sender)
+                    .receiverDocument(receiver)
+                    .transactionValue(transactionValue)
+                    .transactionDate(transactionDate)
+                    .build());
+        }
+
+        return transactions;
     }
 
 }

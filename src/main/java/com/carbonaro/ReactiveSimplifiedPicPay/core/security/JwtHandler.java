@@ -1,12 +1,14 @@
 package com.carbonaro.ReactiveSimplifiedPicPay.core.security;
 
+import com.carbonaro.ReactiveSimplifiedPicPay.api.responses.oauth.TokenResponse;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
@@ -22,9 +24,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 import javax.crypto.SecretKey;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 
 @Component
@@ -46,7 +46,8 @@ public class JwtHandler implements ReactiveAuthenticationManager, ServerAuthenti
                 .cast(JwtToken.class)
                 .filter(jwtToken -> isTokenValid(jwtToken.getToken()))
                 .map(JwtToken::withAuthenticated)
-                .switchIfEmpty(Mono.error(new AuthenticationServiceException("Invalid token.")));
+                .switchIfEmpty(Mono.defer(() -> Mono.error(new AuthenticationServiceException("Invalid token."))))
+                .onErrorResume(SignatureException.class, e -> Mono.error(new SecurityException("Invalid Token")));
     }
 
     @Override
@@ -58,13 +59,20 @@ public class JwtHandler implements ReactiveAuthenticationManager, ServerAuthenti
                 .map(token -> new JwtToken(token, createUserDetails(token)));
     }
 
-    private UserDetails createUserDetails(String token) {
+    public Mono<Authentication> convert2(String token) {
 
-        String username = extractUsername(token);
+        return Mono.justOrEmpty(token)
+                .filter(header -> header.startsWith(BEARER))
+                .map(header -> header.substring(BEARER.length()))
+                .map(trueToken -> new JwtToken(trueToken, createUserDetails(token)));
+    }
+
+    public UserDetails createUserDetails(String token) {
+
         return User.builder()
-                .username(username)
+                .username(extractUsername(token))
                 .authorities(createAuthorities(token))
-                .password("")
+                .password(StringUtils.EMPTY)
                 .build();
     }
 
@@ -76,19 +84,39 @@ public class JwtHandler implements ReactiveAuthenticationManager, ServerAuthenti
                 .toList();
     }
 
-    String extractUsername(String jwt) {
+    private String extractUsername(String jwt) {
         return extractClaim(jwt, Claims::getSubject);
     }
 
-    List<String> extractRoles(String jwt) {
-        return extractClaim(jwt, claims -> (List<String>) claims.get("roles"));
+    private List<String> extractRoles(String jwt) {
+
+        return extractClaim(jwt, claims -> {
+            Object scopesObj = claims.get("authorities");
+            if (scopesObj instanceof List<?> scopesList) {
+                List<String> roles = new ArrayList<>();
+                for (Object scope : scopesList) {
+                    if (scope instanceof String) {
+                        roles.add((String) scope);
+                    }
+                }
+                return roles;
+            }
+            return new ArrayList<>();
+        });
     }
 
-    public String generateToken(UserDetails userDetails) {
-        return generateToken(Map.of(), userDetails);
+    public TokenResponse generateToken(UserDetails userDetails) {
+
+        return TokenResponse
+                .builder()
+                .tokenType("Bearer")
+                .expirationIn(360000L)
+                .expirationInDescription("One Hour")
+                .accessToken(generateToken(Map.of(), userDetails))
+                .build();
     }
 
-    boolean isTokenValid(String jwt) {
+    private boolean isTokenValid(String jwt) {
         return !isTokenExpired(jwt);
     }
 
@@ -102,8 +130,10 @@ public class JwtHandler implements ReactiveAuthenticationManager, ServerAuthenti
         return Jwts
                 .builder()
                 .claims(extraClaims)
-                .subject(userDetails.getUsername())
-                .claim("roles", userDetails.getAuthorities().stream()
+                .id(UUID.randomUUID().toString())
+                .issuer("OAuth-service")
+                .subject("Authentication-Developer-environment")
+                .claim("authorities", userDetails.getAuthorities().stream()
                         .map(GrantedAuthority::getAuthority)
                         .map(role -> role.substring("ROLE_".length()))
                         .toArray())
@@ -120,15 +150,12 @@ public class JwtHandler implements ReactiveAuthenticationManager, ServerAuthenti
     }
 
     private Claims extractAllClaims(String jwt) {
-        try {
-            return Jwts.parser()
-                    .verifyWith(getSigningKey())
-                    .build()
-                    .parseSignedClaims(jwt)
-                    .getPayload();
-        } catch (JwtException e) {
-            throw new AuthenticationServiceException(e.getMessage());
-        }
+
+        return Jwts.parser()
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(jwt)
+                .getPayload();
     }
 
     private SecretKey getSigningKey() {
@@ -137,12 +164,12 @@ public class JwtHandler implements ReactiveAuthenticationManager, ServerAuthenti
     }
 
     @Getter
-    private static class JwtToken extends AbstractAuthenticationToken {
+    public static class JwtToken extends AbstractAuthenticationToken {
 
         private final String token;
         private final UserDetails principal;
 
-        JwtToken(String token, UserDetails principal) {
+        public JwtToken(String token, UserDetails principal) {
             super(principal.getAuthorities());
             this.token = token;
             this.principal = principal;

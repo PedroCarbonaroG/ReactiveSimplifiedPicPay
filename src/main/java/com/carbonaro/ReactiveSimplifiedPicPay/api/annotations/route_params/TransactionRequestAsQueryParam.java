@@ -15,16 +15,19 @@ import java.math.BigDecimal;
         in = ParameterIn.QUERY,
         name = "senderDocument",
         description = "Sender Document",
-        schema = @Schema(type = "String"))
+        schema = @Schema(implementation = String.class),
+        required = true)
 @Parameter(
         in = ParameterIn.QUERY,
         name = "receiverDocument",
         description = "Receiver Document",
-        schema = @Schema(type = "String"))
+        schema = @Schema(implementation = String.class),
+        required = true)
 @Parameter(
         in = ParameterIn.QUERY,
         name = "transactionValue",
         description = "Transaction Value",
-        schema = @Schema(implementation = BigDecimal.class))
+        schema = @Schema(implementation = BigDecimal.class),
+        required = true)
 public @interface TransactionRequestAsQueryParam {
 }

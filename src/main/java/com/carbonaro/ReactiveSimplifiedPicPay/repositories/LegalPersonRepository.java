@@ -42,6 +42,10 @@ public class LegalPersonRepository extends BaseRepository {
         return toPage(query, page, LegalPerson.class);
     }
 
+    public Mono<LegalPerson> findByEmail(String email) {
+        return repository.findByEmail(email);
+    }
+
     public Mono<LegalPerson> findById(String id) {
         return repository.findById(id);
     }

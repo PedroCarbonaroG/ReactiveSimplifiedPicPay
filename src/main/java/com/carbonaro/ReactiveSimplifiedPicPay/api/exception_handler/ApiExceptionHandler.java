@@ -12,9 +12,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.server.ServerWebExchange;
+import java.security.SignatureException;
+import java.time.LocalDateTime;
 
 import static com.carbonaro.ReactiveSimplifiedPicPay.AppConstants.*;
 
@@ -39,11 +42,11 @@ public class ApiExceptionHandler extends ApiExceptionHandlerHelper {
             log.error("ERROR            ====> {}", messageHelper.getMessage(e.getMessage()));
             log.error("LOCALIZED ERROR  ====> {}", e.getLocalizedMessage());
             log.error("ERROR CLASS      ====> {}", e.getClass());
+            log.error("STACKTRACE       ====> {}", (Object) e.getStackTrace());
+        }
 
-            for (int i = 0; i < e.getStackTrace().length; i++) {
-                System.out.println(e.getStackTrace()[i]);
-            }
-//            log.error("STACKTRACE       ====> {}", (Object) e.getStackTrace());
+        for (int i = 0; i < e.getStackTrace().length; i++) {
+            System.out.println(e.getStackTrace()[i]);
         }
     }
 
@@ -75,6 +78,20 @@ public class ApiExceptionHandler extends ApiExceptionHandlerHelper {
                 .build();
 
         return new ResponseEntity<>(response, BAD_REQUEST_STATUS);
+    }
+
+    @ExceptionHandler({AuthenticationServiceException.class, SignatureException.class})
+    private ResponseEntity<ErrorResponse> unauthorizedExceptionHandler(Exception e, ServerWebExchange request) {
+
+        var errorResponse = ErrorResponse
+                .builder()
+                .error("Unauthorized")
+                .timestamp(LocalDateTime.now())
+                .path(getPath(request))
+                .status(401)
+                .build();
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler({NotFoundException.class})
