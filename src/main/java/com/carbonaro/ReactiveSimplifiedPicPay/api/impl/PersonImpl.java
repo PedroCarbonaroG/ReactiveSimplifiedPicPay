@@ -18,8 +18,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
-import static com.carbonaro.ReactiveSimplifiedPicPay.AppConstants.LIST_ALL_LEGALS_SCOPES;
-import static com.carbonaro.ReactiveSimplifiedPicPay.AppConstants.LIST_ALL_NATURALS_SCOPES;
+import static com.carbonaro.ReactiveSimplifiedPicPay.AppConstants.*;
 
 @Slf4j
 @RestController
@@ -30,7 +29,7 @@ public class PersonImpl implements IPersonAPI {
     private final LegalPersonService legalPersonService;
 
     @Override
-    @PreAuthorize(LIST_ALL_LEGALS_SCOPES)
+    @PreAuthorize(ADMIN_SCOPE)
     public Mono<PageResponse<LegalPersonResponse>> findAllLegals(LegalPersonFilterRequest filterRequest) {
 
         var page = PageRequest.of(filterRequest.getPage(), filterRequest.getSize());
@@ -41,6 +40,7 @@ public class PersonImpl implements IPersonAPI {
     }
 
     @Override
+    @PreAuthorize(ADMIN_SCOPE)
     public Mono<LegalPersonResponse> findLegalByCNPJ(String companyCNPJ) {
 
         return legalPersonService
@@ -50,6 +50,7 @@ public class PersonImpl implements IPersonAPI {
     }
 
     @Override
+    @PreAuthorize(ADMIN_SCOPE)
     public Mono<LegalPersonResponse> findLegalById(String id) {
 
         return legalPersonService
@@ -59,6 +60,7 @@ public class PersonImpl implements IPersonAPI {
     }
 
     @Override
+    @PreAuthorize(ADMIN_SCOPE)
     public Mono<Void> saveLegalPerson(LegalPersonRequest legalPerson) {
 
         return Mono
@@ -69,6 +71,7 @@ public class PersonImpl implements IPersonAPI {
     }
 
     @Override
+    @PreAuthorize(ADMIN_SCOPE)
     public Mono<Void> savePartnerToLegalPerson(String cnpj, String partnerCPF) {
 
         return legalPersonService
@@ -77,6 +80,7 @@ public class PersonImpl implements IPersonAPI {
     }
 
     @Override
+    @PreAuthorize(ADMIN_SCOPE)
     public Mono<Void> updateLegalPerson(String cnpj, LegalPersonRequest legalPerson) {
 
         return Mono
@@ -88,6 +92,7 @@ public class PersonImpl implements IPersonAPI {
     }
 
     @Override
+    @PreAuthorize(ADMIN_SCOPE)
     public Mono<Void> deleteLegalPerson(String companyCNPJ) {
 
         return Mono
@@ -97,6 +102,7 @@ public class PersonImpl implements IPersonAPI {
     }
 
     @Override
+    @PreAuthorize(ADMIN_SCOPE)
     public Mono<Void> deletePartnerByLegalPerson(String companyCNPJ, String partnerCPF) {
 
         return legalPersonService
@@ -105,7 +111,7 @@ public class PersonImpl implements IPersonAPI {
     }
 
     @Override
-    @PreAuthorize(LIST_ALL_NATURALS_SCOPES)
+    @PreAuthorize(ADMIN_SCOPE)
     public Mono<PageResponse<NaturalPersonResponse>> findAllNaturals(NaturalPersonFilterRequest filterRequest) {
 
         var page = PageRequest.of(filterRequest.getPage(), filterRequest.getSize());
@@ -116,6 +122,7 @@ public class PersonImpl implements IPersonAPI {
     }
 
     @Override
+    @PreAuthorize(ADMIN_SCOPE)
     public Mono<NaturalPersonResponse> findNaturalByCPF(String cpf) {
 
         return naturalPersonService
@@ -125,6 +132,7 @@ public class PersonImpl implements IPersonAPI {
     }
 
     @Override
+    @PreAuthorize(ADMIN_SCOPE)
     public Mono<NaturalPersonResponse> findNaturalByID(String id) {
 
         return naturalPersonService
@@ -134,6 +142,7 @@ public class PersonImpl implements IPersonAPI {
     }
 
     @Override
+    @PreAuthorize(ADMIN_SCOPE)
     public Mono<Void> saveNaturalPerson(NaturalPersonRequest naturalPerson) {
 
         return Mono
@@ -144,6 +153,7 @@ public class PersonImpl implements IPersonAPI {
     }
 
     @Override
+    @PreAuthorize(ADMIN_SCOPE)
     public Mono<Void> updateNaturalPerson(String cpf, NaturalPersonRequest naturalPerson) {
 
         return Mono
@@ -154,6 +164,7 @@ public class PersonImpl implements IPersonAPI {
     }
 
     @Override
+    @PreAuthorize(ADMIN_SCOPE)
     public Mono<Void> deleteNaturalPerson(String cpf) {
 
         return Mono

@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 import java.util.Set;
 
+import static com.carbonaro.ReactiveSimplifiedPicPay.AppConstants.OAUTH_USER_NOT_FOUND;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -35,11 +37,11 @@ public class OAuthImpl implements IOAuthAPI {
     }
 
     @Override
-    public Mono<TokenResponse> generateUserToken(String username, String password) {
+    public Mono<TokenResponse> generateToken(String username, String password) {
 
         return userService
                 .findByUsername(username)
-                .switchIfEmpty(Mono.error(new SecurityException("User not found")))
+                .switchIfEmpty(Mono.error(new SecurityException(OAUTH_USER_NOT_FOUND)))
                 .map(jwtHandler::generateToken);
     }
 

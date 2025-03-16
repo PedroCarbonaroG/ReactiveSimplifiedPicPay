@@ -34,18 +34,18 @@ public class TransactionService {
     public Mono<PageResponse<Transaction>> findAllTransactions(Pageable page, TransactionFilterRequest filterRequest) {
 
         return checkSenderDocument(filterRequest.getSenderDocument())
-                .flatMap(self -> transactionRepository.findAll(page, filterRequest))
+                .then(transactionRepository.findAll(page, filterRequest))
                 .switchIfEmpty(Mono.error(new EmptyException(GENERAL_EMPTY_WARNING)))
                 .map(transactionMapper::toPageResponseTransactionResponse);
     }
     private Mono<Void> checkSenderDocument(String document) {
 
-        if (Objects.nonNull(document)) {
-            if (document.length() != 11 || !document.matches(ONLY_NUMBERS)) {
-                return Mono.error(new BadRequestException(TRANSACTION_INVALID_FILTER_SENDER_DOCUMENT));
-            }
-        }
-        return Mono.empty();
+        return isValidSenderDocument(document)
+                ? Mono.error(new BadRequestException(TRANSACTION_INVALID_FILTER_SENDER_DOCUMENT))
+                : Mono.empty();
+    }
+    private boolean isValidSenderDocument(String document) {
+        return Objects.nonNull(document) && document.length() != 11 || Objects.nonNull(document) && !document.matches(ONLY_NUMBERS);
     }
 
     public Mono<Transaction> saveTransaction(Transaction transaction) {

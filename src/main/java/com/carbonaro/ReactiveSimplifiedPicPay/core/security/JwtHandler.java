@@ -59,14 +59,6 @@ public class JwtHandler implements ReactiveAuthenticationManager, ServerAuthenti
                 .map(token -> new JwtToken(token, createUserDetails(token)));
     }
 
-    public Mono<Authentication> convert2(String token) {
-
-        return Mono.justOrEmpty(token)
-                .filter(header -> header.startsWith(BEARER))
-                .map(header -> header.substring(BEARER.length()))
-                .map(trueToken -> new JwtToken(trueToken, createUserDetails(token)));
-    }
-
     public UserDetails createUserDetails(String token) {
 
         return User.builder()
@@ -110,7 +102,7 @@ public class JwtHandler implements ReactiveAuthenticationManager, ServerAuthenti
         return TokenResponse
                 .builder()
                 .tokenType("Bearer")
-                .expirationIn(360000L)
+                .expirationIn(3600L)
                 .expirationInDescription("One Hour")
                 .accessToken(generateToken(Map.of(), userDetails))
                 .build();

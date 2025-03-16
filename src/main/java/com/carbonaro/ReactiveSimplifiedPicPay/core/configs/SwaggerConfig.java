@@ -1,13 +1,14 @@
 package com.carbonaro.ReactiveSimplifiedPicPay.core.configs;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
-import io.swagger.v3.oas.models.Components;
-import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.*;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.List;
 
 @Configuration
 @OpenAPIDefinition
@@ -30,7 +31,10 @@ public class SwaggerConfig {
                         .addSecuritySchemes("bearerAuth", new SecurityScheme()
                                 .type(SecurityScheme.Type.HTTP)
                                 .scheme("bearer")
-                                .bearerFormat("JWT")));
+                                .bearerFormat("JWT")))
+                .paths(new Paths()
+                        .addPathItem("/oauth/register", new PathItem().post(new Operation().security(List.of())))
+                        .addPathItem("/oauth/login", new PathItem().post(new Operation().security(List.of()))));
     }
 
 }

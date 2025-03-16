@@ -11,8 +11,8 @@ import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Operation(
-        summary = "Responsible route to make available a valid token (USER)",
-        description = "If everything went right, return a valid token(USER LEVEL) for 1 hour",
+        summary = "Responsible route to make available a valid token",
+        description = "If everything went right, return a valid token for 1 hour",
         responses = {
                 @ApiResponse(
                         responseCode = "200",
@@ -22,5 +22,5 @@ import java.lang.annotation.RetentionPolicy;
                         responseCode = " 400 • 404  500",
                         description = "If something goes wrong if data or application resources, returns treated error.",
                         content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorResponse.class)))})
-public @interface GenerateUserTokenRouteDescription {
+public @interface GenerateTokenRouteDescription {
 }

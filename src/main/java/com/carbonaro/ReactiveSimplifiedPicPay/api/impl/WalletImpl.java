@@ -5,8 +5,12 @@ import com.carbonaro.ReactiveSimplifiedPicPay.services.WalletService;
 import java.math.BigDecimal;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
+
+import static com.carbonaro.ReactiveSimplifiedPicPay.AppConstants.ADMIN_SCOPE;
+import static com.carbonaro.ReactiveSimplifiedPicPay.AppConstants.USER_SCOPE;
 
 @Slf4j
 @RestController
@@ -16,6 +20,7 @@ public class WalletImpl implements IWalletAPI {
     private final WalletService walletService;
 
     @Override
+    @PreAuthorize(USER_SCOPE)
     public Mono<Void> deposit(String document, BigDecimal amount) {
 
         return walletService
@@ -24,6 +29,7 @@ public class WalletImpl implements IWalletAPI {
     }
 
     @Override
+    @PreAuthorize(USER_SCOPE)
     public Mono<BigDecimal> consultBalance(String document) {
 
         log.info("Consulting balance for account: {}", document);

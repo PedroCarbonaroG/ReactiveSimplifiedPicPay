@@ -1,6 +1,5 @@
 package com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.route_description;
 
-import com.carbonaro.ReactiveSimplifiedPicPay.api.exception_handler.response.ErrorEmptyResponse;
 import com.carbonaro.ReactiveSimplifiedPicPay.api.exception_handler.response.ErrorResponse;
 import com.carbonaro.ReactiveSimplifiedPicPay.api.responses.transaction.TransactionResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,7 +21,7 @@ import java.lang.annotation.RetentionPolicy;
                 @ApiResponse(
                         responseCode = "204",
                         description = "Neither Transactions was found.",
-                        content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorEmptyResponse.class))),
+                        content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorResponse.class))),
                 @ApiResponse(
                         responseCode = "404",
                         description = "Not Found. Resources are not found to complete the service provided by this endpoint..",

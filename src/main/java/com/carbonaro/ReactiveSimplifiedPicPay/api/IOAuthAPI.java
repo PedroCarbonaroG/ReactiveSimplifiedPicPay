@@ -1,6 +1,7 @@
 package com.carbonaro.ReactiveSimplifiedPicPay.api;
 
-import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.route_description.GenerateUserTokenRouteDescription;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.route_description.GenerateTokenRouteDescription;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.route_description.RegisterUserRouteDescription;
 import com.carbonaro.ReactiveSimplifiedPicPay.api.responses.oauth.TokenResponse;
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.entities.SystemUser;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -14,10 +15,11 @@ import reactor.core.publisher.Mono;
 public interface IOAuthAPI {
 
     @PostMapping("/register")
+    @RegisterUserRouteDescription
     Mono<SystemUser> registerUser(@RequestHeader String username, @RequestHeader String password);
 
-    @PostMapping("/login/user")
-    @GenerateUserTokenRouteDescription
-    Mono<TokenResponse> generateUserToken(@RequestHeader String username, @RequestHeader String password);
+    @PostMapping("/login")
+    @GenerateTokenRouteDescription
+    Mono<TokenResponse> generateToken(@RequestHeader String username, @RequestHeader String password);
 
 }

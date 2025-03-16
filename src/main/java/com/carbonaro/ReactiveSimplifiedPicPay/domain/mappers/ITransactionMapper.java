@@ -9,7 +9,11 @@ import com.carbonaro.ReactiveSimplifiedPicPay.api.responses.transaction.Transact
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.entities.LegalPerson;
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.entities.Transaction;
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.mappers.helpers.ITransactionMapperHelper;
+
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -37,7 +41,7 @@ public abstract class ITransactionMapper {
     public Mono<PageResponse<TransactionResponse>> toPageTransactionResponse(PageResponse<Transaction> pageOfTransactions) {
 
         return Flux
-                .fromIterable(pageOfTransactions.getContent())
+                .fromIterable(Objects.isNull(pageOfTransactions.getContent()) ? Collections.emptyList() : pageOfTransactions.getContent())
                 .flatMap(this::buildTupleForTransactionResponse)
                 .flatMap(this::setTransactionFields)
                 .collectList()

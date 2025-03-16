@@ -10,8 +10,12 @@ import com.carbonaro.ReactiveSimplifiedPicPay.services.TransactionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
+
+import static com.carbonaro.ReactiveSimplifiedPicPay.AppConstants.ADMIN_SCOPE;
+import static com.carbonaro.ReactiveSimplifiedPicPay.AppConstants.USER_SCOPE;
 
 @Slf4j
 @RestController
@@ -22,6 +26,7 @@ public class TransactionImpl implements ITransactionAPI {
     private final ITransactionMapper transactionMapper;
 
     @Override
+    @PreAuthorize(ADMIN_SCOPE)
     public Mono<PageResponse<TransactionResponse>> findAllTransactions(TransactionFilterRequest filterRequest) {
 
         var pageRequest = PageRequest.of(filterRequest.getPage(), filterRequest.getSize());
@@ -32,6 +37,7 @@ public class TransactionImpl implements ITransactionAPI {
     }
 
     @Override
+    @PreAuthorize(USER_SCOPE)
     public Mono<Void> saveTransaction(TransactionRequest transaction) {
 
         return Mono

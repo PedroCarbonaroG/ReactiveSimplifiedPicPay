@@ -4,8 +4,6 @@ import com.carbonaro.ReactiveSimplifiedPicPay.services.SystemUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
@@ -21,6 +19,8 @@ import org.springframework.security.web.server.authentication.AuthenticationWebF
 import org.springframework.security.web.server.authentication.ServerAuthenticationConverter;
 import reactor.core.publisher.Mono;
 
+import static com.carbonaro.ReactiveSimplifiedPicPay.AppConstants.OAUTH_USER_NOT_FOUND;
+
 @Configuration
 @EnableWebFluxSecurity
 @RequiredArgsConstructor
@@ -30,7 +30,6 @@ public class SecurityConfig {
     private final SystemUserService userService;
 
     @Bean
-    @Order(Ordered.HIGHEST_PRECEDENCE)
     SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http,
                                                      ReactiveAuthenticationManager authenticationManager,
                                                      ServerAuthenticationConverter authenticationConverter) {
@@ -41,7 +40,7 @@ public class SecurityConfig {
         return http
                 .authorizeExchange(exchanges -> exchanges
                         .pathMatchers("/swagger-resources/**", "/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**", "/webjars/**").permitAll()
-                        .pathMatchers(HttpMethod.POST, "/oauth/register", "/oauth/login/user", "/oauth/login/admin").permitAll()
+                        .pathMatchers(HttpMethod.POST, "/oauth/register", "/oauth/login").permitAll()
                         .anyExchange().authenticated())
                 .addFilterAt(authenticationWebFilter, SecurityWebFiltersOrder.AUTHENTICATION)
                 .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
@@ -60,8 +59,8 @@ public class SecurityConfig {
     public ReactiveUserDetailsService userDetailsService() {
 
         return username -> userService.findByUsername(username)
-                .map(user -> (UserDetails) user)
-                .switchIfEmpty(Mono.error(new SecurityException("User not found")));
+                .map(UserDetails.class::cast)
+                .switchIfEmpty(Mono.error(new SecurityException(OAUTH_USER_NOT_FOUND)));
     }
 
 }

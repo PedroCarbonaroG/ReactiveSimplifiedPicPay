@@ -14,6 +14,7 @@ import reactor.core.publisher.Mono;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.Objects;
 import java.util.stream.Stream;
 
@@ -25,7 +26,6 @@ public abstract class BaseRepository {
     protected ReactiveMongoTemplate template;
 
     protected <T> Mono<Page<T>> toPage(Query query, Pageable page, Class<T> clazz) {
-
         return template
                 .count(query, clazz)
                 .flatMap(total -> template
