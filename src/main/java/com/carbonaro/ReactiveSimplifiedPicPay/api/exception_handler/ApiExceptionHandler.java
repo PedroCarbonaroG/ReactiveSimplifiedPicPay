@@ -7,6 +7,7 @@ import com.carbonaro.ReactiveSimplifiedPicPay.services.exceptions.EmptyException
 import com.carbonaro.ReactiveSimplifiedPicPay.services.exceptions.NotFoundException;
 import com.carbonaro.ReactiveSimplifiedPicPay.services.exceptions.TransactionValidationException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.security.SignatureException;
@@ -124,13 +125,14 @@ public class ApiExceptionHandler implements WebExceptionHandler {
         };
 
         ErrorResponse errorResponse = ErrorResponse.builder()
+                .timestamp(LocalDateTime.now())
                 .error(status.name())
                 .status(status.value())
                 .errorMessage(status.name().concat(SEPARATOR).concat(messageHelper.getMessage(errorMessage)))
                 .path(exchange.getRequest().getPath().value())
                 .build();
 
-        var bytes = new ObjectMapper().writeValueAsBytes(errorResponse);
+        var bytes = new ObjectMapper().registerModule(new JavaTimeModule()).writeValueAsBytes(errorResponse);
         var buffer = exchange.getResponse().bufferFactory().wrap(bytes);
 
         exchange.getResponse().setStatusCode(status);
