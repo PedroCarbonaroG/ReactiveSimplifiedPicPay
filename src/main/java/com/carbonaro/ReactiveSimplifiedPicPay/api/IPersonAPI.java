@@ -1,20 +1,6 @@
 package com.carbonaro.ReactiveSimplifiedPicPay.api;
 
-import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.route_description.DeleteLegalPersonRouteDescription;
-import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.route_description.DeleteNaturalPersonRouteDescription;
-import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.route_description.DeletePartnerByLegalPersonRouteDescription;
-import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.route_description.FindAllLegalsRouteDescription;
-import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.route_description.FindAllNaturalsRouteDescription;
-import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.route_description.FindLegalByCNPJRouteDescription;
-import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.route_description.FindLegalByIdRouteDescription;
-import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.route_description.FindNaturalByCPFRouteDescription;
-import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.route_description.FindNaturalByIDRouteDescription;
-import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.route_description.LegalPersonFilterRequestAsQueryParam;
-import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.route_description.SaveLegalPersonRouteDescription;
-import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.route_description.SaveNaturalPersonRouteDescription;
-import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.route_description.SavePartnerToLegalPersonRouteDescription;
-import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.route_description.UpdateLegalPersonRouteDescription;
-import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.route_description.UpdateNaturalPersonRouteDescription;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.route_description.*;
 import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.route_params.LegalPersonRequestAsQueryParam;
 import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.route_params.NaturalPersonFilterRequestAsQueryParam;
 import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.route_params.NaturalPersonRequestAsQueryParam;
@@ -29,12 +15,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springdoc.core.converters.models.PageableAsQueryParam;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 @Tag(name = "Person API - Natural and Legal environment")

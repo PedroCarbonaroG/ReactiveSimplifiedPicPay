@@ -12,6 +12,10 @@ interface INaturalPersonRepository extends ReactiveMongoRepository<NaturalPerson
     @Description("Returns a NaturalPerson by it's unique CPF")
     Mono<NaturalPerson> findByCpf(String cpf);
 
+    @Description("Returns a NaturalPerson by your unique email")
+    Mono<NaturalPerson> findByEmail(String email);
+
     @Description("Successfully delete an NaturalPerson by it's CPF")
     Mono<Void> deleteByCpf(String cpf);
+
 }

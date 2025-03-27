@@ -14,26 +14,31 @@ import java.lang.annotation.Target;
         in = ParameterIn.QUERY,
         name = "employeesNumber",
         description = "Number of enterprise employees.",
-        schema = @Schema(type = "Integer"))
+        schema = @Schema(implementation = Integer.class),
+        required = true)
 @Parameter(
         in = ParameterIn.QUERY,
         name = "name",
         description = "Enterprise full name.",
-        schema = @Schema(type = "String"))
+        schema = @Schema(implementation = String.class),
+        required = true)
 @Parameter(
         in = ParameterIn.QUERY,
         name = "email",
         description = "Enterprise full email.",
-        schema = @Schema(type = "String"))
+        schema = @Schema(implementation = String.class),
+        required = true)
 @Parameter(
         in = ParameterIn.QUERY,
         name = "address",
         description = "Enterprise full address.",
-        schema = @Schema(type = "String"))
+        schema = @Schema(implementation = String.class),
+        required = true)
 @Parameter(
         in = ParameterIn.QUERY,
         name = "password",
         description = "Enterprise full and secret password.",
-        schema = @Schema(type = "String"))
+        schema = @Schema(implementation = String.class),
+        required = true)
 public @interface LegalPersonRequestAsQueryParam {
 }

@@ -15,6 +15,7 @@ public class ExportingBuilderExcelHelper {
     private final ITransactionMapper transactionMapper;
     private final TransactionService transactionService;
     private final LegalPersonService legalPersonService;
+
     private ExportingServiceHelper exportingServiceHelper;
     private final NaturalPersonService naturalPersonService;
 

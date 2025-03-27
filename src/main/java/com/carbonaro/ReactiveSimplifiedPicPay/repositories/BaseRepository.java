@@ -1,10 +1,5 @@
 package com.carbonaro.ReactiveSimplifiedPicPay.repositories;
 
-import java.lang.reflect.Field;
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.Objects;
-import java.util.stream.Stream;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +11,12 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
+import java.lang.reflect.Field;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.Collections;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 @Slf4j
 @Repository
@@ -25,7 +26,6 @@ public abstract class BaseRepository {
     protected ReactiveMongoTemplate template;
 
     protected <T> Mono<Page<T>> toPage(Query query, Pageable page, Class<T> clazz) {
-
         return template
                 .count(query, clazz)
                 .flatMap(total -> template
@@ -41,14 +41,19 @@ public abstract class BaseRepository {
     }
 
     protected void addParamBetweenDates(Query query, String field, LocalDate initialDate, LocalDate finalDate) {
-        if (possibleAddParamToQuery(query, field, initialDate, finalDate)) {
+        if (possibleAddParamToQuery(query, field) && possibleAddParamToQuery(initialDate) || possibleAddParamToQuery(query, field, finalDate)) {
             query.addCriteria(Criteria.where(field).gte(initialDate).lte(finalDate));
         }
     }
 
     protected void addParamBetweenValues(Query query, String field, BigDecimal initialValue, BigDecimal finalValue) {
-        if (possibleAddParamToQuery(query, field, initialValue, finalValue)) {
-            query.addCriteria(Criteria.where(field).gte(initialValue.toString()).lte(finalValue.toString()));
+
+        if (initialValue != null || finalValue != null) {
+            Criteria criteria = Criteria.where(field);
+            if (initialValue != null && finalValue != null) { criteria.gte(initialValue).lte(finalValue); }
+            else if (initialValue != null) { criteria.gte(initialValue); }
+            else { criteria.lte(finalValue); }
+            query.addCriteria(criteria);
         }
     }
 

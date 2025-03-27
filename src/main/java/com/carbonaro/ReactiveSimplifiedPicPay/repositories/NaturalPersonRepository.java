@@ -41,6 +41,10 @@ public class NaturalPersonRepository extends BaseRepository {
         return repository.deleteByCpf(document);
     }
 
+    public Mono<NaturalPerson> findByEmail(String email) {
+        return repository.findByEmail(email);
+    }
+
     public Mono<Void> deleteAll() {
         return repository.deleteAll();
     }

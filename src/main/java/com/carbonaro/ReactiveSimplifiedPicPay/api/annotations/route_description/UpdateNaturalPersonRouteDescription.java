@@ -1,6 +1,5 @@
 package com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.route_description;
 
-import com.carbonaro.ReactiveSimplifiedPicPay.api.exception_handler.response.ErrorEmptyResponse;
 import com.carbonaro.ReactiveSimplifiedPicPay.api.exception_handler.response.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -18,7 +17,7 @@ import java.lang.annotation.RetentionPolicy;
                 @ApiResponse(
                         responseCode = "204",
                         description = "Neither LegalPerson was found.",
-                        content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorEmptyResponse.class))),
+                        content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorResponse.class))),
                 @ApiResponse(
                         responseCode = " 400 • 404  500",
                         description = "If something goes wrong if data or application resources, returns treated error.",

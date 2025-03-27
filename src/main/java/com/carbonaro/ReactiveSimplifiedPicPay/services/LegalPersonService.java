@@ -86,7 +86,7 @@ public class LegalPersonService {
     }
 
     public Mono<Page<LegalPerson>> findAllLegals(Pageable page, LegalPersonFilterRequest filterRequest) {
-
+        // TODO MELHORAR FILTRO PARA PESQUISA POR APROXIMAÇÃO NOME, ENDEREÇO
         return legalPersonRepository
                 .findAll(page, filterRequest)
                 .switchIfEmpty(Mono.error(new EmptyException()))

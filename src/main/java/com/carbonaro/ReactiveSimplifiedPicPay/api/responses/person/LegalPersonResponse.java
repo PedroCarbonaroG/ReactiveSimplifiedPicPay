@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+
+import java.math.BigDecimal;
 import java.util.List;
 
 @Data
@@ -25,7 +27,14 @@ public class LegalPersonResponse extends PersonResponse {
     @Schema(description = "Number of employees in the company")
     private int employeesNumber;
 
+    @Schema(description = "Enterprise monthly billing")
+    private BigDecimal monthlyBilling;
+
+    @Schema(description = "Enterprise annual billing")
+    private BigDecimal annualBilling;
+
     @Schema(description = "Demonstration of the company partners")
     List<NaturalPersonResponse> partners;
+
 }
 

@@ -1,150 +1,165 @@
 package com.carbonaro.ReactiveSimplifiedPicPay.api.exception_handler;
 
-import com.carbonaro.ReactiveSimplifiedPicPay.api.exception_handler.helper.ApiExceptionHandlerHelper;
 import com.carbonaro.ReactiveSimplifiedPicPay.api.exception_handler.helper.MessageHelper;
-import com.carbonaro.ReactiveSimplifiedPicPay.api.exception_handler.response.ErrorEmptyResponse;
 import com.carbonaro.ReactiveSimplifiedPicPay.api.exception_handler.response.ErrorResponse;
 import com.carbonaro.ReactiveSimplifiedPicPay.services.exceptions.BadRequestException;
 import com.carbonaro.ReactiveSimplifiedPicPay.services.exceptions.EmptyException;
 import com.carbonaro.ReactiveSimplifiedPicPay.services.exceptions.NotFoundException;
 import com.carbonaro.ReactiveSimplifiedPicPay.services.exceptions.TransactionValidationException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.security.SignatureException;
-import io.swagger.v3.core.util.Json;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.web.reactive.error.ErrorWebExceptionHandler;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.annotation.Description;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.server.ServerWebExchange;
+import org.springframework.web.server.WebExceptionHandler;
+import org.springframework.web.util.UriUtils;
 import reactor.core.publisher.Mono;
-import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.util.Arrays;
 
 import static com.carbonaro.ReactiveSimplifiedPicPay.AppConstants.*;
 
 @Slf4j
+@Order(-2)
 @RestControllerAdvice
 @RequiredArgsConstructor
-public class ApiExceptionHandler extends ApiExceptionHandlerHelper implements ErrorWebExceptionHandler {
+public class ApiExceptionHandler implements WebExceptionHandler {
 
     private final MessageHelper messageHelper;
-
     private static final String SEPARATOR = " • ";
 
-    private void getPrivateStackTrace(Exception e) {
-
-        if (e instanceof EmptyException) {
-
-            log.warn("WARN           ====> {}", messageHelper.getMessage(e.getMessage()));
-            log.warn("LOCALIZED WARN ====> {}", e.getLocalizedMessage());
-            log.warn("WARNING CLASS  ====> {}", e.getClass());
-            log.warn("STACKTRACE     ====> {}", (Object) e.getStackTrace());
+    private void logException(Throwable e, boolean isWarning) {
+        if (isWarning) {
+            log.warn("⚠ WARN: {}", messageHelper.getMessage(e.getMessage()));
+            log.warn("⚠ LOCALIZED: {}", messageHelper.getMessage(e.getLocalizedMessage()));
         } else {
-            log.error("ERROR            ====> {}", messageHelper.getMessage(e.getMessage()));
-            log.error("LOCALIZED ERROR  ====> {}", e.getLocalizedMessage());
-            log.error("ERROR CLASS      ====> {}", e.getClass());
-
-            for (int i = 0; i < e.getStackTrace().length; i++) {
-                System.out.println(e.getStackTrace()[i]);
-            }
-//            log.error("STACKTRACE       ====> {}", (Object) e.getStackTrace());
+            log.error("❌ ERROR: {}", messageHelper.getMessage(e.getMessage()));
+            log.error("❌ LOCALIZED: {}", messageHelper.getMessage(e.getLocalizedMessage()));
         }
+        log.error("CLASS: {}", e.getClass());
+
+        log.error("STACKTRACE:");
+        Arrays.stream(e.getStackTrace()).forEach(System.out::println);
     }
 
     @ExceptionHandler({EmptyException.class})
-    private ResponseEntity<ErrorEmptyResponse> noContentExceptionHandler(Exception e, ServerWebExchange request) {
-
-        getPrivateStackTrace(e);
-        ErrorEmptyResponse response = ErrorEmptyResponse.builder()
-                .error(NO_CONTENT)
-                .timestamp(TIMESTAMP)
-                .path(getPath(request))
-                .status(NO_CONTENT_STATUS.value())
-                .warningMessage(messageHelper.getMessage(e.getMessage()).concat(SEPARATOR).concat(messageHelper.getMessage(HANDLER_NO_CONTENT_WARNING_MESSAGE)))
-                .build();
-
-        return new ResponseEntity<>(response, HttpStatus.OK);
+    private ResponseEntity<ErrorResponse> handleNoContentException(Exception e, ServerWebExchange request) {
+        logException(e, true);
+        return buildErrorResponse(e, HttpStatus.OK, request);
     }
 
     @ExceptionHandler({TransactionValidationException.class, BadRequestException.class})
-    private ResponseEntity<ErrorResponse> badRequestExceptionHandler(Exception e, ServerWebExchange request) {
+    private ResponseEntity<ErrorResponse> handleBadRequestException(Exception e, ServerWebExchange request) {
+        logException(e, false);
+        return buildErrorResponse(e, HttpStatus.BAD_REQUEST, request);
+    }
 
-        getPrivateStackTrace(e);
+    @ExceptionHandler({AccessDeniedException.class})
+    private ResponseEntity<ErrorResponse> handleSecurityException(Exception e, ServerWebExchange request) {
+
+        var status = HttpStatus.UNAUTHORIZED;
+
         ErrorResponse response = ErrorResponse.builder()
-                .error(BAD_REQUEST)
-                .timestamp(TIMESTAMP)
+                .timestamp(LocalDateTime.now())
                 .path(getPath(request))
-                .status(BAD_REQUEST_STATUS.value())
-                .errorMessage(messageHelper.getMessage(e.getMessage()).concat(SEPARATOR).concat(messageHelper.getMessage(HANDLER_BAD_REQUEST_ERROR_MESSAGE)))
+                .error(status.getReasonPhrase())
+                .status(status.value())
+                .errorMessage(e.getMessage().concat(SEPARATOR)
+                        .concat(messageHelper.getMessage(getDefaultMessageByStatus(status.value()))))
                 .build();
 
-        return new ResponseEntity<>(response, BAD_REQUEST_STATUS);
+        return new ResponseEntity<>(response, status);
     }
 
     @ExceptionHandler({NotFoundException.class})
-    private ResponseEntity<ErrorResponse> notFoundExceptionHandler(Exception e, ServerWebExchange request) {
-
-        getPrivateStackTrace(e);
-        ErrorResponse response = ErrorResponse.builder()
-                .error(NOT_FOUND)
-                .timestamp(TIMESTAMP)
-                .path(getPath(request))
-                .status(NOT_FOUND_STATUS.value())
-                .errorMessage(messageHelper.getMessage(e.getMessage()).concat(SEPARATOR).concat(messageHelper.getMessage(HANDLER_NOT_FOUND_ERROR_MESSAGE)))
-                .build();
-
-        return new ResponseEntity<>(response, NOT_FOUND_STATUS);
+    private ResponseEntity<ErrorResponse> handleNotFoundException(Exception e, ServerWebExchange request) {
+        logException(e, false);
+        return buildErrorResponse(e, HttpStatus.NOT_FOUND, request);
     }
 
-   @ExceptionHandler({Exception.class})
-    private ResponseEntity<ErrorResponse> internalServerErrorExceptionHandler(Exception e, ServerWebExchange request) {
+    @ExceptionHandler(Exception.class)
+    private ResponseEntity<ErrorResponse> handleInternalServerError(Exception e, ServerWebExchange request) {
+        logException(e, false);
+        return buildErrorResponse(e, HttpStatus.INTERNAL_SERVER_ERROR, request);
+    }
 
-        getPrivateStackTrace(e);
+    private ResponseEntity<ErrorResponse> buildErrorResponse(Exception e, HttpStatus status, ServerWebExchange request) {
+
         ErrorResponse response = ErrorResponse.builder()
-                .timestamp(TIMESTAMP)
+                .timestamp(LocalDateTime.now())
                 .path(getPath(request))
-                .error(INTERNAL_SERVER_ERROR)
-                .status(INTERNAL_SERVER_STATUS.value())
-                .errorMessage(messageHelper.getMessage(e.getMessage()).concat(SEPARATOR).concat(messageHelper.getMessage(HANDLER_INTERNAL_SERVER_ERROR_MESSAGE)))
+                .error(status.getReasonPhrase())
+                .status(status.value())
+                .errorMessage(messageHelper.getMessage(e.getMessage()).concat(SEPARATOR)
+                        .concat(messageHelper.getMessage(getDefaultMessageByStatus(status.value()))))
                 .build();
 
-        return new ResponseEntity<>(response, INTERNAL_SERVER_STATUS);
+        return new ResponseEntity<>(response, status);
+    }
+
+    private String getDefaultMessageByStatus(int status) {
+
+        return switch (status / 100) {
+            case 4 -> switch (status) {
+                case 400 -> HANDLER_BAD_REQUEST_ERROR_MESSAGE;
+                case 401 -> HANDLER_UNAUTHORIZED_ACCESS_DENIED_ERROR_MESSAGE;
+                case 404 -> HANDLER_NOT_FOUND_ERROR_MESSAGE;
+                default -> HANDLER_INTERNAL_SERVER_ERROR_MESSAGE;};
+            case 2 -> HANDLER_NO_CONTENT_WARNING_MESSAGE;
+            default -> HANDLER_INTERNAL_SERVER_ERROR_MESSAGE;
+        };
+    }
+
+    private String getPath(ServerWebExchange request) {
+        return UriUtils.decode(request.getRequest().getPath().toString(), "UTF-8");
     }
 
     @Override
+    @SneakyThrows
+    @Description("External system exception handler")
     public Mono<Void> handle(ServerWebExchange exchange, Throwable ex) {
 
+        logException(ex, false);
         HttpStatus status = HttpStatus.UNAUTHORIZED;
-
         String errorMessage = switch (ex) {
             case IllegalArgumentException ignored -> HANDLER_ILLEGAL_ARGUMENT_ERROR_MESSAGE;
             case MalformedJwtException ignored -> HANDLER_MALFORMED_JWT_ERROR_MESSAGE;
             case ExpiredJwtException ignored -> HANDLER_EXPIRED_JWT_ERROR_MESSAGE;
             case SignatureException ignored -> HANDLER_SIGNATURE_ERROR_MESSAGE;
+            case AuthenticationServiceException ignored -> HANDLER_AUTHENTICATION_SERVICE_EXCEPTION;
+            case AuthenticationException ignored -> HANDLER_AUTHENTICATION_EXCEPTION;
             default -> HANDLER_INTERNAL_SERVER_ERROR_MESSAGE;
         };
 
-        getPrivateStackTrace((Exception) ex);
-        ErrorResponse response = ErrorResponse.builder()
-                .error(status.getReasonPhrase())
-                .timestamp(TIMESTAMP)
-                .path(getPath(exchange))
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .error(status.name())
                 .status(status.value())
-                .errorMessage(messageHelper.getMessage(errorMessage))
+                .errorMessage(StringUtils.capitalize(status.name().toLowerCase()).concat(SEPARATOR).concat(messageHelper.getMessage(errorMessage)))
+                .path(exchange.getRequest().getPath().value())
                 .build();
+
+        var bytes = new ObjectMapper().registerModule(new JavaTimeModule()).writeValueAsBytes(errorResponse);
+        var buffer = exchange.getResponse().bufferFactory().wrap(bytes);
 
         exchange.getResponse().setStatusCode(status);
         exchange.getResponse().getHeaders().setContentType(MediaType.APPLICATION_JSON);
-        byte[] bytes = Json.pretty(response).getBytes(StandardCharsets.UTF_8);
-
-        return exchange
-                .getResponse()
-                .writeWith(Mono.just(exchange.getResponse().bufferFactory().wrap(bytes)));
+        return exchange.getResponse().writeWith(Mono.just(buffer));
     }
 
 }
-
