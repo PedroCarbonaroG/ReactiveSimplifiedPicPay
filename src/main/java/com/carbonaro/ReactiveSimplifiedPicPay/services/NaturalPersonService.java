@@ -24,7 +24,7 @@ public class NaturalPersonService {
     private final NaturalPersonRepository repositoryNP;
 
     public Mono<Page<NaturalPerson>> findAllNaturals(Pageable page, NaturalPersonFilterRequest filterRequest) {
-
+        // TODO MELHORAR FILTRO APROXIMAÇÃO NOME, EMAIL E ENDEREÇO
         return repositoryNP
                 .findAll(page, filterRequest)
                 .switchIfEmpty(Mono.error(new EmptyException()))

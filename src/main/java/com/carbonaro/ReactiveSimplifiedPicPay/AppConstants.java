@@ -1,10 +1,6 @@
 package com.carbonaro.ReactiveSimplifiedPicPay;
 
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.security.SignatureException;
 import lombok.experimental.UtilityClass;
-import org.springframework.security.authentication.AuthenticationServiceException;
 
 @UtilityClass
 public class AppConstants {
@@ -13,7 +9,7 @@ public class AppConstants {
     public static final String ONLY_NUMBERS = "^\\d+$";
 
     /* REFERENCES TO EXCEPTION MESSAGES */
-    public static final String OAUTH_USER_NOT_FOUND = "user.err.not.found";
+    public static final String OAUTH_USER_NOT_FOUND = "oauth.user.err.not.found";
     public static final String WALLET_NEGATIVE_AMOUNT_FOR_DEPOSIT = "wallet.err.negative.amount.for.deposit";
     public static final String WALLET_INVALID_DOCUMENT_FORMAT = "wallet.err.invalid.document.format";
     public static final String TRANSACTION_NEGATIVE_VALUE = "transaction.err.negative.value";
@@ -26,6 +22,7 @@ public class AppConstants {
     public static final String GENERAL_MESSAGE_HELPER_DEFAULT_MESSAGE = "general.message.helper.default.message";
 
     public static final String HANDLER_NOT_FOUND_ERROR_MESSAGE = "handler.not.found.error.message";
+    public static final String HANDLER_UNAUTHORIZED_ACCESS_DENIED_ERROR_MESSAGE = "handler.unauthorized.access.denied.error.message";
     public static final String HANDLER_BAD_REQUEST_ERROR_MESSAGE = "handler.bad.request.error.message";
     public static final String HANDLER_NO_CONTENT_WARNING_MESSAGE = "handler.no.content.warning.message";
     public static final String HANDLER_INTERNAL_SERVER_ERROR_MESSAGE =  "handler.internal.server.error.message";

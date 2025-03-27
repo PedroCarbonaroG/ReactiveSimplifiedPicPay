@@ -13,11 +13,13 @@ import io.jsonwebtoken.security.SignatureException;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Description;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -27,6 +29,7 @@ import org.springframework.web.server.WebExceptionHandler;
 import org.springframework.web.util.UriUtils;
 import reactor.core.publisher.Mono;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 
 import static com.carbonaro.ReactiveSimplifiedPicPay.AppConstants.*;
 
@@ -49,19 +52,37 @@ public class ApiExceptionHandler implements WebExceptionHandler {
         }
         log.error("CLASS: {}", e.getClass());
 
-//        log.error("STACKTRACE:", e);
+        log.error("STACKTRACE:");
+        Arrays.stream(e.getStackTrace()).forEach(System.out::println);
     }
 
     @ExceptionHandler({EmptyException.class})
     private ResponseEntity<ErrorResponse> handleNoContentException(Exception e, ServerWebExchange request) {
         logException(e, true);
-        return buildErrorResponse(e, HttpStatus.NO_CONTENT, request);
+        return buildErrorResponse(e, HttpStatus.OK, request);
     }
 
     @ExceptionHandler({TransactionValidationException.class, BadRequestException.class})
     private ResponseEntity<ErrorResponse> handleBadRequestException(Exception e, ServerWebExchange request) {
         logException(e, false);
         return buildErrorResponse(e, HttpStatus.BAD_REQUEST, request);
+    }
+
+    @ExceptionHandler({AccessDeniedException.class})
+    private ResponseEntity<ErrorResponse> handleSecurityException(Exception e, ServerWebExchange request) {
+
+        var status = HttpStatus.UNAUTHORIZED;
+
+        ErrorResponse response = ErrorResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .path(getPath(request))
+                .error(status.getReasonPhrase())
+                .status(status.value())
+                .errorMessage(e.getMessage().concat(SEPARATOR)
+                        .concat(messageHelper.getMessage(getDefaultMessageByStatus(status.value()))))
+                .build();
+
+        return new ResponseEntity<>(response, status);
     }
 
     @ExceptionHandler({NotFoundException.class})
@@ -95,6 +116,7 @@ public class ApiExceptionHandler implements WebExceptionHandler {
         return switch (status / 100) {
             case 4 -> switch (status) {
                 case 400 -> HANDLER_BAD_REQUEST_ERROR_MESSAGE;
+                case 401 -> HANDLER_UNAUTHORIZED_ACCESS_DENIED_ERROR_MESSAGE;
                 case 404 -> HANDLER_NOT_FOUND_ERROR_MESSAGE;
                 default -> HANDLER_INTERNAL_SERVER_ERROR_MESSAGE;};
             case 2 -> HANDLER_NO_CONTENT_WARNING_MESSAGE;
@@ -126,7 +148,7 @@ public class ApiExceptionHandler implements WebExceptionHandler {
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .error(status.name())
                 .status(status.value())
-                .errorMessage(status.name().concat(SEPARATOR).concat(messageHelper.getMessage(errorMessage)))
+                .errorMessage(StringUtils.capitalize(status.name().toLowerCase()).concat(SEPARATOR).concat(messageHelper.getMessage(errorMessage)))
                 .path(exchange.getRequest().getPath().value())
                 .build();
 
