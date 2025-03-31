@@ -11,6 +11,8 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDate;
+
 @Slf4j
 @Repository
 @RequiredArgsConstructor
@@ -19,12 +21,18 @@ public class NaturalPersonRepository extends BaseRepository {
     private final INaturalPersonRepository repository;
 
     private static final String NAME = "name";
+    private static final String EMAIL = "email";
+    private static final String ADDRESS = "address";
+    private static final String BIRTH_DATE = "birthDate";
 
     public Mono<Page<NaturalPerson>> findAll(Pageable page, NaturalPersonFilterRequest request) {
 
         Query query = new Query();
 
         addParamToQuery(query, NAME, request.getName());
+        addParamToQuery(query, EMAIL, request.getEmail());
+        addParamToQuery(query, ADDRESS, request.getEmail());
+        addParamBetweenDates(query, BIRTH_DATE,  request.getBirthDate(), request.getBirthDate());
 
         return toPage(query, page, NaturalPerson.class);
     }
@@ -41,8 +49,8 @@ public class NaturalPersonRepository extends BaseRepository {
         return repository.deleteByCpf(document);
     }
 
-    public Mono<NaturalPerson> findByEmail(String email) {
-        return repository.findByEmail(email);
+    public Mono<Void> delete(NaturalPerson natural) {
+        return repository.delete(natural);
     }
 
     public Mono<Void> deleteAll() {

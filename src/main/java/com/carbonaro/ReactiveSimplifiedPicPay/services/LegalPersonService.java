@@ -86,7 +86,7 @@ public class LegalPersonService {
     }
 
     public Mono<Page<LegalPerson>> findAllLegals(Pageable page, LegalPersonFilterRequest filterRequest) {
-        // TODO MELHORAR FILTRO PARA PESQUISA POR APROXIMAÇÃO NOME, ENDEREÇO
+
         return legalPersonRepository
                 .findAll(page, filterRequest)
                 .switchIfEmpty(Mono.error(new EmptyException()))
@@ -131,8 +131,8 @@ public class LegalPersonService {
 
     public Mono<Void> deleteLegalPerson(String companyCNPJ) {
 
-        return legalPersonRepository
-                .deleteByCnpj(companyCNPJ);
+        return findLegalByCNPJ(companyCNPJ)
+                .flatMap(legalPersonRepository::delete);
     }
 
     public Mono<Void> deposit(LegalPerson legalPerson, BigDecimal amount) {

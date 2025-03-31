@@ -175,7 +175,7 @@ public class JwtHandler implements ReactiveAuthenticationManager, ServerAuthenti
 
         @Override
         public Object getCredentials() {
-            return null;
+            return getAuthorities();
         }
 
         @Override

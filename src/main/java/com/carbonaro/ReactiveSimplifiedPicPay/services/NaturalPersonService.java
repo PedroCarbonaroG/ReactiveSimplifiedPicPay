@@ -24,7 +24,7 @@ public class NaturalPersonService {
     private final NaturalPersonRepository repositoryNP;
 
     public Mono<Page<NaturalPerson>> findAllNaturals(Pageable page, NaturalPersonFilterRequest filterRequest) {
-        // TODO MELHORAR FILTRO APROXIMAÇÃO NOME, EMAIL E ENDEREÇO
+
         return repositoryNP
                 .findAll(page, filterRequest)
                 .switchIfEmpty(Mono.error(new EmptyException()))
@@ -52,8 +52,7 @@ public class NaturalPersonService {
         return Mono.just(naturalPerson)
                 .flatMap(self -> {
                     self.setCpf(self.getCpf());
-                    return repositoryNP.findByCpf(self.getCpf());
-                })
+                    return repositoryNP.findByCpf(self.getCpf());})
                 .flatMap(alreadyExistentNatural -> Mono.error(new BadRequestException()))
                 .switchIfEmpty(validateNewNaturalPerson(naturalPerson)
                         .publishOn(Schedulers.boundedElastic())
@@ -78,7 +77,7 @@ public class NaturalPersonService {
 
         return this
                 .fillEmptyFieldsIfHas(naturalPerson, cpf)
-                .flatMap(self -> repositoryNP.deleteByCpf(cpf).thenReturn(self))
+                .flatMap(self -> repositoryNP.deleteByCpf(self.getCpf()).thenReturn(self))
                 .flatMap(repositoryNP::save)
                 .doOnSuccess(unused -> log.info("NaturalPerson was updated with success!"))
                 .doOnError(errorResponse -> Mono.error(new Exception(errorResponse.getMessage())))
@@ -102,7 +101,9 @@ public class NaturalPersonService {
     }
 
     public Mono<Void> deleteNatural(String cpf) {
-        return repositoryNP.deleteByCpf(cpf);
+
+        return findNaturalByCPF(cpf)
+                .flatMap(repositoryNP::delete);
     }
 
     public Mono<Void> deposit(NaturalPerson naturalPerson, BigDecimal amount) {
@@ -110,8 +111,7 @@ public class NaturalPersonService {
         return Mono.just(naturalPerson)
                 .flatMap(self -> {
                     self.setBalance(self.getBalance().add(amount));
-                    return repositoryNP.save(self);
-                })
+                    return repositoryNP.save(self);})
                 .doOnError(errorResponse -> Mono.error(new Exception(errorResponse.getMessage())))
                 .then();
     }

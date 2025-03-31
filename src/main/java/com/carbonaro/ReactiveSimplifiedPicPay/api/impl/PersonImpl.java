@@ -95,8 +95,7 @@ public class PersonImpl implements IPersonAPI {
     @PreAuthorize(ADMIN_SCOPE)
     public Mono<Void> deleteLegalPerson(String companyCNPJ) {
 
-        return Mono
-                .just(companyCNPJ)
+        return Mono.just(companyCNPJ)
                 .flatMap(legalPersonService::deleteLegalPerson)
                 .doOnSuccess(unused -> log.warn("Legal person with CNPJ: {}, was deleted with success!", companyCNPJ));
     }

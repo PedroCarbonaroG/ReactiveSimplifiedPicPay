@@ -25,7 +25,10 @@ public abstract class BaseRepository {
     @Autowired
     protected ReactiveMongoTemplate template;
 
+    private static final String SEARCH_BY_APPROXIMATION_AND_CASE_INSENSITIVE = "i";
+
     protected <T> Mono<Page<T>> toPage(Query query, Pageable page, Class<T> clazz) {
+
         return template
                 .count(query, clazz)
                 .flatMap(total -> template
@@ -34,9 +37,10 @@ public abstract class BaseRepository {
                         .map(list -> new PageImpl<>(list, page, total)));
     }
 
-    protected <T> void addParamToQuery(Query query, String field, T fieldValue) {
-        if (possibleAddParamToQuery(query, field, fieldValue)) {
-            query.addCriteria(Criteria.where(field).is(fieldValue));
+    protected <T> void addParamToQuery(Query query, String fieldName, T fieldValue) {
+        if (possibleAddParamToQuery(query, fieldName, fieldValue)) {
+            if (fieldValue instanceof String) { query.addCriteria(Criteria.where(fieldName).regex(fieldValue.toString(), SEARCH_BY_APPROXIMATION_AND_CASE_INSENSITIVE)); }
+            else { query.addCriteria(Criteria.where(fieldName).is(fieldValue)); }
         }
     }
 
