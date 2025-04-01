@@ -40,7 +40,7 @@ public class SecurityConfig {
         return http
                 .authorizeExchange(exchanges -> exchanges
                         .pathMatchers("/swagger-resources/**", "/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**", "/webjars/**").permitAll()
-                        .pathMatchers(HttpMethod.POST, "/oauth/register", "/oauth/login").permitAll()
+                        .pathMatchers(HttpMethod.POST, "/oauth/register", "/oauth/register/admin", "/oauth/login").permitAll()
                         .anyExchange().authenticated())
                 .addFilterAt(authenticationWebFilter, SecurityWebFiltersOrder.AUTHENTICATION)
                 .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)

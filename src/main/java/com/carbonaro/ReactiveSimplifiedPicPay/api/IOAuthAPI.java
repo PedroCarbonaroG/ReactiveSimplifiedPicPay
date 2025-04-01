@@ -1,6 +1,7 @@
 package com.carbonaro.ReactiveSimplifiedPicPay.api;
 
 import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.route_description.GenerateTokenRouteDescription;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.route_description.RegisterAdminRouteDescription;
 import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.route_description.RegisterUserRouteDescription;
 import com.carbonaro.ReactiveSimplifiedPicPay.api.responses.oauth.TokenResponse;
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.entities.SystemUser;
