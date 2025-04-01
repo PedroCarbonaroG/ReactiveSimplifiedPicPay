@@ -2,14 +2,15 @@
 2-> Transaction API 100% EXECUTATION - OK
 3-> Person API 100% EXECUTATION - OK
 4-> OAuth API 100% EXECUTATION - OK
+5-> Exporting API 100% EXECUTATION - OK
 6-> REVER TODA A IMPLEMENTAÇÃO DO JWT, TALVEZ DÊ PRA MELHORAR MUITO E SEGREGAR OS METODOS - OK
 7-> TRATAR AS EXCESSOES DO JWT - OK
 8-> PUT SECURITY IN ALL ROUTES - OK
 9-> REFATORAR COMPLETAMENTE O EXCEPTION HANDLER, PRECISA MELHORAR TUDO O FLUXO E TOMAR CUIDADO COM USO DO MESSAGE-HELPER - OK
 10 -> Refactor no OAuthAPI (criar camadas corretas e segregar) - OK
+11-> Create admin at OAuthAPI - OK
 -----------------------------------------------------------------------------------------------------------------------------------
-5-> Exporting API 100% EXECUTATION -
-11-> UNIT TESTS FOR ALL OF THEM -
+12-> UNIT TESTS FOR ALL OF THEM -
 
 ===================================================================================================================================
 Complementar online docs for study:
