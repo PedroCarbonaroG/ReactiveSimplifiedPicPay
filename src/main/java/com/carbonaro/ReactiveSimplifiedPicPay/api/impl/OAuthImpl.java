@@ -28,6 +28,13 @@ public class OAuthImpl implements IOAuthAPI {
     }
 
     @Override
+    public Mono<SystemUser> registerAdmin(String username, String password) {
+
+        log.info("Creating new admin: {}", username);
+        return userService.createAdmin(username, password);
+    }
+
+    @Override
     public Mono<TokenResponse> generateToken(String username, String password) {
 
         log.info("Generating token for user: {}", username);
