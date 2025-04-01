@@ -18,6 +18,10 @@ public interface IOAuthAPI {
     @RegisterUserRouteDescription
     Mono<SystemUser> registerUser(@RequestHeader String username, @RequestHeader String password);
 
+    @PostMapping("/register/admin")
+    @RegisterAdminRouteDescription
+    Mono<SystemUser> registerAdmin(@RequestHeader String username, @RequestHeader String password);
+
     @PostMapping("/login")
     @GenerateTokenRouteDescription
     Mono<TokenResponse> generateToken(@RequestHeader String username, @RequestHeader String password);
