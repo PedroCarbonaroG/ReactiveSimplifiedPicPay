@@ -34,6 +34,7 @@ public class SwaggerConfig {
                                 .bearerFormat("JWT")))
                 .paths(new Paths()
                         .addPathItem("/oauth/register", new PathItem().post(new Operation().security(List.of())))
+                        .addPathItem("/oauth/register/admin", new PathItem().post(new Operation().security(List.of())))
                         .addPathItem("/oauth/login", new PathItem().post(new Operation().security(List.of()))));
     }
 
