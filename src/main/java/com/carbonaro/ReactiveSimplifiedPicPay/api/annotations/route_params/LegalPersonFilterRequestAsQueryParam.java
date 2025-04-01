@@ -1,4 +1,4 @@
-package com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.route_description;
+package com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.route_params;
 
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.enums.CompanySizeEnum;
 import io.swagger.v3.oas.annotations.Parameter;

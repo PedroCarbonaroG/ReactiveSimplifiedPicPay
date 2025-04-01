@@ -21,8 +21,7 @@ import java.lang.annotation.RetentionPolicy;
                         content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = LegalPersonResponse.class))),
                 @ApiResponse(
                         responseCode = "204",
-                        description = "Neither NaturalPerson was found.",
-                        content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorResponse.class))),
+                        description = "Neither NaturalPerson was found."),
                 @ApiResponse(
                         responseCode = " 400 • 404  500",
                         description = "If something goes wrong if data or application resources, returns treated error.",

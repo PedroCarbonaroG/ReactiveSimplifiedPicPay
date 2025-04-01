@@ -19,8 +19,7 @@ import org.springframework.http.MediaType;
                         description = "If everything went right, returns OK."),
                 @ApiResponse(
                         responseCode = "204",
-                        description = "If everything went right however don't find any data about user, returns no content.",
-                        content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorResponse.class))),
+                        description = "If everything went right however don't find any data about user, returns no content."),
                 @ApiResponse(
                         responseCode = " 400 • 404  500",
                         description = "If something goes wrong if data or application resources, returns treated error.",

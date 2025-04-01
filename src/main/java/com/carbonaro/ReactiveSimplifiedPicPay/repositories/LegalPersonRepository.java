@@ -42,8 +42,8 @@ public class LegalPersonRepository extends BaseRepository {
         return toPage(query, page, LegalPerson.class);
     }
 
-    public Mono<LegalPerson> findByEmail(String email) {
-        return repository.findByEmail(email);
+    public Mono<Void> delete(LegalPerson legalPerson) {
+        return repository.delete(legalPerson);
     }
 
     public Mono<LegalPerson> findById(String id) {
@@ -52,10 +52,6 @@ public class LegalPersonRepository extends BaseRepository {
 
     public Mono<LegalPerson> findByCnpj(String cnpj) {
         return repository.findByCnpj(cnpj);
-    }
-
-    public Mono<Void> deleteByCnpj(String cnpj) {
-        return repository.deleteByCnpj(cnpj);
     }
 
     public Mono<Void> deleteAll() {
