@@ -15,9 +15,11 @@ import java.lang.annotation.RetentionPolicy;
         description = "If everything goes right, updates a NaturalPerson with all user required fields",
         responses = {
                 @ApiResponse(
+                        responseCode = "200",
+                        description = "OK. Natural was updated"),
+                @ApiResponse(
                         responseCode = "204",
-                        description = "Neither LegalPerson was found.",
-                        content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorResponse.class))),
+                        description = "Neither LegalPerson was found."),
                 @ApiResponse(
                         responseCode = " 400 • 404  500",
                         description = "If something goes wrong if data or application resources, returns treated error.",

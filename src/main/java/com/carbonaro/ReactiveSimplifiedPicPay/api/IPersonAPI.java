@@ -1,6 +1,7 @@
 package com.carbonaro.ReactiveSimplifiedPicPay.api;
 
 import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.route_description.*;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.route_params.LegalPersonFilterRequestAsQueryParam;
 import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.route_params.LegalPersonRequestAsQueryParam;
 import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.route_params.NaturalPersonFilterRequestAsQueryParam;
 import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.route_params.NaturalPersonRequestAsQueryParam;

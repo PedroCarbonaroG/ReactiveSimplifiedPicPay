@@ -2,14 +2,13 @@ package com.carbonaro.ReactiveSimplifiedPicPay.api.impl;
 
 import com.carbonaro.ReactiveSimplifiedPicPay.api.IWalletAPI;
 import com.carbonaro.ReactiveSimplifiedPicPay.services.WalletService;
-import java.math.BigDecimal;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
+import java.math.BigDecimal;
 
-import static com.carbonaro.ReactiveSimplifiedPicPay.AppConstants.ADMIN_SCOPE;
 import static com.carbonaro.ReactiveSimplifiedPicPay.AppConstants.USER_SCOPE;
 
 @Slf4j

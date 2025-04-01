@@ -20,8 +20,7 @@ import java.lang.annotation.RetentionPolicy;
                         content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = TransactionResponse.class))),
                 @ApiResponse(
                         responseCode = "204",
-                        description = "Neither Transactions was found.",
-                        content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorResponse.class))),
+                        description = "Neither Transactions was found."),
                 @ApiResponse(
                         responseCode = "404",
                         description = "Not Found. Resources are not found to complete the service provided by this endpoint..",

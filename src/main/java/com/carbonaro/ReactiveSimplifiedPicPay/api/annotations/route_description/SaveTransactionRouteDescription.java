@@ -17,20 +17,8 @@ import java.lang.annotation.RetentionPolicy;
                         responseCode = "200",
                         description = "OK"),
                 @ApiResponse(
-                        responseCode = "400",
-                        description = "Some(s) parameter(s) could not match, revise that and try again with right parameters!",
-                        content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorResponse.class))),
-                @ApiResponse(
-                        responseCode = "401",
-                        description = "Some(s) parameter(s) could not match, revise that and try again with right parameters!",
-                        content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorResponse.class))),
-                @ApiResponse(
-                        responseCode = "404",
-                        description = "Not Found. Resources are not found to complete the service provided by this endpoint.",
-                        content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorResponse.class))),
-                @ApiResponse(
-                        responseCode = "500",
-                        description = "Internal Server Error. Something went wrong with API, contact the administration.",
+                        responseCode = " 400 • 401  401 • 500",
+                        description = "If something goes wrong if data or application resources, returns treated error.",
                         content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorResponse.class)))})
 public @interface SaveTransactionRouteDescription {
 }

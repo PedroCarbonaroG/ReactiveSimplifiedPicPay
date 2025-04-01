@@ -1,9 +1,10 @@
 package com.carbonaro.ReactiveSimplifiedPicPay.api;
 
+import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.route_description.GetPersonsToExtractionRouteDescription;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.route_description.GetTransactionsExtractionRouteDescription;
 import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.route_params.TransactionFilterRequestAsQueryParam;
 import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.transaction.TransactionFilterRequest;
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.enums.FileTypeEnum;
-import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -15,13 +16,13 @@ import reactor.core.publisher.Mono;
 @RequestMapping(value = "/extraction", produces = MediaType.APPLICATION_JSON_VALUE)
 public interface IExportingAPI {
 
-    @Operation()
     @GetMapping("/transactions")
     @TransactionFilterRequestAsQueryParam
+    @GetTransactionsExtractionRouteDescription
     Mono<ResponseEntity<byte[]>> getTransactionsExtraction(TransactionFilterRequest filterRequest, FileTypeEnum fileType);
 
-    @Operation()
     @GetMapping("/persons")
+    @GetPersonsToExtractionRouteDescription
     Mono<ResponseEntity<byte[]>> getPersonsToExtraction(FileTypeEnum fileType);
 
 }

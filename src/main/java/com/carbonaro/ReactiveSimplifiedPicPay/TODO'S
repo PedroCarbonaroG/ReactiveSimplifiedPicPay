@@ -6,6 +6,14 @@
 7-> TRATAR AS EXCESSOES DO JWT - OK
 8-> PUT SECURITY IN ALL ROUTES - OK
 9-> REFATORAR COMPLETAMENTE O EXCEPTION HANDLER, PRECISA MELHORAR TUDO O FLUXO E TOMAR CUIDADO COM USO DO MESSAGE-HELPER - OK
-===================================================================================================================================
+10 -> Refactor no OAuthAPI (criar camadas corretas e segregar) - OK
+-----------------------------------------------------------------------------------------------------------------------------------
 5-> Exporting API 100% EXECUTATION -
-10-> UNIT TESTS FOR ALL OF THEM -
+11-> UNIT TESTS FOR ALL OF THEM -
+
+===================================================================================================================================
+Complementar online docs for study:
+https://medium.com/@AlexanderObregon/how-to-set-up-email-notifications-in-spring-boot-applications-b5a2574c5e8f
+https://www.youtube.com/watch?v=ThOdWjAz5cw
+https://www.youtube.com/watch?v=tGGo15irME8&list=PLyHJZXNdCXsd2e3NMW9sZbto8RB5foBtp&index=2
+https://www.udemy.com/course/master-spring-boot-microservice-angular-with-k8s-cicd-aws/?couponCode=KEEPLEARNINGBR

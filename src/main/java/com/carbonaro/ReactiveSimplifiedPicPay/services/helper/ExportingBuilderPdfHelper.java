@@ -18,18 +18,15 @@ public class ExportingBuilderPdfHelper {
     private static final String TRANSACTION_TEMPLATE = "transaction_templates/transaction_header.html";
 
     @SneakyThrows
-    public Mono<byte[]> buildPdf(Object object) {
+    public <T> Mono<byte[]> buildPdf(T report) {
 
         StringBuilder sb = new StringBuilder();
 
         List<Field> fields = Stream.concat(
-                Arrays.stream(object.getClass().getDeclaredFields()),
-                Arrays.stream(object.getClass().getSuperclass().getDeclaredFields()))
+                Arrays.stream(report.getClass().getDeclaredFields()),
+                Arrays.stream(report.getClass().getSuperclass().getDeclaredFields()))
                 .toList();
-
-        for (Field field : fields) {
-            field.setAccessible(true);
-        }
+        fields.forEach(self -> self.setAccessible(true));
 
         sb.append(exportingServiceHelper.processHtmlTemplate(TRANSACTION_TEMPLATE, object));
 

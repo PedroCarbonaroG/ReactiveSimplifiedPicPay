@@ -1,31 +1,4 @@
-
-Day 10/march ->
-
-Complementar online docs for study:
-https://medium.com/@AlexanderObregon/how-to-set-up-email-notifications-in-spring-boot-applications-b5a2574c5e8f
-https://www.youtube.com/watch?v=ThOdWjAz5cw
-https://www.youtube.com/watch?v=tGGo15irME8&list=PLyHJZXNdCXsd2e3NMW9sZbto8RB5foBtp&index=2
-https://www.udemy.com/course/master-spring-boot-microservice-angular-with-k8s-cicd-aws/?couponCode=KEEPLEARNINGBR
-
-
-
-==============================================================================================================================
-
-ApiExeptionHandlerHelper -> 
 package com.carbonaro.ReactiveSimplifiedPicPay.api.exception_handler.helper;
-
-import static com.carbonaro.ReactiveSimplifiedPicPay.AppConstants.GENERAL_MESSAGE_HELPER_DEFAULT_MESSAGE;
-import static com.carbonaro.ReactiveSimplifiedPicPay.AppConstants.HANDLER_AUTHENTICATION_EXCEPTION;
-import static com.carbonaro.ReactiveSimplifiedPicPay.AppConstants.HANDLER_AUTHENTICATION_SERVICE_EXCEPTION;
-import static com.carbonaro.ReactiveSimplifiedPicPay.AppConstants.HANDLER_BAD_REQUEST_ERROR_MESSAGE;
-import static com.carbonaro.ReactiveSimplifiedPicPay.AppConstants.HANDLER_EXPIRED_JWT_ERROR_MESSAGE;
-import static com.carbonaro.ReactiveSimplifiedPicPay.AppConstants.HANDLER_ILLEGAL_ARGUMENT_ERROR_MESSAGE;
-import static com.carbonaro.ReactiveSimplifiedPicPay.AppConstants.HANDLER_INTERNAL_SERVER_ERROR_MESSAGE;
-import static com.carbonaro.ReactiveSimplifiedPicPay.AppConstants.HANDLER_MALFORMED_JWT_ERROR_MESSAGE;
-import static com.carbonaro.ReactiveSimplifiedPicPay.AppConstants.HANDLER_NOT_FOUND_ERROR_MESSAGE;
-import static com.carbonaro.ReactiveSimplifiedPicPay.AppConstants.HANDLER_NO_CONTENT_WARNING_MESSAGE;
-import static com.carbonaro.ReactiveSimplifiedPicPay.AppConstants.HANDLER_SIGNATURE_ERROR_MESSAGE;
-import static com.carbonaro.ReactiveSimplifiedPicPay.AppConstants.HANDLER_UNAUTHORIZED_ACCESS_DENIED_ERROR_MESSAGE;
 
 import com.carbonaro.ReactiveSimplifiedPicPay.api.exception_handler.response.ErrorResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -33,7 +6,6 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.security.SignatureException;
-import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -47,6 +19,9 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.util.UriUtils;
 import reactor.core.publisher.Mono;
+import java.time.LocalDateTime;
+
+import static com.carbonaro.ReactiveSimplifiedPicPay.AppConstants.*;
 
 @Slf4j
 @RequiredArgsConstructor

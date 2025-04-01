@@ -19,13 +19,13 @@ public class ExportingBuilderExcelHelper {
     private ExportingServiceHelper exportingServiceHelper;
     private final NaturalPersonService naturalPersonService;
 
-    public Mono<byte[]> buildExcel(Object object) {
+    public <T> Mono<byte[]> buildExcel(T report) {
 
-        return Mono.just(object)
+        return Mono.just(report)
                 .map(this::initialBuilder);
     }
     
-    private byte[] initialBuilder(Object object) {
+    private <T> byte[] initialBuilder(T report) {
 
         return null;
     }
