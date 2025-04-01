@@ -31,4 +31,18 @@ public class SystemUserService {
         return userRepository.save(user);
     }
 
+    public Mono<SystemUser> createAdmin(String username, String password) {
+
+        var userAdmin = SystemUser.builder()
+                .username(username)
+                .password(SecurityConfig.passwordEncoder().encode(password))
+                .authorities(Set.of(
+                        new SimpleGrantedAuthority(SystemUserEnum.USER.getValue()),
+                        new SimpleGrantedAuthority(SystemUserEnum.ADMIN.getValue())
+                ))
+                .build();
+
+        return userRepository.save(userAdmin);
+    }
+
 }
