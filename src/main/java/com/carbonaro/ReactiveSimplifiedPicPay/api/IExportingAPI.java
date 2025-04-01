@@ -1,10 +1,13 @@
 package com.carbonaro.ReactiveSimplifiedPicPay.api;
 
-import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.route_description.GetPersonsToExtractionRouteDescription;
-import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.route_description.GetTransactionsExtractionRouteDescription;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.route_params.LegalPersonFilterRequestAsQueryParam;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.route_params.NaturalPersonFilterRequestAsQueryParam;
 import com.carbonaro.ReactiveSimplifiedPicPay.api.annotations.route_params.TransactionFilterRequestAsQueryParam;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.person.LegalPersonFilterRequest;
+import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.person.NaturalPersonFilterRequest;
 import com.carbonaro.ReactiveSimplifiedPicPay.api.requests.transaction.TransactionFilterRequest;
 import com.carbonaro.ReactiveSimplifiedPicPay.domain.enums.FileTypeEnum;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -18,11 +21,22 @@ public interface IExportingAPI {
 
     @GetMapping("/transactions")
     @TransactionFilterRequestAsQueryParam
-    @GetTransactionsExtractionRouteDescription
-    Mono<ResponseEntity<byte[]>> getTransactionsExtraction(TransactionFilterRequest filterRequest, FileTypeEnum fileType);
+    @TransactionsToExtractionRouteDescription
+    Mono<ResponseEntity<byte[]>> transactionsToExtraction(
+            @Parameter(hidden = true) TransactionFilterRequest filter,
+            @Parameter FileTypeEnum fileType);
 
-    @GetMapping("/persons")
-    @GetPersonsToExtractionRouteDescription
-    Mono<ResponseEntity<byte[]>> getPersonsToExtraction(FileTypeEnum fileType);
+    @GetMapping("/person/naturals")
+    @NaturalsToExtractionRouteDescription
+    @NaturalPersonFilterRequestAsQueryParam
+    Mono<ResponseEntity<byte[]>> naturalsToExtraction(
+            @Parameter(hidden = true) NaturalPersonFilterRequest filter,
+            @Parameter FileTypeEnum fileType);
 
+    @GetMapping("/person/legals")
+    @LegalsToExtractionRouteDescription
+    @LegalPersonFilterRequestAsQueryParam
+    Mono<ResponseEntity<byte[]>> legalsToExtraction(
+            @Parameter(hidden = true) LegalPersonFilterRequest filter,
+            @Parameter FileTypeEnum fileType);
 }
