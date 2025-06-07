@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  mongo:
+    image: mongo:7.0
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+      MONGO_INITDB_DATABASE: ReactiveSimplifiedPicPay
+    volumes:
+      - mongodb_data:/data/db
+    command: mongod --auth
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: springboot-app
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://root:example@mongo:27017/ReactiveSimplifiedPicPay?authSource=admin
+      SPRING_DATA_MONGODB_AUTO_INDEX_CREATION: "true"
+      SPRING_APPLICATION_NAME: ReactiveSimplifiedPicPay
+      SPRING_OUTPUT_ANSI_ENABLED: ALWAYS
+      JWT_SECRET_KEY: mySecretKeyGoesHereOrTakeFromAnCloudParameterStoreHereJustForDidactics
+      JWT_TOKEN_EXPIRATION_SECONDS: 3600
+    depends_on:
+      - mongo
+    restart: unless-stopped
+
+volumes:
+  mongodb_data:
